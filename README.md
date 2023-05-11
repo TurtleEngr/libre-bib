@@ -3,21 +3,21 @@ A tool for managing a large Libreoffice Bibliography
 
 ## Features
 
-* Add bibliographic entries to a simple text file
-
 ### Libreoffice Database
 
-* Import the text file into a Libreoffice compatable DB (lo db)
+* Add bibliographic entries to a simple text file
 
-* Update the lo db from the text file
+* Import the text file into a Libreoffice compatible DB (lo-db)
 
-* Make a backup csv file of the lo db
+* Update the lo-db from the text file
+
+* Make a backup csv file of the lo-db
 
 ### LibraryThing Database
 
-* Import a LibraryThing tsv file (lib db)
+* Import a LibraryThing tsv file (lib-db)
 
-* Merge selected fields from lib db to the lo db
+* Merge selected fields from lib-db to the lo-db
 
 ### Formatted Bibliography
 
@@ -26,15 +26,15 @@ A tool for managing a large Libreoffice Bibliography
 * Bibliography types supported: articles, books (all types), misc
   (videos, DVDs, mp4, audio, etc.), www (links)
 
-### Make references to bib db in your Write document
+### Make references to bib-db in your Write document
 
 * Simple insert of bib reference tags in your Libreoffice Write
   document (odt)
 
-* Update new bib references, so they include the fields from the bib
-  db, and they will be formatted with EndNote text style.
+* Update new bib-db references, so they include the fields from the
+  bib-db. Also the refs will be formatted with EndNote text style.
 
-* Update bib references with any cnanges in the bib db.
+* Update bib references with any changes in the bib-db.
 
 ### Optional
 
@@ -45,7 +45,7 @@ A tool for managing a large Libreoffice Bibliography
 
 * Linux system
 
-### Required Packagesa
+### Required Packages
 
 * libreoffice
 * libreoffice-sdbc-mysql (needed for DB connection)
@@ -58,9 +58,9 @@ A tool for managing a large Libreoffice Bibliography
 * tidy
 * make (script and file manager)
 
-
 ### Optional Packages
 
+* ssh - if using a remote DB
 * epm-helper - mkver.pl (generate conf.* files)
 * sed
 * pandoc
@@ -68,8 +68,6 @@ A tool for managing a large Libreoffice Bibliography
 * pod2pdf
 * beekeeper - https://github.com/beekeeper-studio/beekeeper-studio
 
-## Installation
-
-## Usage
+## Installation and Usage
 
 See doc/manual/libre-bib.md
