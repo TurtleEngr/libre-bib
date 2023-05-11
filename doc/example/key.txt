@@ -1,0 +1,42 @@
+Note: most Type and Media are a mess in biblio.txt
+
+Type: article, book, media, link
+
+      0=>"article",  - link
+      1=>"book",
+      10=>"media",  - video, audio
+      16=>"link"    - org, site, website
+
+Media is require. Type is optional and will be overridden:
+
+Media:       Type:
+-------      -------
+Article      article - can be web pages
+article      article
+a/v          media
+audio        media
+Blu-ray      media   - from lib
+Book         book   - from lib
+book         book
+DVD          media   - from lib
+Ebook        book   - from lib
+Hardcover    book   - from lib
+Link         article   - see also: org, site, website
+link         article
+Media        media
+media        media
+mp3          media
+mp4          media
+org          link
+Paper Book   book   - from lib
+Paperback    book   - from lib
+podcast      media
+product      link
+site         link
+TED          media
+ted          media
+VHS          media
+video        media
+website      link
+youtube      media
+        

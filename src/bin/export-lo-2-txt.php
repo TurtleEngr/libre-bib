@@ -1,0 +1,295 @@
+#!/usr/bin/php
+<?php
+
+# -----------------------------
+function fusage() {
+    global $argc;
+    global $argv;
+    
+    system("pod2text $argv[0]");
+    exit(1);
+
+/* ...
+
+=pod
+
+=head1 NAME
+
+export-lo-2-txt.php - export lo db to biblio.txt
+
+=head1 SYNOPSIS
+
+ ./export-lo-2-txt.php [-c Conf] [-t Table] [-o FILE.txt] [-n] [-v] [-d] [-h] 
+
+=head1 DESCRIPTION
+
+[Describe the script's purpose]
+
+=head1 OPTIONS
+
+=over 4
+
+=item B<-c Conf>
+
+Default: conf.php
+
+Define these vars:
+
+ $gDBName = "biblio_db";
+ $gHost = "127.0.0.1";
+ $gPassHint = "b4n";
+ $gPassCache = ".pass.tmp";
+ $gPortLocal = "3306";
+ $gPortRemote = "3308";
+ $gUserName = "bruce";
+ $gDsn = "mysql:dbname=biblio_db;host=127.0.0.1;port=3308;charset=UTF8";
+
+=item B<-t Table>
+
+Table to be read. Default: lo
+
+=item B<-o FILE.txt
+
+Output file. Default: biblio-new.txt
+
+=item B<-n> - noexecute
+
+If defined, the script will run everything it can, but not execute any
+write operations.
+
+=item B<-v> - verbose
+
+Not imp.
+
+Verbose output.
+
+=item B<-d> - debug
+
+Turn debug code on.
+
+=item B<-h> - help
+
+This help.
+
+=back
+
+=for comment =head1 RETURN VALUE
+
+=head1 ERRORS
+
+Does the conf file exist?
+
+Values i the conf file?
+
+Do expected files exist?
+
+Is the ssh tunnel setup?
+
+Does the DB exist?
+
+Does the user have grants needed to access DB and it's tables?
+
+=for comment =head1 EXAMPLES
+
+=head1 ENVIRONMENT
+
+=head1 FILES
+
+.pass.tmp, conf.php, /usr/local/bin/mkconf.sh, bin/util.php
+
+=head1 SEE ALSO
+
+Makefile, mkver.pl
+
+=head1 NOTES
+
+ https://www.php.net/manual/en/book.pdo.php
+
+ alter table bib add primary key (Identifier);
+
+=for comment =head1 CAVEATS
+
+=for comment =head1 DIAGNOSTICS
+
+=for comment =head1 BUGS
+
+=for comment =head1 RESTRICTIONS
+
+=for comment =head1 AUTHOR
+
+=head1 HISTORY
+
+$Revision: 1.1 $ $Date: 2023/05/11 20:16:15 $ GMT 
+
+=cut
+
+... */
+} # fUsage
+
+# -----------------------------
+function fCleanUp() {
+        echo "\n";
+} # fCleanUp
+
+# -----------------------------
+function fGetOps() {
+    global $argc;
+    global $argv;
+    global $gpConf;
+    global $gpDebug;
+    global $gpHelp;
+    global $gpNoExec;
+    global $gpFile;
+    global $gpTable;
+    global $gpVerbose;
+
+    $gpConf = "conf.php";
+    $gpDebug = false;
+    $gpFile = "biblio.txt";
+    $gpHelp = false;
+    $gpNoExec = false;
+    $gpTable = "lo";
+    $gpVerbose = false;
+
+    $tOpt = getopt("c:t:o:ndvh");
+    
+    if (isset($tOpt['c']))
+        $gpConf = $tOpt['c'];
+
+    if (isset($tOpt['t']))
+        $gpTable = $tOpt['t'];
+
+    if (isset($tOpt['o']))
+        $gpFile = $tOpt['o'];
+        
+    $gpNoExec = isset($tOpt['n']);
+    $gpDebug = isset($tOpt['d']);
+    $gpVerbose = isset($tOpt['v']);
+    $gpHelp = isset($tOpt['h']);
+
+    if ($gpHelp or $argc < 2)
+        fUsage();
+
+    if ($gpDebug)
+        echo "Debug is on. " . __FILE__ . "[" . __LINE__ . "]\n";
+} # fGetOps
+
+# -----------------------------
+function fValidate() {
+    global $gDb;
+    global $gDsn;
+    global $gPassCache;
+    global $gPassword;
+    global $gUserName;
+    global $gFileH;
+    global $gpConf;
+    global $gpDebug;
+    global $gpFile;
+    global $gpTable;
+
+    if ("$gpConf" == "")
+        throw new Exception("Error: Missing -c option. [" . __LINE__ . "]");
+
+    if (! file_exists("$gpConf"))
+        throw new Exception("Error: Bad -c option. [" . __LINE__ . "]");
+    require_once($gpConf);
+
+    if (! file_exists("bin/util.php"))
+        throw new Exception("Error: Missing: bin/util.php. [" . __LINE__ . "]");
+    require_once("bin/util.php");
+
+    if ("$gpTable" == "")
+        throw new Exception("Error: Missing -t option. [" . __LINE__ . "]");
+
+    if ("$gpFile" == "")
+        throw new Exception("Error: Missing -o option. [" . __LINE__ . "]");
+
+    if (($gFileH = fopen($gpFile, "w")) == FALSE)
+        throw new Exception("Cannot open $gpFile. [" . __LINE__ . "]");
+
+    if ("$gDsn" == "")
+        throw new Exception("Error: Missing gDsn. [" . __LINE__ . "]");
+
+    if ("$gPassCache" == "")
+        throw new Exception("Error: Missing gPassCache. Run make connect [" . __LINE__ . "]");
+
+    if ("$gUserName" == "")
+        throw new Exception("Error: Missing gUserName. [" . __LINE__ . "]");
+
+    if (! file_exists("$gPassCache"))
+        throw new Exception("Missing: gPassCache file: $gPassCache. Run make connect [" . __LINE__ . "]");
+
+    $gPassword = rtrim(shell_exec("/bin/bash -c 'cat $gPassCache'"));
+    if ("$gPassword" == "")
+        throw new Exception("Error: password is not in $gPassCache. [" . __LINE__ . "]");
+    
+    # Create database connection
+    if ($gpDebug) { echo "$gDsn, $gUserName \n"; }
+    $gDb = new PDO($gDsn, $gUserName, $gPassword);
+
+    if (! fTableExists($gpTable))
+        throw new Exception("Error: Missing table $gpTable [" . __LINE__ . "]");
+} # fValidate
+
+# -----------------------------
+function fExportTable() {
+    global $gDb;
+    global $gpDebug;
+    global $gpTable;
+    global $gFileH;
+
+    fprintf($gFileH, "# Generated by export-lo-2-txt.php\n");
+    fprintf($gFileH, "# " . fDate("iso") . "\n\n");
+
+    $tColList = array("Identifier", "Type", "RepType", "Booktitle",
+        "Title", "Author", "Custom2", "Year", "Custom4", "Publisher",
+        "Note", "ISBN", "Custom3", "URL", "Custom1", "Annote",
+        "Address", "Chapter", "Edition", "Editor", "Howpublish",
+        "Institutn", "Journal", "Month", "Number", "Organizat",
+        "Pages", "School", "Series", "Volume", "Custom5");
+
+    # Get all columns
+    $tRecH = $gDb->prepare("select * from $gpTable");
+    $tRecH->execute();
+
+    # Get each record and output the biblio.txt block
+    $tCount = 0;
+    while ($tRec = $tRecH->fetch(PDO::FETCH_ASSOC)) {
+        echo ".";
+        ++$tCount;
+        fprintf($gFileH, "\n");
+
+        # Process in tColList order
+        foreach (array_values($tColList) as $tCol) {
+            $tVal = $tRec["$tCol"];
+            if ("$tVal" == "")
+                continue;
+            if ($tCol == "Type")
+                $tVal = fType2Txt($tVal);
+            fprintf($gFileH, "%s: %s\n", fLo2TxtMap($tCol), $tVal);
+        }
+    } # while
+    echo "\nProcessed: $tCount \n";
+    fclose($gFileH);
+} # fExportTable
+
+# ****************************************
+# Includes, GetOps, Validate, ReadOnly
+
+try {
+    fGetOps();
+    fValidate();
+} catch(Exception $e) {
+    echo "Problem with setup: " . $e->getMessage() . "\n";
+    exit(1);
+}
+
+# Write section
+try {
+    fExportTable();
+} catch(Exception $e) {
+    echo "Problem creating table: " . $e->getMessage() . "\n";
+    exit(2);
+}
+exit(0);
+?>
