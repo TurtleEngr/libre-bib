@@ -52,6 +52,16 @@ clean :
 	-cd ..; find * -name '*~' -exec rm {} \;
 	-rm .pass.tmp parse-tmp.awk gen/*
 
+commit-all :
+	cd ..; cvs ci -m Updated
+	git ci -am Updated
+	git push origin develop
+
+release :
+	git co main; git merge develop
+	git push origin main
+	git co develop
+
 .pass.tmp :
 	read -srp 'Password ($(gPassHint))? '; \
 	echo $$REPLY >.pass.tmp
