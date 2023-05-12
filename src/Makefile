@@ -144,16 +144,19 @@ src/import-to-lib.date : config/conf.php config/librarything_export-col.tsv $(mD
 	date +%F_%T >$@
 
 # ----------
-# One time
-
-setup-src : config/ref-biblio-col.csv librarything_export-col.tsv
+one-time-setup : config/ref-biblio-col.csv librarything_export-col.tsv
 
 config/ref-biblio-col.csv : config/ref-biblio.csv
 	head -n 1 $? | sed 's/,C,254//g; s/,M//g' >$@
 
-config/ref-biblio.csv : config/ref-biblio.dbt
+config/ref-biblio.csv : config/ref-biblio.dbf
 	libreoffice --headless --convert-to csv $?
 	mv ref-biblio.csv $@
+
+config/ref-biblio.dbf : ~/.config/libreoffice/4/user/database/biblio/biblio.dbf
+	cp ~/.config/libreoffice/4/user/database/biblio/biblio.db* config
+	mv biblio.dbf ref-biblio.dbf
+	mv biblio.dbt ref-biblio.dbt
 
 config/librarything_export-col.tsv : $(mDataPath)/librarything_export.tsv
 	head -n 1 <$? >$@
