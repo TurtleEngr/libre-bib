@@ -1,4 +1,4 @@
-#!/usr/bin/php
+1#!/usr/bin/php
 <?php
 
 # -----------------------------
@@ -36,6 +36,8 @@ file and a warning will be output.
 =over 4
 
 =item B<-c Conf.php>
+
+Default: config/conf.php
 
 This is the connection information and DB that the Table is in.
 
@@ -112,7 +114,7 @@ Do expected files exist?
 
 =head1 FILES
 
-.pass.tmp, conf.php, /usr/local/bin/mkconf.sh bin/util.php
+.pass.tmp, config/conf.php, /usr/local/bin/mkconf.sh bin/util.php
 
 =head1 SEE ALSO
 
@@ -133,7 +135,7 @@ Makefile, /usr/local/bin/mkver.pl
 =head1 HISTORY
 
  Version:
- $Revision: 1.1 $ $Date: 2023/05/11 20:16:15 $ GMT 
+ $Revision: 1.2 $ $Date: 2023/05/12 02:46:39 $ GMT 
 
 =cut
 
@@ -158,7 +160,7 @@ function fGetOps() {
     global $gpTable;
     global $gpVerbose;
 
-    $gpConf = "conf.php";
+    $gpConf = "config/conf.php";
     $gpDebug = false;
     $gpFile = "";
     $gpHelp = false;
@@ -188,7 +190,7 @@ function fGetOps() {
         fUsage();
 
     if ($gpVersion) {
-        echo '$Revision: 1.1 $ $Date: 2023/05/11 20:16:15 $ GMT'
+        echo '$Revision: 1.2 $ $Date: 2023/05/12 02:46:39 $ GMT'
             . " [" . __LINE__ . "]\n";
         exit(2);    # ---------->
     }

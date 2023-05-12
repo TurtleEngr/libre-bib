@@ -32,7 +32,7 @@ import-txt-2lo.php - import biblio.txt to lo db
 
 =item B<-c Conf>
 
-Default: conf.php
+Default: config/conf.php
 
 Define these vars:
 
@@ -100,7 +100,7 @@ Does the user have grants needed to access DB and it's tables?
 
 =head1 FILES
 
-.pass.tmp, conf.php, /usr/local/bin/mkconf.sh, bin/util.php
+.pass.tmp, config/conf.php, config/mkconf.sh, bin/util.php
 
 =head1 SEE ALSO
 
@@ -124,7 +124,7 @@ Makefile, mkver.pl
 
 =head1 HISTORY
 
-$Revision: 1.1 $ $Date: 2023/05/11 20:16:16 $ GMT 
+$Revision: 1.2 $ $Date: 2023/05/12 02:46:39 $ GMT 
 
 =cut
 
@@ -150,7 +150,7 @@ function fGetOps() {
     global $gpVerbose;
 
     $gpBackup = false;
-    $gpConf = "conf.php";
+    $gpConf = "config/conf.php";
     $gpDebug = false;
     $gpHelp = false;
     $gpNoExec = false;

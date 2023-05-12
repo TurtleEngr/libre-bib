@@ -117,12 +117,10 @@ export-lo : config/conf.php bin/util.php
 # ----------
 # backup: lo db
 
-backup-lo : config/conf.php bin/util.php src/ref-biblio-col.csv
+backup-lo : config/conf.php bin/util.php config/ref-biblio-col.csv
 	-cp --backup=t src/backup-lo.csv src/backup-lo.csv.sav
 	bin/export-lo-2-tcsv.php -c config/conf.php -s c -t lo -o src/backup-lo.csv
 	date +%F_%T >src/backup-lo.date
-
-# src/backup-lo.csv : src/import-txt-2-lo.date
 
 restore-lo : config/conf.php bin/util.php
 	bin/import-tcsv-2-lo-db.php -c config/conf.php -s c -c lo -b -i src/backup-lo.csv
@@ -135,22 +133,33 @@ update-lo : config/conf.php
 	@echo "Run this after lib-db, lo-db"
 	bin/update-lib-2-lo.php -c config/conf.php
 
-# ----------
-src/librarything_export-col.tsv : src/librarything_export.tsv
-	head -n 1 <$? >$@
-
-src/librarything_export.tsv :
-	@echo Manually export $@ from Library Thing
-
 # --------------------
 # Update lib-db
 
 update-lib-db : src/import-to-lo.date
 
-src/import-to-lib.date : config/conf.php src/librarything_export.tsv
+src/import-to-lib.date : config/conf.php config/librarything_export-col.tsv $(mDataPath)/librarything_export.tsv
 	@echo librarything schema and import
-	bin/import-tsv-2-lib-db.php -c config/conf.php -s t -t lib -b -i src/librarything_export.tsv
+	bin/import-tsv-2-lib-db.php -c config/conf.php -s t -t lib -b -i $(mDataPath)/librarything_export.tsv
 	date +%F_%T >$@
+
+# ----------
+# One time
+
+setup-src : config/ref-biblio-col.csv librarything_export-col.tsv
+
+config/ref-biblio-col.csv : config/ref-biblio.csv
+	head -n 1 $? | sed 's/,C,254//g; s/,M//g' >$@
+
+config/ref-biblio.csv : config/ref-biblio.dbt
+	libreoffice --headless --convert-to csv $?
+	mv ref-biblio.csv $@
+
+config/librarything_export-col.tsv : $(mDataPath)/librarything_export.tsv
+	head -n 1 <$? >$@
+
+$(mDataPath)/librarything_export.tsv :
+	@echo Manually export $@ from Library Thing
 
 # ----------
 # Rules

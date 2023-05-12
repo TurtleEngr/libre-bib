@@ -32,7 +32,7 @@ export-lo-2-tcvs.php - export lo db to csv or tsv file
 
 =item B<-c Conf>
 
-Default: conf.php
+Default: config/conf.php
 
 Define these vars:
 
@@ -100,8 +100,8 @@ Does the user have grants needed to access DB and it's tables?
 
 =head1 FILES
 
-.pass.tmp, conf.php, bin/util.php, /usr/local/bin/mkconf.sh,
-src/ref-biblio-col.csv
+.pass.tmp, config/conf.php, bin/util.php, /usr/local/bin/mkconf.sh,
+config/ref-biblio-col.csv
 
 =head1 SEE ALSO
 
@@ -125,7 +125,7 @@ Makefile, mkver.pl
 
 =head1 HISTORY
 
-$Revision: 1.1 $ $Date: 2023/05/11 20:16:15 $ GMT 
+$Revision: 1.2 $ $Date: 2023/05/12 02:46:39 $ GMT 
 
 =cut
 
@@ -151,7 +151,7 @@ function fGetOps() {
     global $gpTable;
     global $gpVerbose;
 
-    $gpConf = "conf.php";
+    $gpConf = "config/conf.php";
     $gpDebug = false;
     $gpHelp = false;
     $gpFile = "lo.csv";
