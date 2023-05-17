@@ -1,0 +1,2 @@
+Mainly follow the naming convention and code formatting style.
+Create a branch with your changes. Do a pull request for a merge.
