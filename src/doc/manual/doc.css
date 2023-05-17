@@ -22,6 +22,18 @@ dd {
 blockquote { 
     margin-left: 10%; 
     font-family: "Times New Roman", serif; 
+    font-style: italic; 
+    text-align: left; 
+}
+
+blockquote.in { 
+    margin-left: 5%; 
+    font-family: Courier New, monospace; 
     font-weight: bold; 
+    text-align: left; 
+}
+blockquote.out { 
+    margin-left: 10%; 
+    font-family: Courier New, monospace; 
     text-align: left; 
 }

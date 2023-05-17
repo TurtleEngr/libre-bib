@@ -58,7 +58,7 @@ Run:
     bib setup-bib
   </blockquote>
 
-Fix any error then run it again, util no more errors.
+Fix any errors then run it again, util no more errors.
 
 If you are planing on using a remote DB, then see the "Configure ssh" section.
 
@@ -229,6 +229,303 @@ project/conf.env. It should be set to $cgRemoteDsn for remote
 access. Try again, If that works, your conf.env setting are good for
 continuing.
 
+** Starting a new bib project
+- This assumes you have everything installed and working. This will use
+  the example files.
+
+<blockquote class="in">
+$ cd $HOME
+$ mkdir -p project/biblio
+$ cd project/biblio
+$ bib 
+</blockquote>
+<blockquote class="out">
+Usage:
+    bib [-n] Cmd
+Cmds:
+import-lo, export-lo, backup-lo, restore-lo
+import-lib, update-lo
+ref-new, ref-update
+status, setup-bib, clean, connect, version, help
+</blockquote>
+
+<blockquote class="in">
+$ bib help
+</blockquote>
+
+<blockquote class="out">
+Error: Missing conf.env, copying it now
+Edit conf.env with your details. Uncomment the ones you are changing.
+Then run: bib setup-bib
+
+Usage:
+    bib [-n] Cmd
+Cmds:
+import-lo, export-lo, backup-lo, restore-lo
+import-lib, update-lo
+ref-new, ref-update
+status, setup-bib, clean, connect, version, help
+</blockquote>
+
+<blockquote class="in">
+$ ls
+</blockquote>
+
+<blockquote class="out">
+conf.env*
+</blockquote>
+
+<blockquote class="in">
+$ emacs conf.env
+
+changed:
+
+    export cgDbHostRemote="NAME.example.com"
+    export cgDbPassHint="b4n"
+    export cgDbUser="$USER"
+    export cgUseRemote=false
+    export cgSshKey="$HOME/.ssh/id.KEY-NAME"
+    export cgUseLib=false
+
+to 
+
+    export cgDbHostRemote="myserver.example.com"
+    export cgDbPassHint="fav-pet"
+    export cgDbUser="example"
+    export cgUseRemote=true
+    export cgSshKey="$HOME/.ssh/id.mysys"
+    export cgUseLib=true
+
+save, and exit
+
+$ bib setup-bib
+</blockquote>
+
+<blockquote class="out">
+Missing example.odt. Copy an example from
+/opt/libre-bib/doc/example/example.odt
+Missing: biblio.txt. Copy an example from
+/opt/libre-bib/doc/example/biblio.txt
+Missing librarything.tsv. Copy an example from
+/opt/libre-bib/doc/example/librarything.tsv
+Manually update it with an export from Library Thing.
+</blockquote>
+
+<blockquote class="in">
+$ ls
+</blockquote>
+
+<blockquote class="out">
+backup/          biblio.txt  conf.env~*   key.txt           status/
+biblio-note.txt  conf.env*   example.odt  librarything.tsv  tmp/
+</blockquote>
+
+<blockquote class="in">
+$ bib import-lo
+</blockquote>
+<blockquote class="out">
+Problem with setup: SQLSTATE[HY000] [2002] Connection refused
+make: *** [/opt/libre-bib/bin/Makefile:100: status/import-lo.date] Error 1
+</blockquote>
+
+Open another terminal:
+
+<blockquote class="in">
+$ ssh myserver
+</blockquote>
+<blockquote class="out">
+Enter passphrase for key '/home/bob/.ssh/id.mysys': 
+
+bob@mxlinux:/home/bob
+$ 
+</blockquote>
+
+Minimize the terminal window.
+
+<blockquote class="in">
+$ bib import-lo
+</blockquote>
+<blockquote class="out">
+
+Nothing was output. Edit conf.env and change cgVerbose to true.
+</blockquote>
+
+<blockquote class="in">
+$ bib import-lo
+</blockquote>
+<blockquote class="out">
+/opt/libre-bib/bin/import-txt-2-lo.php -c
+Verbose is on.
+Backup is on.
+UseRemote is on.
+UseLib is on.
+Problem with setup: Missing: cgDbPassCache tmp/.pass.tmp. To set it, run: bib connect [89]
+make: *** [/opt/libre-bib/bin/Makefile:100: status/import-lo.date] Error 1
+</blockquote>
+
+<blockquote class="in">
+$ bib connect
+</blockquote>
+<blockquote class="out">
+read -srp 'Password (fav-pet)? '; \
+echo $REPLY >tmp/.pass.tmp
+Password (fav-pet)? First define tunnel: ssh HOST.example.com
+See: /home/bob/ssh/config
+show databases; use DBNAME; show tables;
+
+if [[ "true" == "true" ]]; then \
+    tPort=3308; \
+else \
+    tPort=3306; \
+fi; \
+mysql -P $tPort -u example --password=$(cat tmp/.pass.tmp) -h 127.0.0.1 biblio_example
+Welcome to the MariaDB monitor.  Commands end with ; or \g.
+Your MariaDB connection id is 784
+Server version: 10.5.18-MariaDB-0+deb11u1 Debian 11
+
+Copyright (c) 2000, 2018, Oracle, MariaDB Corporation Ab and others.
+
+Type 'help;' or '\h' for help. Type '\c' to clear the current input statement.
+
+MariaDB [biblio_example]> quit
+Bye
+</blockquote>
+
+<blockquote class="in">
+$ bib import-lo
+</blockquote>
+<blockquote class="out">
+/opt/libre-bib/bin/import-txt-2-lo.php -c
+Verbose is on.
+Backup is on.
+UseRemote is on.
+UseLib is on.
+.
+Processed 292 lines. [263]
+Inserted 31 records. [264]
+/opt/libre-bib/bin/convert-lo-2-bib.php -c
+Verbose is on.
+Backup is on.
+UseRemote is on.
+UseLib is on.
+
+Processed: 31 [221]
+date +%F_%T >status/import-lo.date
+
+This imported the biblio.txt file, creating the "lo" table.
+You can run "bib conect" and use sql commands to look the table.
+For example:
+
+<blockquote>
+show tables;
+show fields from table lo;
+select Identifier,Booktitle from table lo;
+</blockquote>
+
+<blockquote class="in">
+$ bib import-lib
+</blockquote>
+<blockquote class="out">
+librarything schema and import
+/opt/libre-bib/bin/import-tsv-2-lib-db.php -c
+Verbose is on.
+Backup is on.
+UseRemote is on.
+UseLib is on.
+............
+Processed: 12 
+date +%F_%T >status/import-lib.date
+head -n 1 librarything.tsv | sed 's/ /_/g' >tmp/lib-schema.tsv
+diff /opt/libre-bib/etc/lib-schema.tsv tmp/lib-schema.tsv
+Warning: If there are differences, there could be problems.
+</blockquote>
+
+<blockquote class="in">
+$ bib update-lo
+</blockquote>
+<blockquote class="out">
+Update lo from lib where Titles are similar, first 40 char
+Run this after lib-db, lo-db
+...................
+Processed: 19
+...........
+Processed: 11
+Created: bib_2023-05-17_01-40-14 
+
+Processed: 31 [221]
+
+This will have created a join table with Titles are in the "lo" and
+"lib" tables. It then updated some empty "lo" fields from the "lib"
+data. For example: Publisher is tricky one.  (Enhancement: Provide an
+option so some "lib" values will override the 'lo' values.)
+</blockquote>
+
+<blockquote class="in">
+$ bib backup-lo
+</blockquote>
+<blockquote class="out">
+cp: cannot stat 'backup/backup-lo.csv': No such file or directory
+...............................
+Processed: 31 
+</blockquote>
+
+<blockquote class="in">
+$ ls backup/
+</blockquote>
+<blockquote class="out">
+backup-lo.csv
+</blockquote>
+
+<blockquote class="in">
+$ bib ref-new
+</blockquote>
+<blockquote class="out">
+Unpack example.odt [319]
+Start processing [292]
+
+Processed 1056 lines. [303]
+Found 2 references. [304]
+Backup example.odt [339]
+Final clean-up with tidy [343]
+Repack example.odt [354]
+Done. [386]
+</blockquote>
+
+This updated the REF tags so they are now biblio entries.  You'll also
+see the original example.odt was copied to the backup/ dir.
+
+Run: libreoffice to see how they have changed.
+
+<blockquote class="in">
+$ libreoffice example.odt
+</blockquote>
+
+If you run import-lo or import-lib with updated entrie, then run
+ref-update to update them in the example.odt file. If you add new
+REFs to the document then you wouild run ref-new again.
+
+<blockquote class="in">
+$ bib ref-update
+</blockquote>
+<blockquote class="out">
+Verbose is on.
+Backup is on.
+UseRemote is on.
+UseLib is on.
+Unpack example.odt [330]
+Start processing [303]
+
+Processed 1065 lines. [314]
+Found 2 references. [315]
+Backup example.odt [350]
+Final clean-up with tidy [354]
+Repack example.odt [365]
+Done. [396]
+</blockquote>
+
+Now you can add the Bibliography to the end of your document, and
+setup the styles for the different Type of entries.
+
 ** libre-bib Tour
 
 *** Files and Dirs
@@ -264,8 +561,6 @@ File-Dir.
 | tmp/                       | Var: $cgDirTmp; Cmd: setup-bib           |
 | .... .pass.tmp             | Var: $cgDbPassCache; Cmd: connect        |
 | .... biblio.txt            | Var: $cgDirTmp/$cgLoFile; Cmd: export-lo |
-
-
 
 *** DB Tables
 
@@ -388,6 +683,8 @@ touched.
   But first define cgBuild=true, so the sanity-check will be skipped.
 
 ** Maps
+
+The best source for the maps can be found in bin/util.php.
 
 *** bib to libreoffice names
 

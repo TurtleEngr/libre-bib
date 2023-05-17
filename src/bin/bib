@@ -8,13 +8,12 @@ fUsage() {
     cat <<EOF
 
 Usage:
-    bib Cmd
+    bib [-n] Cmd
 Cmds:
 import-lo, export-lo, backup-lo, restore-lo
 import-lib, update-lo
 ref-new, ref-update
-status, one-time-setup, clean, connect, -v version
--h help
+status, setup-bib, clean, connect, version, help
 EOF
     exit 1
 } # fUsage
@@ -23,7 +22,7 @@ EOF
 if [[ $# -eq 0 || "$1" == "-h" ]]; then
     fUsage
 fi
-tParm=$*
+pParm=$*
 
 if [[ ! -d $cgDirApp ]]; then
     echo "Error: cgDirApp $cgDirApp is not correct"
@@ -34,7 +33,7 @@ if [[ ! -d $cgBin ]]; then
     exit 1
 fi
 
-if [[ "${cgBuild:-false}" != "true" ]]; then
+if [[ "${cgBuild:-false}" != "true" && "$pParm" != "setup-bib" ]]; then
     if ! $cgBin/sanity-check.sh; then
         exit $?
     fi
@@ -44,16 +43,18 @@ fi
 . $cgDirApp/etc/conf.env
 
 
-if [ ! -f conf.env ]; then
-    echo "Error: Missing conf.env, copying it now"
-    cp $cgDirApp/etc/conf.env .
-    echo "Edit conf.env with your details. Uncomment the ones you are changing."
-    echo "Then run: bib setup-bib"
-    fUsage
-fi
+if [[ "${cgBuild:-false}" != "true" ]]; then
+    if [ ! -f conf.env ]; then
+        echo "Error: Missing conf.env, copying it now"
+        cp $cgDirApp/etc/conf.env .
+        echo "Edit conf.env with your details. Uncomment the ones you are changing."
+        echo "Then run: bib setup-bib"
+        fUsage
+    fi
 
-# User conf
-. ./conf.env
+    # User conf
+    . ./conf.env
+fi
 
 tRun=""
 if [[ "$cgNoExecCmd" == "true" ]]; then
@@ -67,7 +68,10 @@ if [[ "$cgVerbose" == "true" ]]; then
 fi
 
 # Commands are executed with make
-make -f $cgBin/Makefile $tRun $tSilent $tParm
-if [[ $? -ne 0 ]]; then
-    fUsage
+make -f $cgBin/Makefile $tRun $tSilent $pParm
+
+if [[ "${cgBuild:-false}" != "true" ]]; then
+    if [[ $? -ne 0 ]]; then
+        fUsage
+    fi
 fi

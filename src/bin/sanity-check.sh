@@ -174,6 +174,7 @@ fCheckPhp() {
 fNotOk() {
     if [[ $gErr != 0 ]]; then
         echo "$gErr errors found so far."
+        echo "Have you run: bib setup-bib"
         exit $gErr      # ---------->
     fi
 }

@@ -7,10 +7,16 @@ build :
 # Make deb package
 package :
 
-# Manual install
+# Manual install - only for testing
 install :
-	mkdir -p $(mAppDir)
-	cd $(mAppDir); mkdir bin etc doc
-	cp src/bin/* $(mAppDir)/bin
-	cp src/config/* $(mAppDir)/etc
+	find src -name '*~' -exec rm {} \;
+	rsync -aC src/* $(mAppDir)/
+	find $(mAppDir) -type d -exec chmod a+rx {} \;
+	find $(mAppDir) -type f -exec chmod a+r {} \;
+	find $(mAppDir) -type f -executable -exec chmod a+rx {} \;
 
+mk-app-dir :
+	sudo mkdir -p $(mAppDir)
+	sudo chown -R $SUDO_USER:$SUDO_USER $(mAppDir)
+	sudo find $(mAppDir) -type d -exec chmod a+rx {} \;
+	sudo find $(mAppDir) -type f -exec chmod a+r {} \;

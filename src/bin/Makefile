@@ -37,6 +37,10 @@ clean :
 	-find . -name '*~' -exec rm {} \; &>/dev/null
 	-rm $(cgDirTmp)/* $(cgDirTmp)/.pass.tmp &>/dev/null
 
+help :
+	@echo "See file: $(cgDirApp)/doc/manual/libre-bib.html"
+	sensible-browser file://$(cgDirApp)/doc/manual/libre-bib.html
+
 commit-all :
 	cd ..; cvs ci -m Updated
 	git ci -am Updated
@@ -182,12 +186,16 @@ status-bib :
 # ----------
 # Rules
 
+%.md : %.html
+	pandoc -f html -t markdown < $<  > $@
+
+
 %.odt : %.html
 	libreoffice --headless --convert-to odt $<
 
 %.html : %.org
 	sed 's/^ *- /\n\n/g' $< | \
-	pandoc -f org -t html >$@
+	pandoc -f org -t html > $@
 	sed -i -f $(cgBin)/fixup.sed $@
 	-$(mTidyXhtml) $@
 
