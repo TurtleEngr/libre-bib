@@ -11,18 +11,18 @@
 
 ## Some details
 
-- format php code with phptidy.php  These are the setting I use:
-  https://github.com/cmrcx/phptidy
+- format php code with phptidy.php. https://github.com/cmrcx/phptidy
+  These are the default settings I changed:
 
-        $indent_char = "    ";
-        $replace_shell_comments     = false;
-        $add_operator_space         = true;
-        $add_file_docblock          = false;
-        $add_function_docblocks     = false;
-        $add_doctags                = false;
+        $indent_char             = "    ";
+        $replace_shell_comments  = false;
+        $add_operator_space      = true;
+        $add_file_docblock       = false;
+        $add_function_docblocks  = false;
+        $add_doctags             = false;
 
-- format bash code with  shfmt. These are the options I use:
-  https://github.com/mvdan/sh/releases
+- format bash code with shfmt. https://github.com/mvdan/sh/releases
+  These are the options I use:
   
         shfmt -i 4 -ci
 
