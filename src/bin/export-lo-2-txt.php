@@ -1,15 +1,16 @@
-#!/usr/bin/php
+#!/usr/bin/env php
 <?php
+# TBD Use show fields lo, to get col names for output.
 
 # -----------------------------
 function fusage() {
     global $argc;
     global $argv;
-    
-    system("pod2text $argv[0]");
-    exit(1);
 
-/* ...
+    system("pod2text $argv[0]");
+    exit(1);     # ---------->
+
+    /* ...
 
 =pod
 
@@ -19,53 +20,18 @@ export-lo-2-txt.php - export lo db to biblio.txt
 
 =head1 SYNOPSIS
 
- ./export-lo-2-txt.php [-c Conf] [-t Table] [-o FILE.txt] [-n] [-v] [-d] [-h] 
+ ./export-lo-2-txt.php [-h]
 
 =head1 DESCRIPTION
 
-[Describe the script's purpose]
+Table cgDbLo will be exported to cgDirTmp/cgLoFile. That is, the table
+will be converted to a text file.
 
 =head1 OPTIONS
 
 =over 4
 
-=item B<-c Conf>
-
-Default: config/conf.php
-
-Define these vars:
-
- $gDBName = "biblio_db";
- $gHost = "127.0.0.1";
- $gPassHint = "b4n";
- $gPassCache = ".pass.tmp";
- $gPortLocal = "3306";
- $gPortRemote = "3308";
- $gUserName = "bruce";
- $gDsn = "mysql:dbname=biblio_db;host=127.0.0.1;port=3308;charset=UTF8";
-
-=item B<-t Table>
-
-Table to be read. Default: lo
-
-=item B<-o FILE.txt
-
-Output file. Default: biblio-new.txt
-
-=item B<-n> - noexecute
-
-If defined, the script will run everything it can, but not execute any
-write operations.
-
-=item B<-v> - verbose
-
-Not imp.
-
-Verbose output.
-
-=item B<-d> - debug
-
-Turn debug code on.
+See also ENVIRONMENT section.
 
 =item B<-h> - help
 
@@ -75,37 +41,23 @@ This help.
 
 =for comment =head1 RETURN VALUE
 
-=head1 ERRORS
-
-Does the conf file exist?
-
-Values i the conf file?
-
-Do expected files exist?
-
-Is the ssh tunnel setup?
-
-Does the DB exist?
-
-Does the user have grants needed to access DB and it's tables?
+=for comment =head1 ERRORS
 
 =for comment =head1 EXAMPLES
 
 =head1 ENVIRONMENT
 
-=head1 FILES
+Set these in conf.env
 
-.pass.tmp, config/conf.php, config/mkconf.sh, bin/util.php
+    cgDbLo
+    cgDirTmp
+    cgLoFile
+    
+=for comment =head1 FILES
 
-=head1 SEE ALSO
+=for comment =head1 SEE ALSO
 
-Makefile, mkver.pl
-
-=head1 NOTES
-
- https://www.php.net/manual/en/book.pdo.php
-
- alter table bib add primary key (Identifier);
+=for comment =head1 NOTES
 
 =for comment =head1 CAVEATS
 
@@ -119,7 +71,7 @@ Makefile, mkver.pl
 
 =head1 HISTORY
 
-$Revision: 1.2 $ $Date: 2023/05/12 02:46:39 $ GMT 
+$Revision: 1.1 $ $Date: 2023/05/17 01:13:24 $ GMT
 
 =cut
 
@@ -128,114 +80,54 @@ $Revision: 1.2 $ $Date: 2023/05/12 02:46:39 $ GMT
 
 # -----------------------------
 function fCleanUp() {
-        echo "\n";
+    echo "\n";
 } # fCleanUp
 
 # -----------------------------
 function fGetOps() {
     global $argc;
     global $argv;
-    global $gpConf;
-    global $gpDebug;
+    global $cgDebug;
     global $gpHelp;
-    global $gpNoExec;
-    global $gpFile;
-    global $gpTable;
-    global $gpVerbose;
+    global $gFileOut;
 
-    $gpConf = "config/conf.php";
-    $gpDebug = false;
-    $gpFile = "biblio.txt";
     $gpHelp = false;
-    $gpNoExec = false;
-    $gpTable = "lo";
-    $gpVerbose = false;
-
-    $tOpt = getopt("c:t:o:ndvh");
-    
-    if (isset($tOpt['c']))
-        $gpConf = $tOpt['c'];
-
-    if (isset($tOpt['t']))
-        $gpTable = $tOpt['t'];
-
-    if (isset($tOpt['o']))
-        $gpFile = $tOpt['o'];
-        
-    $gpNoExec = isset($tOpt['n']);
-    $gpDebug = isset($tOpt['d']);
-    $gpVerbose = isset($tOpt['v']);
+    $gFileOut = $cgDirTmp/$cgLoFile;
+    $tOpt = getopt("ch");
     $gpHelp = isset($tOpt['h']);
-
     if ($gpHelp or $argc < 2)
         fUsage();
 
-    if ($gpDebug)
-        echo "Debug is on. " . __FILE__ . "[" . __LINE__ . "]\n";
+    $tConf = $_ENV['cgDirApp'] . "/etc/conf.php";
+    require_once "$tConf";
+    require_once "$cgBin/util.php";
+    fFixBool();
+
 } # fGetOps
 
 # -----------------------------
 function fValidate() {
-    global $gDb;
-    global $gDsn;
-    global $gPassCache;
-    global $gPassword;
-    global $gUserName;
     global $gFileH;
-    global $gpConf;
-    global $gpDebug;
-    global $gpFile;
-    global $gpTable;
+    global $gFileOut;
+    global $cgDebug;
 
-    if ("$gpConf" == "")
-        throw new Exception("Error: Missing -c option. [" . __LINE__ . "]");
+    fValidateCommon();
 
-    if (! file_exists("$gpConf"))
-        throw new Exception("Error: Bad -c option. [" . __LINE__ . "]");
-    require_once($gpConf);
+    if ("$gFileOut" == "")
+        throw new Exception("Error: Missing cgDirTmp/cgLoFile def. [" . __LINE__ . "]");
 
-    if (! file_exists("bin/util.php"))
-        throw new Exception("Error: Missing: bin/util.php. [" . __LINE__ . "]");
-    require_once("bin/util.php");
+    if (($gFileH = fopen($gFileOut, "w")) == FALSE)
+        throw new Exception("Cannot open $gFileOut. [" . __LINE__ . "]");
 
-    if ("$gpTable" == "")
-        throw new Exception("Error: Missing -t option. [" . __LINE__ . "]");
-
-    if ("$gpFile" == "")
-        throw new Exception("Error: Missing -o option. [" . __LINE__ . "]");
-
-    if (($gFileH = fopen($gpFile, "w")) == FALSE)
-        throw new Exception("Cannot open $gpFile. [" . __LINE__ . "]");
-
-    if ("$gDsn" == "")
-        throw new Exception("Error: Missing gDsn. [" . __LINE__ . "]");
-
-    if ("$gPassCache" == "")
-        throw new Exception("Error: Missing gPassCache. Run make connect [" . __LINE__ . "]");
-
-    if ("$gUserName" == "")
-        throw new Exception("Error: Missing gUserName. [" . __LINE__ . "]");
-
-    if (! file_exists("$gPassCache"))
-        throw new Exception("Missing: gPassCache file: $gPassCache. Run make connect [" . __LINE__ . "]");
-
-    $gPassword = rtrim(shell_exec("/bin/bash -c 'cat $gPassCache'"));
-    if ("$gPassword" == "")
-        throw new Exception("Error: password is not in $gPassCache. [" . __LINE__ . "]");
-    
-    # Create database connection
-    if ($gpDebug) { echo "$gDsn, $gUserName \n"; }
-    $gDb = new PDO($gDsn, $gUserName, $gPassword);
-
-    if (! fTableExists($gpTable))
-        throw new Exception("Error: Missing table $gpTable [" . __LINE__ . "]");
+    if ( ! fTableExists($cgDbLo))
+        throw new Exception("Error: Missing table $cgDbLo [" . __LINE__ . "]");
 } # fValidate
 
 # -----------------------------
 function fExportTable() {
     global $gDb;
-    global $gpDebug;
-    global $gpTable;
+    global $cgDebug;
+    global $cgDbLo;
     global $gFileH;
 
     fprintf($gFileH, "# Generated by export-lo-2-txt.php\n");
@@ -249,7 +141,7 @@ function fExportTable() {
         "Pages", "School", "Series", "Volume", "Custom5");
 
     # Get all columns
-    $tRecH = $gDb->prepare("select * from $gpTable");
+    $tRecH = $gDb->prepare("select * from $cgDbLo");
     $tRecH->execute();
 
     # Get each record and output the biblio.txt block
@@ -281,7 +173,7 @@ try {
     fValidate();
 } catch(Exception $e) {
     echo "Problem with setup: " . $e->getMessage() . "\n";
-    exit(1);
+    exit(2);     # ---------->
 }
 
 # Write section
@@ -289,7 +181,7 @@ try {
     fExportTable();
 } catch(Exception $e) {
     echo "Problem creating table: " . $e->getMessage() . "\n";
-    exit(2);
+    exit(3);     # ---------->
 }
-exit(0);
+exit(0);     # ---------->
 ?>

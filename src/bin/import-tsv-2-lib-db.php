@@ -1,13 +1,15 @@
 #!/usr/bin/env php
 <?php
+# TBD more work needed. e.g. remove more options
 
 # -----------------------------
 function fusage() {
     global $argc;
     global $argv;
+    global $cgDebug;
 
     system("pod2text $argv[0]");
-    exit(1);     # ---------->
+    exit(1);
 
     /* ...
 
@@ -15,26 +17,21 @@ function fusage() {
 
 =head1 NAME
 
-import-tcsv-2-lo-db.php - create lo DB from tsv file
+import-tsv-2-db.php - DESCRIPTION
 
 =head1 SYNOPSIS
 
- ./import-tcsv-2-lo-db.php [-s Sep] [-h]
+ ./import-tsv-2-db.php [-h]
 
 =head1 DESCRIPTION
 
-Import the tab or comma separated file cgBackupFile to the cgDbLo
-table.  The header will be used for field names.
+Import the cgLibFile (librarything.tsv) to DB table cgDbLib (lib).
 
 =head1 OPTIONS
 
-See also ENVIRONMENT section.
+See the ENVIRONMENT section.
 
 =over 4
-
-=item B<-s Sep>
-
-Separator. c - comma; t - tab. Default: c
 
 =item B<-h> - help
 
@@ -44,22 +41,14 @@ This help.
 
 =for comment =head1 RETURN VALUE
 
-=head1 ERRORS
-
-    Does the conf.env file exist?
-    Values in the conf file?
-    Do expected files exist?
-    Is the ssh tunnel setup?
-    Does the DB exist?
-    Does the user have grants needed to access DB and it's tables?
+=for comment =head1 ERRORS
 
 =for comment =head1 EXAMPLES
 
 =head1 ENVIRONMENT
 
-Set these in conf.env
-    cgBackupFile         # Required
-    cgDbLo                 # Required
+    cgLibFile
+    cgDbLib
 
 =for comment =head1 FILES
 
@@ -69,16 +58,9 @@ Set these in conf.env
 
  https://www.php.net/manual/en/book.pdo.php
 
- Convert: ../draft/MY-BIBLIO-final.txt to MY-BIBLIO-final.tsv
- Run: ./convert-txt2tsv.sh
+=head2 my
 
- Parse tsv file and import to DB: biblio_bruce, table: my
-
- List header fields, converting spaces to '_':
-    head -n 1 MY-BIBLIO-final.tsv | sed 's/ /_/g; s/\t/\n/g'
-
- show columns from lib;
- select * from lib;
+ Parse tsv file and import to DB: biblio_db, table: my
 
  Interesting fields:
     Book_Id,Title,Primary_Author,Publication,Date,
@@ -86,10 +68,49 @@ Set these in conf.env
 
  If Media == 'Ebook', it's a Kindle book
 
- alter table lo add primary key (Identifier);
-
  select Media,Title,Primary_Author,Date,ISBN,Publication from lib where
- Title like '%: %';
+    Title like '%: %';
+
+=head2 lib
+
+Write a php script that will import a csv file into a mysql db.
+The first record of the csv file will had the names of table fields.
+If the table does not exits, then create the table with csv file's
+fields.
+
+  Run:
+  create tunnel in another terminal: ssh moria
+  php -f import-lib2db.php
+
+  https://www.php.net/manual/en/book.pdo.php
+
+  Export librarything books:
+  https://www.librarything.com/export.php?export_type=tsv
+
+  Parse tsv file.
+  Exported librarything: librarything_BruceRaf.tsv
+
+  List header fields, converting spaces to '_':
+    head -n 1 librarything_BruceRaf.tsv | sed 's/ /_/g; s/\t/\n/g'
+
+ Find max field length:
+    cat librarything_BruceRaf.tsv | while read; do
+        echo $REPLY | wc -c;
+    done | sort -nu
+
+  show columns from lib;
+  select * from lib;
+
+  Interesting fields:
+    Book_Id,Title,Primary_Author,Publication,Date,
+    Media,Page_Count,Tags,ISBN,Subjects,Dewey_Wording
+
+  If Media == 'Ebook', it's a Kindle book
+
+  alter table lib add primary key(Book_Id);
+
+  select Media,Title,Primary_Author,Date,ISBN,Publication from lib where
+  Title like '%: %';
 
 =for comment =head1 CAVEATS
 
@@ -112,6 +133,7 @@ $Revision: 1.1 $ $Date: 2023/05/17 01:13:24 $ GMT
 
 # -----------------------------
 function fCleanUp() {
+    global $cgDebug;
     echo "\n";
 } # fCleanUp
 
@@ -123,15 +145,8 @@ function fGetOps() {
     global $gpHelp;
 
     $gpHelp = false;
-    $gpSep = 'c';
-
-    $tOpt = getopt("cs:h");
-
-    if (isset($tOpt['s']))
-        $gpSep = $tOpt['s'];
-
+    $tOpt = getopt("c:i:t:h");
     $gpHelp = isset($tOpt['h']);
-
     if ($gpHelp or $argc < 2)
         fUsage();
 
@@ -139,50 +154,31 @@ function fGetOps() {
     require_once "$tConf";
     require_once "$cgBin/util.php";
     fFixBool();
-
-} # fGetOps
+}
 
 # -----------------------------
 function fValidate() {
-    global $gSep;
-    global $gpSep;
-    global $gFiileH;
-    global $cgDebug;
-    global $cgBackupFile;
+    global $gHandle;
+    global $cgLibFile;
 
     fValidateCommon();
 
-    if ("$gpSep" == "")
-        throw new Exception("Error: Missing -s option. [" . __LINE__ . "]");
-    switch ($gpSep) {
-    case "c":
-        $gSep = ",";
-        break;
-    case "t":
-        $gSep = "\t";
-        break;
-    default:
-        throw new Exception("Error: Bad -s. Should be 'c' or 's'. [" . __LINE__ . "]");
-    }
-
-    if (($gFiileH = fopen($cgBackupFile, "r")) == FALSE)
-        throw new Exception("Cannot open $cgBackupFile. [" . __LINE__ . "]");
-} # fValidate
+    if (($gHandle = fopen($cgLibFile, "r")) == FALSE)
+        throw new Exception("Cannot open $cgLibFile. [" . __LINE__ . "]");
+}
 
 # -----------------------------
 function fCreateTable() {
-    global $cgDbLo;
-    global $gBackupName;
+    global $gDb;
     global $gFieldList;
-    global $gFiileH;
+    global $gHandle;
+    global $cgDebug;
+    global $cgDbLib;
+    global $gBackupName;
     global $cgBackup;
 
-    $gBackupName = "";
-    if ($cgBackup and fTableExists($cgDbLo))
-        $gBackupName = fRenameTable($cgDbLo);
-
     #  Get the fields from the first row
-    $tTmpList = fgetcsv($gFiileH, 15000, $gSep);
+    $tTmpList = fgetcsv($gHandle, 15000, "\t");
 
     $gFieldList = array();
     foreach ($tTmpList as $tField) {
@@ -190,39 +186,47 @@ function fCreateTable() {
         array_push($gFieldList, $tField);
     }
 
+    $gBackupName = "";
+    if ($cgBackup and fTableExists($cgDbLib))
+        $gBackupName = fRenameTable($cgDbLib);
+
+    if (fTableExists($cgDbLib))
+        fExecSql("drop table $cgDbLib");
+
     # Create the table from header record
-    $tSql = "CREATE TABLE IF NOT EXISTS $cgDbLo (";
-    foreach ($gFieldList as $tField)
+    $tSql = "CREATE TABLE $cgDbLib (";
+    foreach ($gFieldList as $tField) {
         $tSql .= "`$tField` VARCHAR(255),";
+    }
     $tSql = rtrim($tSql, ",") . ")";
+
     fExecSql("$tSql");
-    fExecSql("alter table $cgDbLo add primary key (Identifier)");
+    fExecSql("alter table $cgDbLib add primary key (Book_Id)");
 } # fCreateTable
 
 # -----------------------------
 function fInsertRec() {
     global $gDb;
-    global $gSep;
     global $gFieldList;
-    global $gFiileH;
-    global $cgDbLo;
+    global $gHandle;
+    global $cgDbLib;
     global $cgDebug;
 
     # Use this to trim all fields in array to be < 254 char
     $fTrimLen = function($pElement) {
-        return substr( $pElement, 0, 254 );     # ---------->
+        return substr( $pElement, 0, 254 );
     };
 
     # Insert data into the table
     $tRec = 0;
-    while (($tData = fgetcsv($gFiileH, 15000, $gSep)) !== FALSE) {
+    while (($tData = fgetcsv($gHandle, 15000, "\t")) !== FALSE) {
         ++$tRec;
         echo ".";
         $tData = array_map($fTrimLen, $tData);
         $tValueStr = implode('","', $tData);
         $tValueStr = utf8_encode($tValueStr);
 
-        $tSql = "INSERT INTO $cgDbLo (`" . implode("`, `", $gFieldList) . "`) VALUES (\"$tValueStr\")";
+        $tSql = "INSERT INTO $cgDbLib (`" . implode("`, `", $gFieldList) . "`) VALUES (\"$tValueStr\")";
 
         $tCount = $gDb->exec($tSql);
         if ($tCount != 1) {
@@ -237,7 +241,8 @@ function fInsertRec() {
         }
     } # while
     echo "\nProcessed: $tRec \n";
-} # fInsertRec
+}
+
 
 # ****************************************
 # Includes, GetOps, Validate, ReadOnly
@@ -247,7 +252,7 @@ try {
     fValidate();
 } catch(Exception $e) {
     echo "Problem with setup: " . $e->getMessage() . "\n";
-    exit(2);     # ---------->
+    exit;
 }
 
 # Write section
@@ -256,9 +261,5 @@ try {
     fInsertRec();
 } catch(Exception $e) {
     echo "Problem creating table: " . $e->getMessage() . "\n";
-    if ($cgBackup)
-        echo "Concider restoring $cgDbLo from $gBackupName\n";
-    exit(3);     # ---------->
 }
-
 ?>

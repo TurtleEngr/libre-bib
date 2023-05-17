@@ -1,9 +1,0 @@
-# Create a tunnel to your MySQL server
-
-# Put the uncommented Include line in your ~/.ssh/config file
-#Include PATH/libre-bib/src/config/libre-bib.ssh
-
-Host HOST.example.com
-        Hostname HOST.example.com
-        IdentityFile ~/.ssh/ID-PRIVATE-KEY
-        LocalForward 3308 localhost:3306

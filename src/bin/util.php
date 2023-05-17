@@ -3,52 +3,52 @@
 /*
 These globals are expected for some functions.
     global $gDb;      - DB Handle
-    global $gpDebug;  - true: output debug, false: no output
-    global $gpNoExec; - true: no-exec, false: exec
+    global $cgDebug;  - true: output debug, false: no output
+    global $cgNoExec; - true: no-exec, false: exec
 */
 
 # -----------------------------
 function fExecSql($pSql) {
     global $gDb;
-    global $gpDebug;
-    global $gpNoExec;
+    global $cgDebug;
+    global $cgNoExec;
 
-    if ($gpDebug) print_r("\n$pSql \n" . __FILE__ . "[" . __LINE__ . "]\n\n");
-    if (! $gpNoExec)
+    if ($cgDebug) print_r("\n$pSql \n" . __FILE__ . "[" . __LINE__ . "]\n\n");
+    if ( ! $cgNoExec)
         return $gDb->query($pSql);
     return true;
 } # fExecSql
 
 # --------------------
 function fRenameTable($pTable) {
-    global $gpNoExec;
-    
+    global $cgNoExec;
+
     # Append: "_MM-DD_HH-MM"
     $tNewName = "$pTable" . "_" . fDate("iso");
 
     $tSql = "RENAME TABLE `$pTable` TO `$tNewName`";
     fExecSql("$tSql");
-    if ($gpNoExec)
+    if ($cgNoExec)
         return $tNewName;
 
-    if (! fTableExists("$tNewName"))
+    if ( ! fTableExists("$tNewName"))
         throw new Exception("Error: Backup failed: $tSql \n" . __FILE__ . "[" . __LINE__ . "]");
 
-    echo "Created: $tNewName \n" . __FILE__ . "[" . __LINE__ . "]\n";
+    echo "Created: $tNewName \n";
     return $tNewName;
 } # fRenameTable
 
 # --------------------
 function fTableExists($pName) {
     global $gDb;
-    
+
     return $gDb->query("SHOW TABLES LIKE '" . $pName . "'")->rowCount() > 0;
 } # fTableExists
 
 # --------------------
 function fListBackup($pName) {
     global $gDb;
-    
+
     $tRecH = $gDb->prepare("SHOW TABLES LIKE '" . $pName . "_%'");
     $tRecH->execute();
     return $tRecH->fetch(PDO::FETCH_BOTH);
@@ -73,10 +73,86 @@ function fDate($pStyle = "iso") {
     return date($tFmt[strtolower($pStyle)]);
 } # fDate
 
+function fValidateCommon() {
+    global $cgDbHost;
+    global $cgDbName;
+    global $cgDbPassCache;
+    global $cgDbPortLocaal;
+    global $cgDbPortRemote;
+    global $cgDbUser;
+    global $cgDebug;
+    global $cgUseRemote;
+    global $gDb;
+    global $gPassword;
+
+    if ( ! file_exists("$cgDbPassCache"))
+        throw new Exception("Missing: cgDbPassCache $cgDbPassCache. To set it, run: bib connect [" . __LINE__ . "]");
+
+    $gPassword = rtrim(shell_exec("/bin/bash -c 'cat $cgDbPassCache'"));
+    if ("$gPassword" == "")
+        throw new Exception("Error: password is not in $cgDbPassCache. [" . __LINE__ . "]");
+
+    # Create database connection
+    $tDsn = "mysql:dbname=$cgDbName;charset=UTF8;host=$cgDbHost;port=";
+    if ($cgUseRemote)
+        $tDsn .= $cgDbPortRemote;
+    else
+        $tDsn .= $cgDbPortLocal;
+
+    if ($cgDebug) { echo "$tDsn, $cgDbUser \n"; }
+    $gDb = new PDO($tDsn, $cgDbUser, $gPassword);
+    # This will throw a fatal error if cannot connect
+} # fValidateCommon
+
+function fBool($pVal) {
+    $tMap = array( "0"=>0, "1"=>1, "f"=>0, "false"=>0, "t"=>1,
+        "true"=>1, "n"=>0, "no"=>0, "y"=>1, "yes"=>1, 0=>0, 1=>1);
+
+    $pVal = strtolower($pVal);
+    if (in_array($pVal, $tMap))
+        return $tMap[$pVal];
+    return 0;
+} # fBoolf
+function fFixBool() {
+    global $cgBackup;
+    global $cgDebug;
+    global $cgNoExec;
+    global $cgNoExecCmd;
+    global $cgUseLib;
+    global $cgUseRemote;
+    global $cgVerbose;
+
+    $cgBackup = fBool($cgBackup);
+    $cgDebug = fBool($cgDebug);
+    $cgNoExec = fBool($cgNoExec);
+    $cgNoExecCmd = fBool($cgNoExecCmd);
+    $cgUseLib = fBool($cgUseLib);
+    $cgUseRemote = fBool($cgUseRemote);
+    $cgVerbose = fBool($cgVerbose);
+
+    if ($cgVerbose) {
+        if ($cgDebug)
+            echo "Debug is on.\n";
+        if ($cgNoExec)
+            echo "NoExec is on.\n";
+        if ($cgVerbose)
+            echo "Verbose is on.\n";
+        if ($cgBackup)
+            echo "Backup is on.\n";
+        if ($cgUseRemote)
+            echo "UseRemote is on.\n";
+        if ($cgUseLib)
+            echo "UseLib is on.\n";
+    }
+} # fFixBool
+
+# ========================================
+# Maps
+
 # --------------------
 function fLibCol() {
     # Return zero based array of column names for lib tables.
-    
+
     $tCol = array(
         "Book_Id",
         "Title",
@@ -134,7 +210,7 @@ function fLibCol() {
 # --------------------
 function fLoCol() {
     # Return zero based array of column names for lo and bib tables.
-    
+
     $tCol = array(
         "Identifier",
         "Type",
@@ -189,7 +265,7 @@ function fTxt2LoMap($pTxt = "") {
 
     $tLowerMap = array();
 
-    $tMap = array(    
+    $tMap = array(
         "ASIN"=>"Custom3",
         "Address"=>"Address",
         "Alt"=>"Custom1",
@@ -361,7 +437,7 @@ function fMedia2RepType($pMedia = "") {
         "{youtube}"=>"youtube"
     );
     if ("$pMedia" != "") {
-        if (! in_array($pMedia, $tMap))
+        if ( ! in_array($pMedia, $tMap))
             $pMedia = "unknown";
         return $tMap[strtolower($pMedia)];
     } else {

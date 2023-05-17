@@ -1,0 +1,27 @@
+body { 
+    margin-left: 5%; 
+    margin-right: 5%; 
+    font-family: Times, serif; 
+    font-size: 110%; 
+    text-align: justify; 
+    background: white;
+    color: black;
+}
+pre { 
+    font-size: 100%; 
+    line-height: 100%; 
+    font-family: Courier New, monospace; 
+}
+dt { 
+    font-weight: bold; 
+    text-align: left; 
+}
+dd { 
+    text-align: left; 
+}
+blockquote { 
+    margin-left: 10%; 
+    font-family: "Times New Roman", serif; 
+    font-weight: bold; 
+    text-align: left; 
+}

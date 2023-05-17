@@ -1,15 +1,15 @@
-#!/usr/bin/php
+#!/usr/bin/env php
 <?php
 
 # -----------------------------
 function fusage() {
     global $argc;
     global $argv;
-    
+
     system("pod2text $argv[0]");
     exit(1);
 
-/* ...
+    /* ...
 
 =pod
 
@@ -19,58 +19,19 @@ import-txt-2lo.php - import biblio.txt to lo db
 
 =head1 SYNOPSIS
 
- ./import-txt-2lo.php [-c Conf] [-t Table] [-b] [-i File.txt]
-                      [-n] [-v] [-d] [-h]
+ ./import-txt-2lo.php [-h]
 
 =head1 DESCRIPTION
 
-[Describe the script's purpose]
+Import file cgLoFile to table cgDbLo, in DB cgDbName.
+
+All records blocks in cgLoFile must start with: "Id:"
 
 =head1 OPTIONS
 
+See also ENVIRONMENT section.
+
 =over 4
-
-=item B<-c Conf>
-
-Default: config/conf.php
-
-Define these vars:
-
- $gDBName = "biblio_db";
- $gHost = "127.0.0.1";
- $gPassHint = "b4n";
- $gPassCache = ".pass.tmp";
- $gPortLocal = "3306";
- $gPortRemote = "3308";
- $gUserName = "bruce";
- $gDsn = "mysql:dbname=biblio_db;host=127.0.0.1;port=3308;charset=UTF8";
-
-=item B<-t Table>
-
-Table to be created. Default: lo
-
-=item B<-b>
-
-Backup the table before importing.
-
-=item B<-i File.txt>
-
-Output file name. Default: biblio.txt
-
-All records must start with: "Id:"
-
-=item B<-n> - noexecute
-
-If defined, the script will run everything it can, but not execute any
-write operations.
-
-=item B<-v> - verbose
-
-Verbose output.
-
-=item B<-d> - debug
-
-Turn debug code on.
 
 =item B<-h> - help
 
@@ -80,37 +41,22 @@ This help.
 
 =for comment =head1 RETURN VALUE
 
-=head1 ERRORS
-
-Does the conf file exist?
-
-Values i the conf file?
-
-Do expected files exist?
-
-Is the ssh tunnel setup?
-
-Does the DB exist?
-
-Does the user have grants needed to access DB and it's tables?
+=for comment =head1 ERRORS
 
 =for comment =head1 EXAMPLES
 
 =head1 ENVIRONMENT
 
-=head1 FILES
+Set these in conf.env
 
-.pass.tmp, config/conf.php, config/mkconf.sh, bin/util.php
+    cgLoFile
+    cgDbLo
+    
+=for comment =head1 FILES
 
-=head1 SEE ALSO
+=for comment =head1 =head1 SEE ALSO
 
-Makefile, mkver.pl
-
-=head1 NOTES
-
- https://www.php.net/manual/en/book.pdo.php
-
- alter table bib add primary key (Identifier);
+=for comment =head1 NOTES
 
 =for comment =head1 CAVEATS
 
@@ -124,7 +70,7 @@ Makefile, mkver.pl
 
 =head1 HISTORY
 
-$Revision: 1.2 $ $Date: 2023/05/12 02:46:39 $ GMT 
+$Revision: 1.1 $ $Date: 2023/05/17 01:13:24 $ GMT
 
 =cut
 
@@ -133,151 +79,73 @@ $Revision: 1.2 $ $Date: 2023/05/12 02:46:39 $ GMT
 
 # -----------------------------
 function fCleanUp() {
-        echo "\n";
+    echo "\n";
 } # fCleanUp
 
 # -----------------------------
 function fGetOps() {
     global $argc;
     global $argv;
-    global $gpBackup;
-    global $gpConf;
-    global $gpDebug;
+    global $cgDebug;
     global $gpHelp;
-    global $gpNoExec;
-    global $gpTable;
-    global $gpFile;
-    global $gpVerbose;
 
-    $gpBackup = false;
-    $gpConf = "config/conf.php";
-    $gpDebug = false;
     $gpHelp = false;
-    $gpNoExec = false;
-    $gpTable = "lo";
-    $gpFile = 'biblio.txt';
-    $gpVerbose = false;
-
-    $tOpt = getopt("bc:i:t:ndvh");
-    
-    $gpBackup = isset($tOpt['b']);
-    
-    if (isset($tOpt['c']))
-        $gpConf = $tOpt['c'];
-
-    if (isset($tOpt['i']))
-        $gpFile = $tOpt['i'];
-
-    if (isset($tOpt['t']))
-        $gpTable = $tOpt['t'];
-
-    $gpNoExec = isset($tOpt['n']);
-    $gpDebug = isset($tOpt['d']);
-    $gpVerbose = isset($tOpt['v']);
+    $tOpt = getopt("ch");
     $gpHelp = isset($tOpt['h']);
-
     if ($gpHelp or $argc < 2)
         fUsage();
-    
-    if ($gpDebug)
-        echo "Debug is on. [" . __LINE__ . "]\n";
+
+    $tConf = $_ENV['cgDirApp'] . "/etc/conf.php";
+    require_once "$tConf";
+    require_once "$cgBin/util.php";
+    fFixBool();
+
 } # fGetOps
 
 # -----------------------------
 function fValidate() {
-    global $gDb;
-    global $gDsn;
-    global $gPassCache;
-    global $gPassword;
-    global $gUserName;
+    global $cgBin;
     global $gFileH;
-    global $gpBackup;
-    global $gpConf;
-    global $gpDebug;
-    global $gpTable;
-    global $gpFile;
+    global $cgLoFile;
 
-    if ("$gpConf" == "")
-        throw new Exception("Error: Missing -c option. [" . __LINE__ . "]");
+    fValidateCommon();
 
-    if (! file_exists("$gpConf"))
-        throw new Exception("Error: Bad -c option. [" . __LINE__ . "]");
-    require_once($gpConf);
-
-    if (! file_exists("bin/util.php"))
-        throw new Exception("Error: Missing: bin/util.php [" . __LINE__ . "]");
-    require_once("bin/util.php");
-
-    if ("$gpTable" == "")
-        throw new Exception("Error: Missing -t option. [" . __LINE__ . "]");
-
-    if ("$gpFile" == "")
-        throw new Exception("Error: Missing -f option. [" . __LINE__ . "]");
-
-    if (! file_exists("$gpFile"))
-        throw new Exception("Error: Missing file: $gpFile. [" . __LINE__ . "]");
-
-    if (($gFileH = fopen($gpFile, "r")) == FALSE)
-        throw new Exception("Cannot open $gpFile. [" . __LINE__ . "]");
-        
-    if ("$gDsn" == "")
-        throw new Exception("Error: Missing gDsn. [" . __LINE__ . "]");
-
-    if ("$gPassCache" == "")
-        throw new Exception("Error: Missing gPassCache. Run make connect [" . __LINE__ . "]");
-
-    if ("$gUserName" == "")
-        throw new Exception("Error: Missing gUserName. [" . __LINE__ . "]");
-
-    if (! file_exists("$gPassCache"))
-        throw new Exception("Missing: gPassCache file: $gPassCache. Run make connect [" . __LINE__ . "]");
-
-    $gPassword = rtrim(shell_exec("/bin/bash -c 'cat $gPassCache'"));
-    if ("$gPassword" == "")
-        throw new Exception("Error: password is not in $gPassCache. [" . __LINE__ . "]");
-    
-    if ($gpBackup)
-        echo "Backup is on. [". __LINE__ . "]\n";
-    else
-        echo "Backup is off. [". __LINE__ . "]\n";
-        
-    # Create database connection
-    if ($gpDebug) { echo "$gDsn, $gUserName \n"; }
-    $gDb = new PDO($gDsn, $gUserName, $gPassword);
-
+    if ( ! file_exists("$cgLoFile"))
+        throw new Exception("Error: Missing file: $cgLoFile. [" . __LINE__ . "]");
+    if (($gFileH = fopen($cgLoFile, "r")) == FALSE)
+        throw new Exception("Cannot open $cgLoFile. [" . __LINE__ . "]");
 } # fValidate
 
 # -----------------------------
 function fCreateTable() {
+    global $cgDbLo;
     global $gBackupName;
-    global $gpBackup;
-    global $gpTable;
-    global $gBackupName;
+    global $cgBackup;
 
     $gBackupName = "";
-    if ($gpBackup and fTableExists($gpTable))
-        $gBackupName = fRenameTable($gpTable);
+    if ($cgBackup and fTableExists($cgDbLo))
+        $gBackupName = fRenameTable($cgDbLo);
 
-    if (fTableExists($gpTable))
-        fExecSql("drop table $gpTable");
+    if (fTableExists($cgDbLo))
+        fExecSql("drop table $cgDbLo");
 
     $cLoCol = fLoCol();
-    $tSql = "CREATE TABLE $gpTable (";
+    $tSql = "CREATE TABLE $cgDbLo (";
     foreach (array_values($cLoCol) as $tCol)
         $tSql .= "`$tCol` VARCHAR(255),";
     $tSql = rtrim($tSql, ",") . ")";
-    
+
     fExecSql("$tSql");
-    fExecSql("alter table $gpTable add primary key (Identifier)");
+    fExecSql("alter table $cgDbLo add primary key (Identifier)");
 } # fCreateTable
 
 # -----------------------------
 function fInsertRec($pRec) {
-    global $gpTable;
+    global $cgDbLo;
     global $gNumLine;
     global $gNumRec;
 
-    $tSql = "INSERT INTO $gpTable (`" .
+    $tSql = "INSERT INTO $cgDbLo (`" .
         implode("`, `", array_keys($pRec)) .
         "`) VALUES (\"" .
         implode('","', array_values($pRec)) .
@@ -290,7 +158,7 @@ function fInsertRec($pRec) {
 function fParseLine($pLine) {
     global $gNumLine;
     global $gNumRec;
-    global $gpDebug;
+    global $cgDebug;
 
     $tData = array("key"=>"", "val"=>"");
 
@@ -308,7 +176,7 @@ function fParseLine($pLine) {
     $tVal = trim($tVal);
     $tData["val"] = $tVal;
 
-    if ($gpDebug) print_r($tData);
+    if ($cgDebug) print_r($tData);
     return $tData;    # ---------->
 } # fParseLine($pLine)
 
@@ -317,22 +185,22 @@ function fImportTxt() {
     global $gFileH;
     global $gNumLine;
     global $gNumRec;
-    global $gpDebug;
-    global $gpTable;
-    global $gpVerbose;
-    
+    global $cgDebug;
+    global $cgDbLo;
+    global $cgVerbose;
+
     $tRec = fLoColValue();
 
     # Get lines from txt file
     $gNumLine = 0;
     $gNumRec = 0;
     while ($tLine = fgets($gFileH)) {
-        if ($gpVerbose)
+        if ($cgVerbose)
             if ($gNumLine % 500 == 0)
                 echo ".";
-        ++$gNumLine;
+            ++$gNumLine;
 
-        if ($gpDebug) echo "Read: $tLine\n";
+        if ($cgDebug) echo "Read: $tLine\n";
 
         $tLine = trim($tLine);
 
@@ -414,9 +282,9 @@ try {
     fImportTxt();
 } catch(Exception $e) {
     echo "Problem creating table: " . $e->getMessage() . "\n";
-    if ($gpBackup)
-        echo "Concider restoring $gpTable from $gBackupName\n";
-    exit(2);
+    if ($cgBackup)
+        echo "Concider restoring $cgDbLo from $gBackupName\n";
+    exit(2);     # ---------->
 }
 
 exit(0);
