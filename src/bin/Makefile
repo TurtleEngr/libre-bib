@@ -27,7 +27,7 @@ version :
 	cat $(cgDirApp)/VERSION
 
 inc-ver :
-	echo '$$Revision: 1.1 $$ $$Date: 2023/05/17 01:13:23 $$ GMT' >$cgDirApp/VERSION
+	echo '$$Revision: 1.2 $$ $$Date: 2023/05/17 09:11:30 $$ GMT' >$cgDirApp/VERSION
 
 add edit :
 	emacs $(cgLoFile) &
