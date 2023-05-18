@@ -54,3 +54,10 @@ file, for a while, I'll make them "issues."
   and doc/. "make rebuild" can be used fix up dependent files.
   libre-bib/ and libre-bib/bin/* should be owned by root and only root
   writable.
+
+## Design
+
+- The ref-new and ref-update parts need to be redesigned so that those
+  commands can be run from other directories. That way the
+  bibliographpy can be shared across books. Currently the binding is
+  too tight.

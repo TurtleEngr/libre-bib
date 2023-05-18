@@ -1,2 +1,4 @@
-CVS
-src/bin/.phptidy-cache
+*~
+CVS/
+int-doc/
+test/
