@@ -66,7 +66,7 @@ Run:
 
 > bib setup-bib
 
-Fix any errors then run it again, util no more errors.
+Fix any errors then run it again, until no more errors.
 
 If you are planing on using a remote DB, then see the \"Configure ssh\"
 section.
@@ -80,8 +80,8 @@ Configure the DB
 
 The DB packages, mariadb-client and mariadb-server, have been installed
 on the remote server (or local sever if you are doing this all on one
-server). Most likely the mariadbd process will already be runnng. Verify
-this with:
+server). Most likely the mariadbd process will already be running.
+Verify this with:
 
 > ps -fC mariadbd
 
@@ -196,7 +196,7 @@ In a terminal ssh to the remote system.
 
 > ssh \$cgDbSshUser@\$cgDbHostRemote
 
-Leave the teminal window open and start another terminal window. In the
+Leave the terminal window open and start another terminal window. In the
 new terminal window type:
 
 > telnet 127.0.0.1 \$cgDbPortRemote
@@ -233,7 +233,22 @@ Quick Start
 -----------
 
 This shows a minimal setup with a local DB. This will use the example
-files and the minimal defalut configuration.
+files and the minimal default configuration.
+
+``` {.in}
+mkdir -p project/biblio
+cd project/biblio
+bib setup bib      # This creates your default conf.env file
+edit conf.env      # Uncomment and set these values
+    set cgDbName="YOUR-DB-NAME"
+    set cgDbUser="YOUR-DB-USER"
+    set cgDbPassHint="YOUR-HINT"
+bib setup bib      # Your project are will be setup
+bib connect        # Connect to DB to cache the  password
+bib import-lo      # Import the biblio.txt file
+bib ref-new        # A DB values for any new REFs
+bib ref-update    # Update REFs with any DB changes
+```
 
 ------------------------------------------------------------------------
 
@@ -286,7 +301,7 @@ conf.env*
 ```
 
 If you accidentally ran bib in a directory that is no going to be a
-bibliography direcory, just delete the conf.env file.
+bibliography directory, just delete the conf.env file.
 
 ``` {.in}
 $ emacs conf.env
@@ -312,8 +327,10 @@ $ bib setup-bib
 ``` {.out}
 Missing example.odt. Copy an example from
 /opt/libre-bib/doc/example/example.odt
+
 Missing: biblio.txt. Copy an example from
 /opt/libre-bib/doc/example/biblio.txt
+
 Missing librarything.tsv. Copy an example from
 /opt/libre-bib/doc/example/librarything.tsv
 Manually update it with an export from Library Thing.
@@ -370,7 +387,8 @@ Verbose is on.
 Backup is on.
 UseRemote is on.
 UseLib is on.
-Problem with setup: Missing: cgDbPassCache tmp/.pass.tmp. To set it, run: bib connect [89]
+Problem with setup: Missing: cgDbPassCache tmp/.pass.tmp. To set it,
+run: bib connect [89]
 make: *** [/opt/libre-bib/bin/Makefile:100: status/import-lo.date] Error 1
 ```
 
@@ -390,7 +408,8 @@ if [[ "true" == "true" ]]; then \
 else \
     tPort=3306; \
 fi; \
-mysql -P $tPort -u example --password=$(cat tmp/.pass.tmp) -h 127.0.0.1 biblio_example
+mysql -P $tPort -u example --password=$(cat tmp/.pass.tmp)
+    -h 127.0.0.1 biblio_example
 Welcome to the MariaDB monitor.  Commands end with ; or \g.
 Your MariaDB connection id is 784
 Server version: 10.5.18-MariaDB-0+deb11u1 Debian 11
@@ -403,7 +422,7 @@ MariaDB [biblio_example]> quit
 Bye
 ```
 
-Clearly I need to cleanup the outputs.
+(Clearly I need to cleanup the outputs.)
 
 ``` {.in}
 $ bib import-lo
@@ -429,7 +448,7 @@ date +%F_%T >status/import-lo.date
 ```
 
 This imported the biblio.txt file, creating the \"lo\" table. You can
-run \"bib conect\" and use sql commands to look the table. For example:
+run \"bib connect\" and use sql commands to look the table. For example:
 
 ``` {.in\"}
 show tables;
@@ -523,9 +542,9 @@ Run: libreoffice to see how they have changed.
 $ libreoffice example.odt
 ```
 
-If you run import-lo or import-lib with updated entrie, then run
+If you run import-lo or import-lib with updated entries, then run
 ref-update to update them in the example.odt file. If you add new REFs
-to the document then you wouild run ref-new again.
+to the document then you would run ref-new again.
 
 ``` {.in}
 $ bib ref-update
@@ -557,7 +576,7 @@ libre-bib Tour
 
 ### Files and Dirs
 
-This will be a quick summary of the direcories and files setup in your
+This will be a quick summary of the directories and files setup in your
 project directory. The details will be describe in later sections as
 they are used.
 
@@ -614,7 +633,7 @@ If you have setup a LibraryThing DB (see:
 <https://www.librarything.com/home>) you can export a tsv file of your
 LibraryThing DB to librarything.tsv. Then you can run \"bib update-lo\"
 to update empty \"lo\" table fields from the \"lib\" DB table. See the
-\"LibrayThing\" section for more details.
+\"LibraryThing\" section for more details.
 
 The key.txt file just gives some quick tip on the kind of values you can
 put after the Tags. It isn\'t used anywhere else, so you can edit or
@@ -690,7 +709,7 @@ New biblio {REF} tags have been added to your odt file. Run this command
 to update your odt file with the current biblio entries found in the lo
 table. If there are no new entries, the file will be unchanged.
 
-If the file is changed, the original file will be found in the bacckup/
+If the file is changed, the original file will be found in the backup/
 dir. So your odt file can be restored if there are problems.
 
 If the lo table has been updated with different values, then run the
@@ -711,9 +730,9 @@ If the lo table has been updated with different values, then run this
 command to update the odt file with the new values. This command will
 not modify any new {REF} tags.
 
-The original file will be found in the bacckup/ dir. So your odt file
-can be restored if there are problems. It could be there are no changes
-to the file, but this command doesn\'t check for difference, it just
+The original file will be found in the backup/ dir. So your odt file can
+be restored if there are problems. It could be there are no changes to
+the file, but this command doesn\'t check for difference, it just
 replaces all of the biblio-entries it finds in the odt file.
 
 Internal: see /opt/libre-bib/etc/cite-update.xml for the template that

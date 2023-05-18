@@ -74,7 +74,7 @@
   <blockquote>
     bib setup-bib
   </blockquote>
-  <p>Fix any errors then run it again, util no more errors.</p>
+  <p>Fix any errors then run it again, until no more errors.</p>
   <p>If you are planing on using a remote DB, then see the "Configure ssh"
   section.</p>
   <hr />
@@ -82,7 +82,7 @@
   <h3 id="install-and-test">Install and test</h3>
   <p>The DB packages, mariadb-client and mariadb-server, have been installed
   on the remote server (or local sever if you are doing this all on one
-  server). Most likely the mariadbd process will already be runnng. Verify
+  server). Most likely the mariadbd process will already be running. Verify
   this with:</p>
   <blockquote>
     <p>ps -fC mariadbd</p>
@@ -229,7 +229,7 @@
   <blockquote>
     <p>ssh $cgDbSshUser@$cgDbHostRemote</p>
   </blockquote>
-  <p>Leave the teminal window open and start another terminal window. In the
+  <p>Leave the terminal window open and start another terminal window. In the
   new terminal window type:</p>
   <blockquote>
     <p>telnet 127.0.0.1 $cgDbPortRemote</p>
@@ -256,7 +256,21 @@
   <hr />
   <h2 id="quick-start">Quick Start</h2>
   <p>This shows a minimal setup with a local DB. This will use the example
-  files and the minimal defalut configuration.</p>
+  files and the minimal default configuration.</p>
+  <pre class="in">
+mkdir -p project/biblio
+cd project/biblio
+bib setup bib      # This creates your default conf.env file
+edit conf.env      # Uncomment and set these values
+    set cgDbName="YOUR-DB-NAME"
+    set cgDbUser="YOUR-DB-USER"
+    set cgDbPassHint="YOUR-HINT"
+bib setup bib      # Your project are will be setup
+bib connect        # Connect to DB to cache the  password
+bib import-lo      # Import the biblio.txt file
+bib ref-new        # A DB values for any new REFs
+bib ref-update    # Update REFs with any DB changes
+</pre>
   <hr />
   <h2 id="a-full-example">A Full Example</h2>
   <p>This assumes you have everything installed and working. This will use
@@ -293,7 +307,7 @@ Cmds:
 conf.env*
 </pre>
   <p>If you accidentally ran bib in a directory that is no going to be a
-  bibliography direcory, just delete the conf.env file.</p>
+  bibliography directory, just delete the conf.env file.</p>
   <pre class="in">
 $ emacs conf.env
 change:
@@ -317,8 +331,10 @@ $ bib setup-bib
   <pre class="out">
 Missing example.odt. Copy an example from
 /opt/libre-bib/doc/example/example.odt
+
 Missing: biblio.txt. Copy an example from
 /opt/libre-bib/doc/example/biblio.txt
+
 Missing librarything.tsv. Copy an example from
 /opt/libre-bib/doc/example/librarything.tsv
 Manually update it with an export from Library Thing.
@@ -354,7 +370,8 @@ Verbose is on.
 Backup is on.
 UseRemote is on.
 UseLib is on.
-Problem with setup: Missing: cgDbPassCache tmp/.pass.tmp. To set it, run: bib connect [89]
+Problem with setup: Missing: cgDbPassCache tmp/.pass.tmp. To set it,
+run: bib connect [89]
 make: *** [/opt/libre-bib/bin/Makefile:100: status/import-lo.date] Error 1
 </pre>
   <pre class="in">$ bib connect</pre>
@@ -370,7 +387,8 @@ if [[ "true" == "true" ]]; then \
 else \
     tPort=3306; \
 fi; \
-mysql -P $tPort -u example --password=$(cat tmp/.pass.tmp) -h 127.0.0.1 biblio_example
+mysql -P $tPort -u example --password=$(cat tmp/.pass.tmp)
+    -h 127.0.0.1 biblio_example
 Welcome to the MariaDB monitor.  Commands end with ; or \g.
 Your MariaDB connection id is 784
 Server version: 10.5.18-MariaDB-0+deb11u1 Debian 11
@@ -382,7 +400,7 @@ Type 'help;' or '\h' for help. Type '\c' to clear the current input statement.
 MariaDB [biblio_example]&gt; quit
 Bye
 </pre>
-  <p>Clearly I need to cleanup the outputs.</p>
+  <p>(Clearly I need to cleanup the outputs.)</p>
   <pre class="in">$ bib import-lo</pre>
   <pre class="out">
 /opt/libre-bib/bin/import-txt-2-lo.php -c
@@ -403,7 +421,7 @@ Processed: 31 [221]
 date +%F_%T &gt;status/import-lo.date
 </pre>
   <p>This imported the biblio.txt file, creating the "lo" table. You can run
-  "bib conect" and use sql commands to look the table. For example:</p>
+  "bib connect" and use sql commands to look the table. For example:</p>
   <pre class="in&quot;">
 show tables;
 show fields from table lo;
@@ -467,9 +485,9 @@ Done. [386]
   see the original example.odt was copied to the backup/ dir.</p>
   <p>Run: libreoffice to see how they have changed.</p>
   <pre class="in">$ libreoffice example.odt</pre>
-  <p>If you run import-lo or import-lib with updated entrie, then run
+  <p>If you run import-lo or import-lib with updated entries, then run
   ref-update to update them in the example.odt file. If you add new REFs to
-  the document then you wouild run ref-new again.</p>
+  the document then you would run ref-new again.</p>
   <pre class="in">$ bib ref-update</pre>
   <pre class="out">
 Verbose is on.
@@ -491,7 +509,7 @@ Done. [396]
   <hr />
   <h2 id="libre-bib-tour">libre-bib Tour</h2>
   <h3 id="files-and-dirs">Files and Dirs</h3>
-  <p>This will be a quick summary of the direcories and files setup in your
+  <p>This will be a quick summary of the directories and files setup in your
   project directory. The details will be describe in later sections as they
   are used.</p>
   <p>The bib commands will notice changes and rebuild any dependent files
@@ -620,7 +638,7 @@ Done. [396]
   "https://www.librarything.com/home">https://www.librarything.com/home</a>)
   you can export a tsv file of your LibraryThing DB to librarything.tsv. Then
   you can run "bib update-lo" to update empty "lo" table fields from the
-  "lib" DB table. See the "LibrayThing" section for more details.</p>
+  "lib" DB table. See the "LibraryThing" section for more details.</p>
   <p>The key.txt file just gives some quick tip on the kind of values you can
   put after the Tags. It isn't used anywhere else, so you can edit or delete
   the file.</p>
@@ -661,7 +679,7 @@ Done. [396]
   <p>New biblio {REF} tags have been added to your odt file. Run this command
   to update your odt file with the current biblio entries found in the lo
   table. If there are no new entries, the file will be unchanged.</p>
-  <p>If the file is changed, the original file will be found in the bacckup/
+  <p>If the file is changed, the original file will be found in the backup/
   dir. So your odt file can be restored if there are problems.</p>
   <p>If the lo table has been updated with different values, then run the
   bib-update command.</p>
@@ -674,10 +692,10 @@ Done. [396]
   <p>If the lo table has been updated with different values, then run this
   command to update the odt file with the new values. This command will not
   modify any new {REF} tags.</p>
-  <p>The original file will be found in the bacckup/ dir. So your odt file
-  can be restored if there are problems. It could be there are no changes to
-  the file, but this command doesn't check for difference, it just replaces
-  all of the biblio-entries it finds in the odt file.</p>
+  <p>The original file will be found in the backup/ dir. So your odt file can
+  be restored if there are problems. It could be there are no changes to the
+  file, but this command doesn't check for difference, it just replaces all
+  of the biblio-entries it finds in the odt file.</p>
   <p>Internal: see /opt/libre-bib/etc/cite-update.xml for the template that
   will be used.</p>
   <p>This will only update non-empty bib-field values. The style won't be
