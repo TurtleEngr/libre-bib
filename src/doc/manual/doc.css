@@ -7,11 +7,6 @@ body {
     background: white;
     color: black;
 }
-pre { 
-    font-size: 100%; 
-    line-height: 100%; 
-    font-family: Courier New, monospace; 
-}
 dt { 
     font-weight: bold; 
     text-align: left; 
@@ -25,14 +20,18 @@ blockquote {
     font-style: italic; 
     text-align: left; 
 }
-
-blockquote.in { 
+pre { 
+    font-size: 100%; 
+    line-height: 100%; 
+    font-family: Courier New, monospace; 
+}
+pre.in { 
     margin-left: 5%; 
     font-family: Courier New, monospace; 
     font-weight: bold; 
     text-align: left; 
 }
-blockquote.out { 
+pre.out { 
     margin-left: 10%; 
     font-family: Courier New, monospace; 
     text-align: left; 

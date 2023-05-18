@@ -1,11 +1,21 @@
 # libre-bib
-A tool for managing a large Libreoffice Bibliography
+
+This tool will help with managing a large Libreoffice Bibliography.  It
+can be used across multiple Libreoffice odt documents.
+
+Libre-Bib is still in development.
+
+Libre-Bib is mostly functional. I am using it for managing a large
+Bibliography with about 3,000 records, and my LibraryThing DB has over
+400 references to books or media I own.
 
 ## Features
 
 ### Libreoffice Database
 
 * Add bibliographic entries to a simple text file
+  (cgLoFile=biblio.txt) This is the only file you do not want to
+  lose. Everything else can be rebuilt from this file.
 
 * Import the text file into a Libreoffice compatible DB (lo-db)
 
@@ -21,7 +31,7 @@ A tool for managing a large Libreoffice Bibliography
 
 ### Formatted Bibliography
 
-* Make an updated DB (bib), with changes that makes biblo layout easier.
+* Make an updated DB (bib), with changes that makes biblio layout easier.
 
 * Bibliography types supported: articles, books (all types), misc
   (videos, DVDs, mp4, audio, etc.), www (links)

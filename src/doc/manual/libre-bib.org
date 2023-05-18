@@ -58,7 +58,7 @@ Run:
     bib setup-bib
   </blockquote>
 
-Fix any errors then run it again, util no more errors.
+Fix any errors then run it again, until no more errors.
 
 If you are planing on using a remote DB, then see the "Configure ssh" section.
 
@@ -69,7 +69,7 @@ If you are planing on using a remote DB, then see the "Configure ssh" section.
 - The DB packages, mariadb-client and mariadb-server, have been
   installed on the remote server (or local sever if you are doing this
   all on one server).  Most likely the mariadbd process will already
-  be runnng. Verify this with:
+  be running. Verify this with:
 
   <blockquote>
     ps -fC mariadbd
@@ -198,7 +198,7 @@ In a terminal ssh to the remote system.
     ssh $cgDbSshUser@$cgDbHostRemote
   </blockquote>
 
-Leave the teminal window open and start another terminal window.  In
+Leave the terminal window open and start another terminal window.  In
 the new terminal window type:
 
   <blockquote>
@@ -229,144 +229,146 @@ project/conf.env. It should be set to $cgRemoteDsn for remote
 access. Try again, If that works, your conf.env setting are good for
 continuing.
 
-** Starting a new bib project
+* Using libre-bib
+** Quick Start
+- This shows a minimal setup with a local DB. This will use the
+  example files and the minimal default configuration.
+
+#+BEGIN_EXPORT html
+<pre class="in">
+mkdir -p project/biblio
+cd project/biblio
+bib setup bib      # This creates your default conf.env file
+edit conf.env      # Uncomment and set these values
+    set cgDbName="YOUR-DB-NAME"
+    set cgDbUser="YOUR-DB-USER"
+    set cgDbPassHint="YOUR-HINT"
+bib setup bib      # Your project are will be setup
+bib connect        # Connect to DB to cache the  password
+bib import-lo      # Import the biblio.txt file
+bib ref-new        # A DB values for any new REFs
+bib ref-update    # Update REFs with any DB changes
+</pre>
+#+END_EXPORT
+
+** A Full Example
 - This assumes you have everything installed and working. This will use
   the example files.
 
-<blockquote class="in">
-$ cd $HOME
+#+BEGIN_EXPORT html
+<pre class="in">$ cd $HOME
 $ mkdir -p project/biblio
 $ cd project/biblio
 $ bib 
-</blockquote>
-<blockquote class="out">
+</pre>
+<pre class="out">
 Usage:
     bib [-n] Cmd
 Cmds:
-import-lo, export-lo, backup-lo, restore-lo
-import-lib, update-lo
-ref-new, ref-update
-status, setup-bib, clean, connect, version, help
-</blockquote>
+    import-lo, export-lo, backup-lo, restore-lo
+    import-lib, update-lo
+    ref-new, ref-update
+    status, setup-bib, clean, connect, version, help
+</pre>
 
-<blockquote class="in">
-$ bib help
-</blockquote>
-
-<blockquote class="out">
+<pre class="in">$ bib help</pre>
+<pre class="out">
 Error: Missing conf.env, copying it now
 Edit conf.env with your details. Uncomment the ones you are changing.
 Then run: bib setup-bib
-
 Usage:
-    bib [-n] Cmd
+        bib [-n] Cmd
 Cmds:
-import-lo, export-lo, backup-lo, restore-lo
-import-lib, update-lo
-ref-new, ref-update
-status, setup-bib, clean, connect, version, help
-</blockquote>
+    import-lo, export-lo, backup-lo, restore-lo
+    import-lib, update-lo
+    ref-new, ref-update
+    status, setup-bib, clean, connect, version, help
+</pre>
 
-<blockquote class="in">
-$ ls
-</blockquote>
-
-<blockquote class="out">
+<pre class="in">$ ls</pre>
+<pre class="out">
 conf.env*
-</blockquote>
+</pre>
 
-<blockquote class="in">
+<p>If you accidentally ran bib in a directory that is no going to be
+a bibliography directory, just delete the conf.env file.</p>
+
+<pre class="in">
 $ emacs conf.env
-
-changed:
-
+change:
     export cgDbHostRemote="NAME.example.com"
     export cgDbPassHint="b4n"
     export cgDbUser="$USER"
     export cgUseRemote=false
     export cgSshKey="$HOME/.ssh/id.KEY-NAME"
     export cgUseLib=false
-
 to 
-
     export cgDbHostRemote="myserver.example.com"
     export cgDbPassHint="fav-pet"
     export cgDbUser="example"
     export cgUseRemote=true
     export cgSshKey="$HOME/.ssh/id.mysys"
     export cgUseLib=true
-
 save, and exit
 
 $ bib setup-bib
-</blockquote>
-
-<blockquote class="out">
+</pre>
+<pre class="out">
 Missing example.odt. Copy an example from
 /opt/libre-bib/doc/example/example.odt
+
 Missing: biblio.txt. Copy an example from
 /opt/libre-bib/doc/example/biblio.txt
+
 Missing librarything.tsv. Copy an example from
 /opt/libre-bib/doc/example/librarything.tsv
 Manually update it with an export from Library Thing.
-</blockquote>
+</pre>
 
-<blockquote class="in">
-$ ls
-</blockquote>
-
-<blockquote class="out">
+<pre class="in">$ ls</pre>
+<pre class="out">
 backup/          biblio.txt  conf.env~*   key.txt           status/
 biblio-note.txt  conf.env*   example.odt  librarything.tsv  tmp/
-</blockquote>
+</pre>
 
-<blockquote class="in">
-$ bib import-lo
-</blockquote>
-<blockquote class="out">
+<pre class="in">$ bib import-lo</pre>
+<pre class="out">
 Problem with setup: SQLSTATE[HY000] [2002] Connection refused
 make: *** [/opt/libre-bib/bin/Makefile:100: status/import-lo.date] Error 1
-</blockquote>
+</pre>
 
-Open another terminal:
+<p>Open another terminal:</p>
 
-<blockquote class="in">
-$ ssh myserver
-</blockquote>
-<blockquote class="out">
+<pre class="in">$ ssh myserver</pre>
+<pre class="out">
 Enter passphrase for key '/home/bob/.ssh/id.mysys': 
 
 bob@mxlinux:/home/bob
 $ 
-</blockquote>
+</pre>
 
-Minimize the terminal window.
+<p>Minimize the terminal window.</p>
 
-<blockquote class="in">
-$ bib import-lo
-</blockquote>
-<blockquote class="out">
+<pre class="in">$ bib import-lo</pre>
+<pre class="out">
 
 Nothing was output. Edit conf.env and change cgVerbose to true.
-</blockquote>
+</pre>
 
-<blockquote class="in">
-$ bib import-lo
-</blockquote>
-<blockquote class="out">
+<pre class="in">$ bib import-lo</pre>
+<pre class="out">
 /opt/libre-bib/bin/import-txt-2-lo.php -c
 Verbose is on.
 Backup is on.
 UseRemote is on.
 UseLib is on.
-Problem with setup: Missing: cgDbPassCache tmp/.pass.tmp. To set it, run: bib connect [89]
+Problem with setup: Missing: cgDbPassCache tmp/.pass.tmp. To set it,
+run: bib connect [89]
 make: *** [/opt/libre-bib/bin/Makefile:100: status/import-lo.date] Error 1
-</blockquote>
+</pre>
 
-<blockquote class="in">
-$ bib connect
-</blockquote>
-<blockquote class="out">
+<pre class="in">$ bib connect</pre>
+<pre class="out">
 read -srp 'Password (fav-pet)? '; \
 echo $REPLY >tmp/.pass.tmp
 Password (fav-pet)? First define tunnel: ssh HOST.example.com
@@ -378,7 +380,8 @@ if [[ "true" == "true" ]]; then \
 else \
     tPort=3306; \
 fi; \
-mysql -P $tPort -u example --password=$(cat tmp/.pass.tmp) -h 127.0.0.1 biblio_example
+mysql -P $tPort -u example --password=$(cat tmp/.pass.tmp)
+    -h 127.0.0.1 biblio_example
 Welcome to the MariaDB monitor.  Commands end with ; or \g.
 Your MariaDB connection id is 784
 Server version: 10.5.18-MariaDB-0+deb11u1 Debian 11
@@ -389,12 +392,12 @@ Type 'help;' or '\h' for help. Type '\c' to clear the current input statement.
 
 MariaDB [biblio_example]> quit
 Bye
-</blockquote>
+</pre>
 
-<blockquote class="in">
-$ bib import-lo
-</blockquote>
-<blockquote class="out">
+<p>(Clearly I need to cleanup the outputs.)</p>
+
+<pre class="in">$ bib import-lo</pre>
+<pre class="out">
 /opt/libre-bib/bin/import-txt-2-lo.php -c
 Verbose is on.
 Backup is on.
@@ -411,21 +414,22 @@ UseLib is on.
 
 Processed: 31 [221]
 date +%F_%T >status/import-lo.date
+</pre>
 
-This imported the biblio.txt file, creating the "lo" table.
-You can run "bib conect" and use sql commands to look the table.
-For example:
+<p>This imported the biblio.txt file, creating the "lo" table.
+You can run "bib connect" and use sql commands to look the table.
+For example:</p>
 
-<blockquote>
+<pre class-"in">
 show tables;
 show fields from table lo;
 select Identifier,Booktitle from table lo;
-</blockquote>
+</pre>
 
-<blockquote class="in">
-$ bib import-lib
-</blockquote>
-<blockquote class="out">
+<p>Now let's import the export from LibraryThing.</p>
+
+<pre class="in">$ bib import-lib</pre>
+<pre class="out">
 librarything schema and import
 /opt/libre-bib/bin/import-tsv-2-lib-db.php -c
 Verbose is on.
@@ -438,12 +442,10 @@ date +%F_%T >status/import-lib.date
 head -n 1 librarything.tsv | sed 's/ /_/g' >tmp/lib-schema.tsv
 diff /opt/libre-bib/etc/lib-schema.tsv tmp/lib-schema.tsv
 Warning: If there are differences, there could be problems.
-</blockquote>
+</pre>
 
-<blockquote class="in">
-$ bib update-lo
-</blockquote>
-<blockquote class="out">
+<pre class="in">$ bib update-lo</pre>
+<pre class="out">
 Update lo from lib where Titles are similar, first 40 char
 Run this after lib-db, lo-db
 ...................
@@ -453,33 +455,27 @@ Processed: 11
 Created: bib_2023-05-17_01-40-14 
 
 Processed: 31 [221]
+</pre>
 
-This will have created a join table with Titles are in the "lo" and
+<p>This will have created a join table with Titles are in the "lo" and
 "lib" tables. It then updated some empty "lo" fields from the "lib"
 data. For example: Publisher is tricky one.  (Enhancement: Provide an
-option so some "lib" values will override the 'lo' values.)
-</blockquote>
+option so some "lib" values will override the 'lo' values.)</p>
 
-<blockquote class="in">
-$ bib backup-lo
-</blockquote>
-<blockquote class="out">
+<pre class="in">$ bib backup-lo</pre>
+<pre class="out">
 cp: cannot stat 'backup/backup-lo.csv': No such file or directory
 ...............................
 Processed: 31 
-</blockquote>
+</pre>
 
-<blockquote class="in">
-$ ls backup/
-</blockquote>
-<blockquote class="out">
+<pre class="in">$ ls backup/</pre>
+<pre class="out">
 backup-lo.csv
-</blockquote>
+</pre>
 
-<blockquote class="in">
-$ bib ref-new
-</blockquote>
-<blockquote class="out">
+<pre class="in">$ bib ref-new</pre>
+<pre class="out">
 Unpack example.odt [319]
 Start processing [292]
 
@@ -489,25 +485,21 @@ Backup example.odt [339]
 Final clean-up with tidy [343]
 Repack example.odt [354]
 Done. [386]
-</blockquote>
+</pre>
 
-This updated the REF tags so they are now biblio entries.  You'll also
-see the original example.odt was copied to the backup/ dir.
+<p>This updated the REF tags so they are now biblio entries.  You'll also
+see the original example.odt was copied to the backup/ dir.</p>
 
-Run: libreoffice to see how they have changed.
+<p>Run: libreoffice to see how they have changed.</p>
 
-<blockquote class="in">
-$ libreoffice example.odt
-</blockquote>
+<pre class="in">$ libreoffice example.odt</pre>
 
-If you run import-lo or import-lib with updated entrie, then run
+<p>If you run import-lo or import-lib with updated entries, then run
 ref-update to update them in the example.odt file. If you add new
-REFs to the document then you wouild run ref-new again.
+REFs to the document then you would run ref-new again.</p>
 
-<blockquote class="in">
-$ bib ref-update
-</blockquote>
-<blockquote class="out">
+<pre class="in">$ bib ref-update</pre>
+<pre class="out">
 Verbose is on.
 Backup is on.
 UseRemote is on.
@@ -521,16 +513,17 @@ Backup example.odt [350]
 Final clean-up with tidy [354]
 Repack example.odt [365]
 Done. [396]
-</blockquote>
+</pre>
+#+END_EXPORT
 
-Now you can add the Bibliography to the end of your document, and
-setup the styles for the different Type of entries.
+ - Now you can add the Bibliography to the end of your document, and
+   setup the styles for the different Type of entries.
 
 ** libre-bib Tour
 
 *** Files and Dirs
 
-This will be a quick summary of the direcories and files setup in your
+This will be a quick summary of the directories and files setup in your
 project directory. The details will be describe in later sections as
 they are used.
 
@@ -579,7 +572,7 @@ bibliographic information about a book, article, web page, video, etc.
 If you have setup a LibraryThing DB (see: https://www.librarything.com/home)
 you can export a tsv file of your LibraryThing DB to librarything.tsv.
 Then you can run "bib update-lo" to update empty "lo" table fields from
-the "lib" DB table. See the "LibrayThing" section for more details.
+the "lib" DB table. See the "LibraryThing" section for more details.
 
 The key.txt file just gives some quick tip on the kind of values you
 can put after the Tags. It isn't used anywhere else, so you can
@@ -628,7 +621,7 @@ to update your odt file with the current biblio entries found in the
 lo table. If there are no new entries, the file will be unchanged.
 
 If the file is changed, the original file will be found in the
-bacckup/ dir. So your odt file can be restored if there are problems.
+backup/ dir. So your odt file can be restored if there are problems.
 
 If the lo table has been updated with different values, then run
 the bib-update command.
@@ -645,7 +638,7 @@ If the lo table has been updated with different values, then run this
 command to update the odt file with the new values. This command will
 not modify any new {REF} tags.
 
-The original file will be found in the bacckup/ dir. So your odt file
+The original file will be found in the backup/ dir. So your odt file
 can be restored if there are problems. It could be there are no
 changes to the file, but this command doesn't check for difference,
 it just replaces all of the biblio-entries it finds in the odt file.

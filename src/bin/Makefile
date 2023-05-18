@@ -7,8 +7,6 @@
 
 SHELL = /bin/bash
 
-mDataPath = ../doc/example
-
 mConfigDB = ~/.config/libreoffice/4/user/database
 
 mTidyXhtml = tidy -m -q -i -w 78 -asxhtml --break-before-br yes --indent-attributes yes --indent-spaces 2 --tidy-mark no --vertical-space no
@@ -27,7 +25,7 @@ version :
 	cat $(cgDirApp)/VERSION
 
 inc-ver :
-	echo '$$Revision: 1.2 $$ $$Date: 2023/05/17 09:11:30 $$ GMT' >$cgDirApp/VERSION
+	echo '$$Revision: 1.3 $$ $$Date: 2023/05/18 01:53:17 $$ GMT' >$cgDirApp/VERSION
 
 add edit :
 	emacs $(cgLoFile) &
@@ -160,22 +158,22 @@ ref-update :
 setup-bib : $(cgDirStatus) $(cgDirTmp) $(cgDirBackup) $(cgDirConf) $(cgDocFile) $(cgLoFile) $(cgLibFile) ~/.ssh/libre-bib.ssh
 
 $(cgLoFile) :
-	@echo 'Missing: $@. Copy an example from'
+	@echo -e '\nMissing: $@. Copy an example from'
 	@echo '$(cgDirApp)/doc/example/biblio.txt'
 	cp -i $(cgDirApp)/doc/example/biblio.txt $@
 	cp -i $(cgDirApp)/doc/example/biblio-note.txt $(basename $(cgLoFile))-note.txt
 	cp -i $(cgDirApp)/doc/example/key.txt key.txt
 
 $(cgDocFile) :
-	@echo 'Missing $@. Copy an example from'
+	@echo -e '\nMissing $@. Copy an example from'
 	@echo '$(cgDirApp)/doc/example/example.odt'
 	-cp -i $(cgDirApp)/doc/example/example.odt $@
 	touch $@
 
 $(cgLibFile) :
-	@echo 'Missing $@. Copy an example from'
+	@echo -e '\nMissing $@. Copy an example from'
 	@echo '$(cgDirApp)/doc/example/librarything.tsv'
-	@echo 'Manually update it with an export from Library Thing.'
+	@echo 'Manually update it with an export from LibraryThing.'
 	-cp -i $(cgDirApp)/doc/example/librarything.tsv $@
 	touch $@
 
@@ -214,6 +212,17 @@ $(cgDirApp)/etc/conf.php : $(cgDirApp)/etc/conf.env
 
 $(cgDirApp)/doc/example/conf.env : $(cgDirApp)/etc/conf.env
 	sed 's/^export /#export /' <$? >$@
+	chmod a+rx $@
+
+conf.env : $(cgDirApp)/doc/example/conf.env
+	@if [[ ! -f conf.env  ]]; then \
+	    cp -v $? $@; \
+	else \
+	    echo 'A new conf.env has been copied to $(cgDirTmp)'; \
+	    cp -v --backup=t $? $(cgDirTmp); \
+	    chmod a+rx $(cgDirTmp)/$?
+	fi
+	chmod a+rx $@
 
 # ----------
 build : rebuild $(cgDirApp)/etc/lo-schema.csv $(cgDirApp)/etc/lib-schema.tsv
