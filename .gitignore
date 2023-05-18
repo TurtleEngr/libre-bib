@@ -1,4 +1,5 @@
 *~
+.phptidy-cache
 CVS/
 int-doc/
 test/

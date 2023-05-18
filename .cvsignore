@@ -1,2 +1,4 @@
 .git
+.github
+.phptidy-cache
 src/bin/.phptidy-cache
