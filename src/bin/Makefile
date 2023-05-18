@@ -25,7 +25,7 @@ version :
 	cat $(cgDirApp)/VERSION
 
 inc-ver :
-	echo '$$Revision: 1.3 $$ $$Date: 2023/05/18 01:53:17 $$ GMT' >$cgDirApp/VERSION
+	echo '$$Revision: 1.4 $$ $$Date: 2023/05/18 02:24:32 $$ GMT' >$cgDirApp/VERSION
 
 add edit :
 	emacs $(cgLoFile) &
@@ -220,7 +220,8 @@ conf.env : $(cgDirApp)/doc/example/conf.env
 	else \
 	    echo 'A new conf.env has been copied to $(cgDirTmp)'; \
 	    cp -v --backup=t $? $(cgDirTmp); \
-	    chmod a+rx $(cgDirTmp)/$?
+	    chmod a+rx $(cgDirTmp)/$@; \
+	    touch $@; \
 	fi
 	chmod a+rx $@
 
