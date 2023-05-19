@@ -144,7 +144,7 @@ function fValidate() {
 class ManageBiblio {
     protected $gDbH;
     public $gDebug;
-    
+
     # --------------------
     public function __construct($pDbH, $pDebug = false) {
         $this->gDbH = $pDbH;
@@ -305,7 +305,7 @@ class ManageBiblio {
     # --------------------
     public function fixBooksWithBlanks() {
         global $cgDbLo;
-        
+
         # Get records that are books, where tColList are blank.
         try {
             $tId = "Identifier";

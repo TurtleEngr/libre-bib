@@ -139,7 +139,7 @@ fIsWrite() {
 
 # ------------------------------
 fCheckSh() {
-    for gVal in $(grep -l 'env bash' $cgBin/* | grep -Ev 'Makefile'); do
+    for gVal in $(grep -rl 'env bash' $cgBin/* | grep -Ev 'Makefile'); do
         if ! fFileExec; then
             continue
         fi
@@ -156,7 +156,7 @@ fCheckPhp() {
     for gVal in \
         $cgBin/util.php \
         $cgDirApp/etc/conf.php \
-        $(grep -l 'env php' $cgBin/* | grep -Ev 'Makefile'); do
+        $(grep -rl 'env php' $cgBin/* | grep -Ev 'Makefile'); do
         if ! fFileExec; then
             continue
         fi

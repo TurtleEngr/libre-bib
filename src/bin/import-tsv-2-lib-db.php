@@ -156,6 +156,7 @@ function fGetOps() {
     fFixBool();
 }
 
+
 # -----------------------------
 function fValidate() {
     global $gHandle;
@@ -166,6 +167,7 @@ function fValidate() {
     if (($gHandle = fopen($cgLibFile, "r")) == FALSE)
         throw new Exception("Cannot open $cgLibFile. [" . __LINE__ . "]");
 }
+
 
 # -----------------------------
 function fCreateTable() {
