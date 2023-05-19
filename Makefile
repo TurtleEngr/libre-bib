@@ -30,5 +30,5 @@ mk-app-dir :
 	sudo find $(cgDirApp) -type f -exec chmod a+r {} \;
 
 mk-doc :
-	$(mMake) src/doc/manual/libre-bib.md
+	-$(mMake) src/doc/manual/libre-bib.md
 	$(mMake) src/doc/example/example-outline.html

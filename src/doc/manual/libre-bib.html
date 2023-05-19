@@ -9,8 +9,6 @@
         href="doc.css" />
 </head>
 <body>
-  <!-- Note: This is the Master file for the manual. The other files
-are generated from this file. -->
   <hr />
   <hr />
   <h1 id="libre-bib-manual">Libre Bib Manual</h1>
@@ -131,14 +129,14 @@ are generated from this file. -->
   <ul>
     <li>Connect to the DB</li>
   </ul>
-  <pre>
+  <pre class="in">
 sudo -s
 mysql -P 3306 -u root -p
 </pre>
   <ul>
     <li>Create the DB</li>
   </ul>
-  <pre>
+  <pre class="in">
 create database $cgDbName;
 show databases;
 </pre>
@@ -149,7 +147,7 @@ show databases;
       the mysql system.</p>
     </li>
   </ul>
-  <pre>
+  <pre class="in">
 create user 'admin'@'localhost' identified by 'ADMIN-PASS';
 grant all privileges on *.* to 'admin'@localhost;
 
@@ -188,7 +186,7 @@ quit;
   <h2 id="configure-ssh">Configure ssh</h2>
   <p>In your ~/.ssh/ dir you should see a libre-bib.ssh file. For this to be
   setup properly edit your project/conf.env file. Set the variables:</p>
-  <pre>
+  <pre class="in">
 | conf.env var   | Description                              |
 |----------------+------------------------------------------|
 | cgDbHost       | keep this set to the localhost IP        |
@@ -724,7 +722,7 @@ Done. [396]
   settings. For example, most of the things related to a remote DB will be
   the same. You can change the application's etc/conf.env default file. You
   can even add your own variables. Here are the steps.</p>
-  <pre>
+  <pre class="in">
 cd /opt/libre-bib/etc
 edit conf.env
 bash -n conf.env   # syntax check

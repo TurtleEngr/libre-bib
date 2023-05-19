@@ -24,6 +24,7 @@ pre {
     font-size: 100%; 
     line-height: 100%; 
     font-family: Courier New, monospace; 
+    text-align: left; 
 }
 pre.in { 
     margin-left: 5%; 

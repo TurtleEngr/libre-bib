@@ -124,42 +124,39 @@ names to try things out.
 
 -   Connect to the DB
 
-```{=html}
-<!-- -->
+``` {.in}
+sudo -s
+mysql -P 3306 -u root -p
 ```
-    sudo -s
-    mysql -P 3306 -u root -p
 
 -   Create the DB
 
-```{=html}
-<!-- -->
+``` {.in}
+create database $cgDbName;
+show databases;
 ```
-    create database $cgDbName;
-    show databases;
 
 -   Create users
 
     The create user and grants are best done with the \'root\' DB user
     on the mysql system.
 
-```{=html}
-<!-- -->
+``` {.in}
+create user 'admin'@'localhost' identified by 'ADMIN-PASS';
+grant all privileges on *.* to 'admin'@localhost;
+
+create user '$cgDbUser'@'localhost' identified by 'USER-PASS';
+grant all privileges on $cgDbName.* to '$cgDbUser'@localhost;
+
+flush privileges;
+
+select user from mysql.user;
+show grants for 'root'@localhost;
+show grants for 'admin'@localhost;
+show grants for '$cgDbName'@localhost;
+
+quit;
 ```
-    create user 'admin'@'localhost' identified by 'ADMIN-PASS';
-    grant all privileges on *.* to 'admin'@localhost;
-
-    create user '$cgDbUser'@'localhost' identified by 'USER-PASS';
-    grant all privileges on $cgDbName.* to '$cgDbUser'@localhost;
-
-    flush privileges;
-
-    select user from mysql.user;
-    show grants for 'root'@localhost;
-    show grants for 'admin'@localhost;
-    show grants for '$cgDbName'@localhost;
-
-    quit;
 
 -   Test a local connection with \$cgDbName
 
@@ -183,16 +180,18 @@ Configure ssh
 In your \~/.ssh/ dir you should see a libre-bib.ssh file. For this to be
 setup properly edit your project/conf.env file. Set the variables:
 
-    | conf.env var   | Description                              |
-    |----------------+------------------------------------------|
-    | cgDbHost       | keep this set to the localhost IP        |
-    | cgDbName       | name of the mysql database               |
-    | cgDbPortRemote | remote port, on project's system.        |
-    | cgDbLocalPort  | port for mysql on the remote system      |
-    | cgDbUser       | DB user with grants to cgDbName          |
-    | cgDbPassHint   | hint for the password prompt             |
-    | cgDbSshUser    | user that can login to the remote system |
-    | cgDbSshKey     | key login to the remote system           |
+``` {.in}
+| conf.env var   | Description                              |
+|----------------+------------------------------------------|
+| cgDbHost       | keep this set to the localhost IP        |
+| cgDbName       | name of the mysql database               |
+| cgDbPortRemote | remote port, on project's system.        |
+| cgDbLocalPort  | port for mysql on the remote system      |
+| cgDbUser       | DB user with grants to cgDbName          |
+| cgDbPassHint   | hint for the password prompt             |
+| cgDbSshUser    | user that can login to the remote system |
+| cgDbSshKey     | key login to the remote system           |
+```
 
 Remove \~/ssh/libre-bib.ssh file and run again:
 
@@ -801,11 +800,13 @@ settings. For example, most of the things related to a remote DB will be
 the same. You can change the application\'s etc/conf.env default file.
 You can even add your own variables. Here are the steps.
 
-    cd /opt/libre-bib/etc
-    edit conf.env
-    bash -n conf.env   # syntax check
-    cd BIB-PROJECT     # any of your bib project dirs
-    bib rebuild        # update user default file, and conf.php
+``` {.in}
+cd /opt/libre-bib/etc
+edit conf.env
+bash -n conf.env   # syntax check
+cd BIB-PROJECT     # any of your bib project dirs
+bib rebuild        # update user default file, and conf.php
+```
 
 Source /opt/libre-bib/etc/conf.env and conf.env in a bash script call
 your own Makefile, other bash scripts, or php scripts to run things.

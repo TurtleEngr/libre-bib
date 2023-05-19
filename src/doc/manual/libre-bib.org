@@ -115,7 +115,7 @@ the example names to try things out.
 + Connect to the DB
 
 #+BEGIN_EXPORT html
-<pre>
+<pre class="in">
 sudo -s
 mysql -P 3306 -u root -p
 </pre>
@@ -124,7 +124,7 @@ mysql -P 3306 -u root -p
 + Create the DB
 
 #+BEGIN_EXPORT html
-<pre>
+<pre class="in">
 create database $cgDbName;
 show databases;
 </pre>
@@ -136,7 +136,7 @@ show databases;
   on the mysql system.
 
 #+BEGIN_EXPORT html
-<pre>
+<pre class="in">
 create user 'admin'@'localhost' identified by 'ADMIN-PASS';
 grant all privileges on *.* to 'admin'@localhost;
 
@@ -179,7 +179,7 @@ In your ~/.ssh/ dir you should see a libre-bib.ssh file. For this to be
 setup properly edit your project/conf.env file. Set the variables:
 
 #+BEGIN_EXPORT html
-<pre>
+<pre class="in">
 | conf.env var   | Description                              |
 |----------------+------------------------------------------|
 | cgDbHost       | keep this set to the localhost IP        |
@@ -702,7 +702,7 @@ touched.
   steps.
 
 #+BEGIN_EXPORT html
-<pre>
+<pre class="in">
 cd /opt/libre-bib/etc
 edit conf.env
 bash -n conf.env   # syntax check
