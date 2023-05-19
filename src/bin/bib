@@ -44,7 +44,7 @@ fi
 
 if [[ "${cgBuild:-false}" != "true" ]]; then
     if [ ! -f conf.env ]; then
-	echo 'Error: Missing conf.env, copying it now'
+        echo 'Error: Missing conf.env, copying it now'
         make -f $cgBin/Makefile conf.env
         echo 'Edit conf.env with your details. Uncomment the ones you'
         echo 'are changing, then run: bib setup-bib'

@@ -1,9 +1,9 @@
 # libre-bib
 
+Libre-Bib is still in development.
+
 This tool will help with managing a large Libreoffice Bibliography.  It
 can be used across multiple Libreoffice odt documents.
-
-Libre-Bib is still in development.
 
 Libre-Bib is mostly functional. I am using it for managing a large
 Bibliography with about 3,000 records, and my LibraryThing DB has over
@@ -13,71 +13,56 @@ Bibliography with about 3,000 records, and my LibraryThing DB has over
 
 ### Libreoffice Database
 
-* Add bibliographic entries to a simple text file
-  (cgLoFile=biblio.txt) This is the only file you do not want to
-  lose. Everything else can be rebuilt from this file.
+* Add bibliographic entries with a simple text file (biblio.txt).
+  This is the only file that you will not want to lose (so version
+  it). Everything else can be rebuilt from this file.
 
-* Import the text file into a Libreoffice compatible DB (lo-db)
+* Import the text file into a Libreoffice compatible DB (lo-db).
 
-* Update the lo-db from the text file
+* Update the lo-db from changes in text file.
 
-* Make a backup csv file of the lo-db
+* Make a backup csv file of the lo-db.
 
 ### LibraryThing Database
 
-* Import a LibraryThing tsv file (lib-db)
+The [LibraryThing](https://www.librarything.com/home) application can
+used to very quickly collect your book's information, by using the
+ISBN bar codes. No need to type, author, publisher, date, etc.
 
-* Merge selected fields from lib-db to the lo-db
+* Import an exported LibraryThing tsv file to lib-db.
+
+* Merge selected fields from the lib-db to the lo-db.
+
+* Export a new biblio.txt file with the lo-db updates.
 
 ### Formatted Bibliography
 
-* Make an updated DB (bib), with changes that makes biblio layout easier.
+* Make a partially formatted bib-db from the lib-db.  This DB table
+  makes formatting the bibliography entries easier. For example most
+  of the non-empty fields will be prefixed with ", ".
 
-* Bibliography types supported: articles, books (all types), misc
-  (videos, DVDs, mp4, audio, etc.), www (links)
+* The supported Bibliography types: articles, books (all types), misc
+  (media, videos, DVDs, mp4, audio, etc.), www (links)
 
 ### Make references to bib-db in your Write document
 
-* Simple insert of bib reference tags in your Libreoffice Write
-  document (odt)
+* Automatic insert of bib reference tags in your Libreoffice Write
+  document (odt). (No need to highlight then select the bibliographic
+  reference; the {REF} tag is all you need, so you can keep writing
+  and not be slowed down with a manual GUI steps.)
 
-* Update new bib-db references, so they include the fields from the
-  bib-db. Also the refs will be formatted with EndNote text style.
+* Update new {REF} tags, so they will include the fields from the
+  bib-db. Also the refs will be formatted with "Endnote Character"
+  style.
 
-* Update bib references with any changes in the bib-db.
+* Update existing {REF} tags with any changes in the bib-db.
 
-### Optional
+### Emacs Org-Mode helper
 
 * Optionally the Libreoffice Write file can be created from an emacs
-  org file.
+  org-mode file.
 
-## Requirements
+### Requirements and Installation
 
-* Linux system
-
-### Required Packages
-
-* libreoffice
-* libreoffice-sdbc-mysql (needed for DB connection)
-* mariadb-client - mysql
-* mariadb-server - mariadbd (only on remote host)
-* php
-* php-mysqlnd - php-PDO
-* perl - pod2html, pod2man, pod2text, pod2usage
-* bash
-* tidy
-* make (script and file manager)
-
-### Optional Packages
-
-* ssh - if using a remote DB
-* epm-helper - mkver.pl (generate conf.* files)
-* sed
-* pandoc
-* libpod-markdown-perl - pod2markdown
-* pod2pdf
-* beekeeper - https://github.com/beekeeper-studio/beekeeper-studio
-
-## Installation and Usage
-
-See doc/manual/libre-bib.md
+See the [Libre Bib Manual](src/doc/manual/libre-bib.md) for system and
+package requirements.

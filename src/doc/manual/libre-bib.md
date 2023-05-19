@@ -14,6 +14,19 @@ Install and Setup
 
 ------------------------------------------------------------------------
 
+O.S. Requirments
+----------------
+
+-   A Linux system
+    -   mx linux (21.x)
+    -   Ubuntu (18.04)
+    -   Debian (not tested)
+    -   RedHat (not tested)
+-   A Windows system setup with CygWin (not tested yet)
+-   A Mac with brew packages (not tested yet)
+
+------------------------------------------------------------------------
+
 Install Package
 ---------------
 
@@ -26,16 +39,16 @@ Install Package
 
 ### Required Packages
 
--   libreoffice
--   libreoffice-sdbc-mysql - needed for libreoffice DB connection
--   mariadb-client - mysql
--   mariadb-server - mariadbd (only on remote host)
--   php
+-   libreoffice (7.0)
+-   libreoffice-sdbc-mysql (7.0) - needed for libreoffice DB connection
+-   mariadb-client (10.5) - mysql
+-   mariadb-server (10.5) - mariadbd (only on remote host)
+-   php (7.4)
 -   php-mysqlnd - php-PDO
--   perl - pod2html, pod2man, pod2text, pod2usage
--   bash
--   sed
--   tidy
+-   perl (5.32) for: pod2html, pod2man, pod2text, pod2usage
+-   bash (5.1)
+-   sed (4.7 probably not important)
+-   tidy (5.6 probably not important)
 -   make - for script and file management
 
 ### Optional Packages
@@ -769,6 +782,25 @@ Backups
 
     drop table \`bib\`; RENAME TABLE \`bib~2023~-04-02~14~-18-37\` TO
     bib;
+
+------------------------------------------------------------------------
+
+Customizing the defaults
+------------------------
+
+If you are managing multiple bibliographies, you might have some common
+settings. For example, most of the things related to a remote DB will be
+the same. You can change the application\'s etc/conf.env default file.
+You can even add your own variables. Here are the steps.
+
+\> cd /opt/libre-bib/etc \> edit conf.env \> bash -n conf.env \# syntax
+check \> cd BIB-PROJECT \# any of your bib project dirs \> bib rebuild
+\# update user default file, and conf.php
+
+Source /opt/libre-bib/etc/conf.env and conf.env in a bash script call
+your own Makefile, other bash scripts, or php scripts to run things.
+Your php scripts could include /opt/libre-bib/etc/conf.php to define the
+ENV vars as globals, or just use \$~ENV~\[\'cgVarName\'\].
 
 ------------------------------------------------------------------------
 

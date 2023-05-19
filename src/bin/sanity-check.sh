@@ -17,7 +17,7 @@ fVar() {
     if [[ -z "$gVal" ]]; then
         echo "Error: $gVar is not defined"
         ((++gErr))
-        return 1      # ---------->
+        return 1 # ---------->
     fi
     return 0
 }
@@ -29,12 +29,12 @@ fDirExist() {
     if [[ ! -d $gVal ]]; then
         echo "Error: $gVar $gVal dir does not exist."
         ((++gErr))
-        return 1      # ---------->
+        return 1 # ---------->
     fi
     if [[ ! -r $gVal ]]; then
         echo "Error: $gVar $gVal dir is not readable."
         ((++gErr))
-        return 1      # ---------->
+        return 1 # ---------->
     fi
     return 0
 }
@@ -46,7 +46,7 @@ fFileExist() {
     if [[ ! -r $gVal ]]; then
         echo "Error: $gVar $gVal file is not readable."
         ((++gErr))
-        return 1      # ---------->
+        return 1 # ---------->
     fi
     return 0
 }
@@ -58,7 +58,7 @@ fFileExec() {
     if [[ ! -x $gVal ]]; then
         echo "Error: $gVar $gVal file is not executable."
         ((++gErr))
-        return 1      # ---------->
+        return 1 # ---------->
     fi
     return 0
 }
@@ -68,42 +68,41 @@ fIsBool() {
     # Input: gVar
     # Output: gVal
     if ! fVar; then
-        return 1      # ---------->
+        return 1 # ---------->
     fi
-    
+
     declare -l tTest=$gVal
     case "$tTest" in
-        0)     return 0 ;;
-        n)     return 0 ;;
-        no)    return 0 ;;
-        f)     return 0 ;;
+        0) return 0 ;;
+        n) return 0 ;;
+        no) return 0 ;;
+        f) return 0 ;;
         false) return 0 ;;
-        1)     return 0 ;;
-        y)     return 0 ;;
-        yes)   return 0 ;;
-        t)     return 0 ;;
-        true)  return 0 ;;
+        1) return 0 ;;
+        y) return 0 ;;
+        yes) return 0 ;;
+        t) return 0 ;;
+        true) return 0 ;;
         *)
             echo "Error: $gVar $gVal is not a valid boolean value"
             ((++gErr))
-        ;;
+            ;;
     esac
     return 1
 }
-
 
 # ------------------------------
 fIsNum() {
     # Input: gVar
     # Output: gVal
     if ! fVar; then
-        return 1      # ---------->
+        return 1 # ---------->
     fi
     tRegEx='^[[:digit:]]+$'
     if [[ ! $gVal =~ $tRegEx ]]; then
         echo "Error: $gVar $gVal is not a number"
         ((++gErr))
-        return 1      # ---------->
+        return 1 # ---------->
     fi
     return 0
 }
@@ -113,14 +112,14 @@ fIsRead() {
     # Input: gVar
     # Output: gVal
     if ! fVar; then
-        return 1      # ---------->
+        return 1 # ---------->
     fi
     if [[ ! -r $gVal ]]; then
         echo "Error: $gVar $gVal is not readable"
         ((++gErr))
-        return 1      # ---------->
+        return 1 # ---------->
     fi
-     return 0
+    return 0
 }
 
 # ------------------------------
@@ -128,14 +127,14 @@ fIsWrite() {
     # Input: gVar
     # Output: gVal
     if ! fVar; then
-        return 1      # ---------->
+        return 1 # ---------->
     fi
     if [[ ! -w $gVal ]]; then
         echo "Error: $gVar $gVal is not writable"
         ((++gErr))
-        return 1      # ---------->
+        return 1 # ---------->
     fi
-     return 0
+    return 0
 }
 
 # ------------------------------
@@ -157,8 +156,7 @@ fCheckPhp() {
     for gVal in \
         $cgBin/util.php \
         $cgDirApp/etc/conf.php \
-        $(grep -l 'env php' $cgBin/* | grep -Ev 'Makefile') \
-    ; do
+        $(grep -l 'env php' $cgBin/* | grep -Ev 'Makefile'); do
         if ! fFileExec; then
             continue
         fi
@@ -175,7 +173,7 @@ fNotOk() {
     if [[ $gErr != 0 ]]; then
         echo "$gErr errors found so far."
         echo "Have you run: bib setup-bib"
-        exit $gErr      # ---------->
+        exit $gErr # ---------->
     fi
 }
 
@@ -192,8 +190,7 @@ fCheckDep() {
         bash \
         sed \
         tidy \
-        make \
-    ; do
+        make; do
         if ! which $tCmd &>/dev/null; then
             echo "Error: Could not find command: $tCmd"
             ((++gErr))
@@ -209,14 +206,14 @@ fCheckApp() {
             fDirExist
         fi
     done
-    fNotOk      # ?---------->
+    fNotOk # ?---------->
 
     # ----------
     if [[ "$cgDirApp" != "${cgBin%/bin}" ]]; then
         echo "Error: cgDirApp or cgBin are not set properly"
         ((++gErr))
     fi
-    fNotOk      # ?---------->
+    fNotOk # ?---------->
 
     find $cgDirApp -name '*~' -exec rm {} \;
 
@@ -226,10 +223,9 @@ fCheckApp() {
         doc \
         doc/manual \
         doc/example \
-        etc \
-    ; do
+        etc; do
         gVal=$cgDirApp/$tDir
-        fDirExist        
+        fDirExist
     done
 
     # ----------
@@ -267,8 +263,7 @@ fCheckApp() {
         etc/conf.php \
         etc/libre-bib.ssh \
         etc/lib-schema.tsv \
-        etc/lo-schema.csv \
-    ; do
+        etc/lo-schema.csv; do
         gVal=$cgDirApp/$tFile
         fFileExist
     done
@@ -291,14 +286,14 @@ fCheckApp() {
         echo "Error in Makefile [3], $tResult"
         ((++gErr))
     fi
-    fNotOk      # ?---------->
-} # fCheckApp
+    fNotOk # ?---------->
+}          # fCheckApp
 
 # ------------------------------
 fCheckUser() {
     gVal=conf.env
     fFileExec
-    fNotOk      # ?---------->
+    fNotOk # ?---------->
 
     # ----------
     for gVar in \
@@ -308,8 +303,7 @@ fCheckUser() {
         cgNoExecCmd \
         cgUseLib \
         cgUseRemote \
-        cgVerbose \
-    ; do
+        cgVerbose; do
         fIsBool
     done
 
@@ -318,8 +312,7 @@ fCheckUser() {
         cgDirBackup \
         cgDirConf \
         cgDirStatus \
-        cgDirTmp \
-    ; do
+        cgDirTmp; do
         if ! fVar; then
             continue
         fi
@@ -333,8 +326,7 @@ fCheckUser() {
     for gVar in \
         cgBackupNum \
         cgDbPortLocal \
-        cgDbPortRemote \
-    ; do
+        cgDbPortRemote; do
         if ! fVar; then
             continue
         fi
@@ -352,16 +344,14 @@ fCheckUser() {
         cgDbPassCache \
         cgDbPassHint \
         cgDbUser \
-        cgBackupFile \
-    ; do
+        cgBackupFile; do
         fVar
     done
 
     # ----------
     for gVar in \
         cgLoFile \
-        cgDocFile \
-    ; do
+        cgDocFile; do
         fIsRead
     done
 
@@ -392,7 +382,7 @@ fCheckUser() {
         fIsRead
     fi
 
-    return $gErr   
+    return $gErr
 } # fCheckUser
 
 # ========================================
@@ -415,7 +405,7 @@ fCheckApp
 
 if [[ ! -f conf.env ]]; then
     # setup-bib has not been called yet
-    exit $gErr      # ---------->
+    exit $gErr # ---------->
 fi
 
 if [[ ! -x ./conf.env ]]; then
@@ -433,6 +423,6 @@ fi
 . ./conf.env
 
 fCheckUser
-fNotOk      # ?---------->
+fNotOk # ?---------->
 
 exit 0

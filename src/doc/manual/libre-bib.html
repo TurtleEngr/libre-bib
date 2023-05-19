@@ -9,12 +9,28 @@
         href="doc.css" />
 </head>
 <body>
+  <!-- Note: This is the Master file for the manual. The other files
+are generated from this file. -->
   <hr />
   <hr />
   <h1 id="libre-bib-manual">Libre Bib Manual</h1>
   <hr />
   <hr />
   <h1 id="install-and-setup">Install and Setup</h1>
+  <hr />
+  <h2 id="o.s.-requirments">O.S. Requirments</h2>
+  <ul>
+    <li>A Linux system
+      <ul>
+        <li>mx linux (21.x)</li>
+        <li>Ubuntu (18.04)</li>
+        <li>Debian (not tested)</li>
+        <li>RedHat (not tested)</li>
+      </ul>
+    </li>
+    <li>A Windows system setup with CygWin (not tested yet)</li>
+    <li>A Mac with brew packages (not tested yet)</li>
+  </ul>
   <hr />
   <h2 id="install-package">Install Package</h2>
   <ul>
@@ -30,16 +46,17 @@
   </ul>
   <h3 id="required-packages">Required Packages</h3>
   <ul>
-    <li>libreoffice</li>
-    <li>libreoffice-sdbc-mysql - needed for libreoffice DB connection</li>
-    <li>mariadb-client - mysql</li>
-    <li>mariadb-server - mariadbd (only on remote host)</li>
-    <li>php</li>
+    <li>libreoffice (7.0)</li>
+    <li>libreoffice-sdbc-mysql (7.0) - needed for libreoffice DB
+    connection</li>
+    <li>mariadb-client (10.5) - mysql</li>
+    <li>mariadb-server (10.5) - mariadbd (only on remote host)</li>
+    <li>php (7.4)</li>
     <li>php-mysqlnd - php-PDO</li>
-    <li>perl - pod2html, pod2man, pod2text, pod2usage</li>
-    <li>bash</li>
-    <li>sed</li>
-    <li>tidy</li>
+    <li>perl (5.32) for: pod2html, pod2man, pod2text, pod2usage</li>
+    <li>bash (5.1)</li>
+    <li>sed (4.7 probably not important)</li>
+    <li>tidy (5.6 probably not important)</li>
     <li>make - for script and file management</li>
   </ul>
   <h3 id="optional-packages">Optional Packages</h3>
@@ -727,6 +744,19 @@ Done. [396]
       `bib<sub>2023</sub>-04-02<sub>14</sub>-18-37` TO bib;</p>
     </li>
   </ul>
+  <hr />
+  <h2 id="customizing-the-defaults">Customizing the defaults</h2>
+  <p>If you are managing multiple bibliographies, you might have some common
+  settings. For example, most of the things related to a remote DB will be
+  the same. You can change the application's etc/conf.env default file. You
+  can even add your own variables. Here are the steps.</p>
+  <p>&gt; cd /opt/libre-bib/etc &gt; edit conf.env &gt; bash -n conf.env #
+  syntax check &gt; cd BIB-PROJECT # any of your bib project dirs &gt; bib
+  rebuild # update user default file, and conf.php</p>
+  <p>Source /opt/libre-bib/etc/conf.env and conf.env in a bash script call
+  your own Makefile, other bash scripts, or php scripts to run things. Your
+  php scripts could include /opt/libre-bib/etc/conf.php to define the ENV
+  vars as globals, or just use $<sub>ENV</sub>['cgVarName'].</p>
   <hr />
   <h2 id="build">Build</h2>
   <p>Use: "make build"</p>
