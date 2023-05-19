@@ -7,11 +7,6 @@ body {
     background: white;
     color: black;
 }
-pre { 
-    font-size: 100%; 
-    line-height: 100%; 
-    font-family: Courier New, monospace; 
-}
 dt { 
     font-weight: bold; 
     text-align: left; 
@@ -25,6 +20,11 @@ blockquote {
     font-family: "Times New Roman", serif; 
     font-style: italic; 
     text-align: left; 
+}
+pre { 
+    font-size: 100%; 
+    line-height: 100%; 
+    font-family: Courier New, monospace; 
 }
 table {
     border-collapse: collapse;

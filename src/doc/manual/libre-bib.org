@@ -180,20 +180,26 @@ access).
 In your ~/.ssh/ dir you should see a libre-bib.ssh file. For this to be
 setup properly edit your project/conf.env file. Set the variables:
 
-| conf.env var   | Description                                               |
-|----------------+-----------------------------------------------------------|
-| cgDbHost       | keep this set to the localhost IP                         |
-| cgDbName       | name of the mysql database                                |
-| cgDbPortRemote | remote port, on project's system. Can be any unused port. |
-| cgDbLocalPort  | port for mysql on the remote system (probably no change)  |
-| cgDbUser       | DB user with grants to cgDbName and all of it's tables    |
-| cgDbPassHint   | hint for the password prompt                              |
-| cgDbSshUser    | user that can login to the remote system                  |
-| cgDbSshKey     | key used by user for login to the remote system           |
+#+BEGIN_EXPORT html
+<pre>
+| conf.env var   | Description                              |
+|----------------+------------------------------------------|
+| cgDbHost       | keep this set to the localhost IP        |
+| cgDbName       | name of the mysql database               |
+| cgDbPortRemote | remote port, on project's system.        |
+| cgDbLocalPort  | port for mysql on the remote system      |
+| cgDbUser       | DB user with grants to cgDbName          |
+| cgDbPassHint   | hint for the password prompt             |
+| cgDbSshUser    | user that can login to the remote system |
+| cgDbSshKey     | key login to the remote system           |
+</pre>
+#+END_EXPORT
 
 Remove ~/ssh/libre-bib.ssh file and run again:
 
-    bib setup-bib
+  <blockquote>
+  bib setup-bib
+  </blockquote>
 
 If the ~/ssh/libre-bib.ssh file looks OK, add following line top of
 your ~/.ssh/config file (or near a Host config for your system).

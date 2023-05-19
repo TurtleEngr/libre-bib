@@ -36,3 +36,18 @@ pre.out {
     font-family: Courier New, monospace; 
     text-align: left; 
 }
+table {
+    border-collapse: collapse;
+    width: 80%;
+    text-align: left; 
+    vertical-align: top;
+}
+th {
+    font-weight: bold; 
+}
+th, td {
+    border: 2px solid black;
+    padding: 8px;
+    text-align: left; 
+    word-wrap: break-word;
+}

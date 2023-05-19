@@ -129,41 +129,43 @@ are generated from this file. -->
   project/conf.env file. You can change those now or just use the example
   names to try things out.</p>
   <ul>
-    <li>
-      <p>Connect to the DB</p>
-      <blockquote>
-        <p>sudo -s mysql -P 3306 -u root -p</p>
-      </blockquote>
-    </li>
-    <li>
-      <p>Create the DB</p>
-      <blockquote>
-        <p>create database $cgDbName; show databases;</p>
-      </blockquote>
-    </li>
+    <li>Connect to the DB</li>
+  </ul>
+  <pre>
+sudo -s
+mysql -P 3306 -u root -p
+</pre>
+  <ul>
+    <li>Create the DB</li>
+  </ul>
+  <pre>
+create database $cgDbName;
+show databases;
+</pre>
+  <ul>
     <li>
       <p>Create users</p>
       <p>The create user and grants are best done with the 'root' DB user on
       the mysql system.</p>
-      <blockquote>
-        <p>create user 'admin'@'localhost' identified by 'ADMIN-PASS'; grant
-        all privileges on <strong>.</strong> to 'admin'<span class="citation"
-              data-cites="localhost">@localhost</span>;</p>
-        <p>create user '$cgDbUser'@'localhost' identified by 'USER-PASS';
-        grant all privileges on $cgDbName.* to '$cgDbUser'<span class=
-        "citation"
-              data-cites="localhost">@localhost</span>;</p>
-        <p>flush privileges;</p>
-        <p>select user from mysql.user; show grants for 'root'<span class=
-        "citation"
-              data-cites="localhost">@localhost</span>; show grants for
-              'admin'<span class="citation"
-              data-cites="localhost">@localhost</span>; show grants for
-              '$cgDbName'<span class="citation"
-              data-cites="localhost">@localhost</span>;</p>
-        <p>quit;</p>
-      </blockquote>
     </li>
+  </ul>
+  <pre>
+create user 'admin'@'localhost' identified by 'ADMIN-PASS';
+grant all privileges on *.* to 'admin'@localhost;
+
+create user '$cgDbUser'@'localhost' identified by 'USER-PASS';
+grant all privileges on $cgDbName.* to '$cgDbUser'@localhost;
+
+flush privileges;
+
+select user from mysql.user;
+show grants for 'root'@localhost;
+show grants for 'admin'@localhost;
+show grants for '$cgDbName'@localhost;
+
+quit;
+</pre>
+  <ul>
     <li>
       <p>Test a local connection with $cgDbName</p>
       <blockquote>
@@ -186,50 +188,22 @@ are generated from this file. -->
   <h2 id="configure-ssh">Configure ssh</h2>
   <p>In your ~/.ssh/ dir you should see a libre-bib.ssh file. For this to be
   setup properly edit your project/conf.env file. Set the variables:</p>
-  <table>
-    <thead>
-      <tr class="header">
-        <th>conf.env var</th>
-        <th>Description</th>
-      </tr>
-    </thead>
-    <tbody>
-      <tr class="odd">
-        <td>cgDbHost</td>
-        <td>keep this set to the localhost IP</td>
-      </tr>
-      <tr class="even">
-        <td>cgDbName</td>
-        <td>name of the mysql database</td>
-      </tr>
-      <tr class="odd">
-        <td>cgDbPortRemote</td>
-        <td>remote port, on project's system. Can be any unused port.</td>
-      </tr>
-      <tr class="even">
-        <td>cgDbLocalPort</td>
-        <td>port for mysql on the remote system (probably no change)</td>
-      </tr>
-      <tr class="odd">
-        <td>cgDbUser</td>
-        <td>DB user with grants to cgDbName and all of it's tables</td>
-      </tr>
-      <tr class="even">
-        <td>cgDbPassHint</td>
-        <td>hint for the password prompt</td>
-      </tr>
-      <tr class="odd">
-        <td>cgDbSshUser</td>
-        <td>user that can login to the remote system</td>
-      </tr>
-      <tr class="even">
-        <td>cgDbSshKey</td>
-        <td>key used by user for login to the remote system</td>
-      </tr>
-    </tbody>
-  </table>
+  <pre>
+| conf.env var   | Description                              |
+|----------------+------------------------------------------|
+| cgDbHost       | keep this set to the localhost IP        |
+| cgDbName       | name of the mysql database               |
+| cgDbPortRemote | remote port, on project's system.        |
+| cgDbLocalPort  | port for mysql on the remote system      |
+| cgDbUser       | DB user with grants to cgDbName          |
+| cgDbPassHint   | hint for the password prompt             |
+| cgDbSshUser    | user that can login to the remote system |
+| cgDbSshKey     | key login to the remote system           |
+</pre>
   <p>Remove ~/ssh/libre-bib.ssh file and run again:</p>
-  <p>bib setup-bib</p>
+  <blockquote>
+    <p>bib setup-bib</p>
+  </blockquote>
   <p>If the ~/ssh/libre-bib.ssh file looks OK, add following line top of your
   ~/.ssh/config file (or near a Host config for your system).</p>
   <blockquote>
@@ -750,9 +724,13 @@ Done. [396]
   settings. For example, most of the things related to a remote DB will be
   the same. You can change the application's etc/conf.env default file. You
   can even add your own variables. Here are the steps.</p>
-  <p>&gt; cd /opt/libre-bib/etc &gt; edit conf.env &gt; bash -n conf.env #
-  syntax check &gt; cd BIB-PROJECT # any of your bib project dirs &gt; bib
-  rebuild # update user default file, and conf.php</p>
+  <pre>
+cd /opt/libre-bib/etc
+edit conf.env
+bash -n conf.env   # syntax check
+cd BIB-PROJECT     # any of your bib project dirs
+bib rebuild        # update user default file, and conf.php
+</pre>
   <p>Source /opt/libre-bib/etc/conf.env and conf.env in a bash script call
   your own Makefile, other bash scripts, or php scripts to run things. Your
   php scripts could include /opt/libre-bib/etc/conf.php to define the ENV
