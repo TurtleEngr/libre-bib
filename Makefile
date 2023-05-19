@@ -19,10 +19,10 @@ build : build-setup check
 package :
 
 # Manual install - only for testing
-install : $(cgDirApp)
+install : $(cgDirApp) check
 	-find src -name '*~' -exec rm {} \; &>/dev/null
 	-mkdir $(cgDirApp)/etc/old &>/dev/null
-	cp --backup=t $(cgDirApp)/etc/* $(cgDirApp)/etc/old/
+	cp --backup=t $$(find $(cgDirApp)/etc/* -prune -type f) $(cgDirApp)/etc/old/
 	rsync -aC src/* $(cgDirApp)/
 	find $(cgDirApp) -type d -exec chmod a+rx {} \;
 	find $(cgDirApp) -type f -exec chmod a+r {} \;
