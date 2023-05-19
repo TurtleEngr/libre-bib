@@ -8,8 +8,6 @@
 <link rel="stylesheet"
       href="doc.css" /></head>
 <body>
-<!-- Note: This is the Master file for the manual. The other files
-are generated from this file. -->
 #+END_EXPORT
 * Libre Bib Manual
 

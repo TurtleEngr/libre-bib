@@ -31,3 +31,4 @@ mk-app-dir :
 
 mk-doc :
 	$(mMake) src/doc/manual/libre-bib.md
+	$(mMake) src/doc/example/example-outline.html
