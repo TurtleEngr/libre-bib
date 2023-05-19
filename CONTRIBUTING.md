@@ -30,56 +30,66 @@
 - The naming convention is CamelCase, with leading lower case letters
   that give clues about the "scope" of a variable.
 
-  > gpVar - global parameter (may be external to the script)
-  > gVar  - global variable (may be external to the script)
-  > cgVar - a global config constant (may be external to the script)
-  > cVar  - a local config constant
-  > pVar  - a function parameter (local)
-  > tVar  - temporary variable (usually local to a function)
-  > fFun  - function
-  > utilFun - a function in util.php (currently not used)
+  ```
+  gpVar - global parameter (may be external to the script)
+  gVar  - global variable (may be external to the script)
+  cgVar - a global config constant (may be external to the script)
+  cVar  - a local config constant
+  pVar  - a function parameter (local)
+  tVar  - temporary variable (usually local to a function)
+  fFun  - function
+  utilFun - a function in util.php (currently not used)
+  ```
 
 - Format php code with phptidy.php.
   [phptidy](https://github.com/cmrcx/phptidy) These are the default
   settings I changed (See bin/.phptidy-config.php)
 
-  > $diff = "diff";
-  > $indent_char             = "    ";  # 4 spaces
-  > $replace_shell_comments  = false;
-  > $add_operator_space      = true;
-  > $add_file_docblock       = false;
-  > $add_function_docblocks  = false;
-  > $add_doctags             = false;
+  ```
+  $diff = "diff";
+  $indent_char             = "    ";  # 4 spaces
+  $replace_shell_comments  = false;
+  $add_operator_space      = true;
+  $add_file_docblock       = false;
+  $add_function_docblocks  = false;
+  $add_doctags             = false;
+  ```
 
   Use:
 
-  > cd libre-bib
-  > tBin=$PWD/build/bin
-  > cd src/bin
-  > $tBin/phptidy.php replace *.php
+  ```
+  cd libre-bib
+  tBin=$PWD/build/bin
+  cd src/bin
+  $tBin/phptidy.php replace *.php
+  ```
 
 - Format bash code with
   shfmt. [shfmt}(https://github.com/mvdan/sh/releases) These are the
   options I use:
 
-  > cd libre-bib
-  > tBin=$PWD/build/bin
-  > cd src/bin
-  > for i in $(shfmt -l -i 4 -ci .); do
-  >     if ! bash -n $i; then exit 1; fi
-  >     $tBin/shfmt -i 4 -ci -w $i;
-  > done
-
+  ```
+  cd libre-bib
+  tBin=$PWD/build/bin
+  cd src/bin
+  for i in $(shfmt -l -i 4 -ci .); do
+      if ! bash -n $i; then exit 1; fi
+      $tBin/shfmt -i 4 -ci -w $i;
+  done
+  ```
+  
 - bib commands are managed with bin/Makefile. For example: "bib
   connect" will call "make -f $cgBin/Makefile connect" All of conf.env
   values are available for use in the Makefile.  Using make keeps
   dependent files up-to-date. It is also easy to add
   commands. Chaining commands works too. Consider this:
 
-  > cd PROJECT/
-  > bib connect
-  > bib import-lo import-lib backup-lo update-lo ref-new ref-update
-
+  ```
+  cd PROJECT/
+  bib connect
+  bib import-lo import-lib backup-lo update-lo ref-new ref-update
+  ```
+  
   That will execute all the commands in order, but if there is an
   error in one, the processing will stop. No need to write all the
   code to manage that! Just be consistent with return errors and

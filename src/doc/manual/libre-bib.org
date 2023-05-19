@@ -62,14 +62,14 @@ are generated from this file. -->
 + edit the cli/php.ini file (for example: /etc/php/7.4/cli/php.ini)
   Change the ="variables_order"= to this:
   <blockquote>
-    =variables_order = "EGPCS"=
+  =variables_order = "EGPCS"=
   </blockquote>
 
 ** Setup libre-bib project
 
 Run:
   <blockquote>
-    bib setup-bib
+  bib setup-bib
   </blockquote>
 
 Fix any errors then run it again, until no more errors.
@@ -86,7 +86,7 @@ If you are planing on using a remote DB, then see the "Configure ssh" section.
   be running. Verify this with:
 
   <blockquote>
-    ps -fC mariadbd
+  ps -fC mariadbd
   </blockquote>
 
 - If you don't see it running, you'll need to consult the mariadb docs
@@ -101,7 +101,7 @@ your distribution, you may need to do things a bit differently.
 Test the connection on the server system
 
   <blockquote>
-    sudo mysql -P 3306 -u root -p
+  sudo mysql -P 3306 -u root -p
   </blockquote>
 
 Most likely you'll use your sudo password, or the password you setup
@@ -116,51 +116,57 @@ the example names to try things out.
 
 + Connect to the DB
 
-  <blockquote>
-    sudo -s
-    mysql -P 3306 -u root -p
-  </blockquote>
+#+BEGIN_EXPORT html
+<pre>
+sudo -s
+mysql -P 3306 -u root -p
+</pre>
+#+END_EXPORT
 
 + Create the DB
 
-  <blockquote>
-    create database $cgDbName;
-    show databases;
-  </blockquote>
+#+BEGIN_EXPORT html
+<pre>
+create database $cgDbName;
+show databases;
+</pre>
+#+END_EXPORT
 
 + Create users
 
   The create user and grants are best done with the 'root' DB user
   on the mysql system.
 
-  <blockquote>
-    create user 'admin'@'localhost' identified by 'ADMIN-PASS';
-    grant all privileges on *.* to 'admin'@localhost;
+#+BEGIN_EXPORT html
+<pre>
+create user 'admin'@'localhost' identified by 'ADMIN-PASS';
+grant all privileges on *.* to 'admin'@localhost;
 
-    create user '$cgDbUser'@'localhost' identified by 'USER-PASS';
-    grant all privileges on $cgDbName.* to '$cgDbUser'@localhost;
+create user '$cgDbUser'@'localhost' identified by 'USER-PASS';
+grant all privileges on $cgDbName.* to '$cgDbUser'@localhost;
 
-    flush privileges;
+flush privileges;
 
-    select user from mysql.user;
-    show grants for 'root'@localhost;
-    show grants for 'admin'@localhost;
-    show grants for '$cgDbName'@localhost;
+select user from mysql.user;
+show grants for 'root'@localhost;
+show grants for 'admin'@localhost;
+show grants for '$cgDbName'@localhost;
 
-    quit;
-  </blockquote>
+quit;
+</pre>
+#+END_EXPORT
 
 + Test a local connection with $cgDbName
 
   <blockquote>
-    mysql -P 3306 -u $cgDbName -p -h 127.0.0.1 $cgDbName
+  mysql -P 3306 -u $cgDbName -p -h 127.0.0.1 $cgDbName
   </blockquote>
 
 + If you will be using libre-bib on the same system as the DB, then
   try connecting with the "bib" command.
 
   <blockquote>
-    bib connect
+  bib connect
   </blockquote>
 
 If that doesn't work look at the cgDsn variable setting in
@@ -193,7 +199,7 @@ If the ~/ssh/libre-bib.ssh file looks OK, add following line top of
 your ~/.ssh/config file (or near a Host config for your system).
 
   <blockquote>
-    Include libre-bib.ssh
+  Include libre-bib.ssh
   </blockquote>
 
 If you want to add more ssh options for the Host, don't add them to
@@ -209,14 +215,14 @@ locally.
 In a terminal ssh to the remote system.
 
   <blockquote>
-    ssh $cgDbSshUser@$cgDbHostRemote
+  ssh $cgDbSshUser@$cgDbHostRemote
   </blockquote>
 
 Leave the terminal window open and start another terminal window.  In
 the new terminal window type:
 
   <blockquote>
-    telnet 127.0.0.1 $cgDbPortRemote
+  telnet 127.0.0.1 $cgDbPortRemote
   </blockquote>
 
 You should see "Connected to 127.0.0.1" and probably password
@@ -225,7 +231,7 @@ prompt. Exit with ctrl-C or ctrl-] then "quit".
 Now test the connection to the database:
 
   <blockquote>
-    mysql -P $cgDbPortRemote -u $cgDbUser -p -h 127.0.0.1 $cgDbName
+  mysql -P $cgDbPortRemote -u $cgDbUser -p -h 127.0.0.1 $cgDbName
   </blockquote>
 
 If that doesn't work, look at the error message and see what needs to
@@ -235,7 +241,7 @@ settings on the db system.
 If that does work, try connecting with the "bib" command.
 
   <blockquote>
-    bib connect
+  bib connect
   </blockquote>
 
 If that doesn't work look at the cgDsn variable setting in
@@ -691,11 +697,15 @@ touched.
   default file. You can even add your own variables. Here are the
   steps.
 
-  > cd /opt/libre-bib/etc
-  > edit conf.env
-  > bash -n conf.env   # syntax check
-  > cd BIB-PROJECT     # any of your bib project dirs
-  > bib rebuild        # update user default file, and conf.php
+#+BEGIN_EXPORT html
+<pre>
+cd /opt/libre-bib/etc
+edit conf.env
+bash -n conf.env   # syntax check
+cd BIB-PROJECT     # any of your bib project dirs
+bib rebuild        # update user default file, and conf.php
+</pre>
+#+END_EXPORT
 
   Source /opt/libre-bib/etc/conf.env and conf.env in a bash script
   call your own Makefile, other bash scripts, or php scripts to run
