@@ -1,4 +1,4 @@
-<!php
+<?php
 
 // List of files in your project
 // Wildcards for glob() may be used.

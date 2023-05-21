@@ -1,3 +1,6 @@
+# Contributing
+
+## Branches
 
 - In past SW teams I've used
   [GitFlow](https://datasift.github.io/gitflow/IntroducingGitFlow.html)
@@ -12,22 +15,43 @@
   git-flow tool.
 
 - If others want to contribute, I'll try to follow the"Github-flow"
-  style. It'll work fine for a small group. Fork the repository,
+  style. It'll work fine for a small group. You: fork the repository,
   create a feature branch, from the "develop" branch, with your
   changes. Then, do a pull request for a merge. See:
   [GitHub-flow](https://docs.github.com/en/get-started/quickstart/github-flow)
 
-- "main" is *only* for stable releases. Never commit directly to "main".
+- "main" is *only* for stable releases. I never commit directly to "main".
 
 - "develop" is the primary branch for development changes. Start there,
   not "main".
 
-## Some details
+## Pull-Requests
+
+- For pull requests use the [pull request
+  template](.github/pull_request_template.md)
+
+* Include an issue number in your pull request.  If you don't have an
+  issue, then go back and create one, giving details. In other-words
+  the commit messages are not enough--the issues help track the "why"
+  behind changes.
+
+* You have setup your build env **make build-setup**
+
+* You have run **make install**. For now that installs to
+  /opt/libre-bib/ and "make check" is done against that. In the future
+  this will install to test/.
+
+* You have followed the Coding Convention.
+
+* You have made a "feature" branch from develop and that is what I'll
+  pull in, check, then merge to develop.
+
+## Coding Convention
 
 - Mainly follow the naming convention and code formatting style that
   you see.
 
-- The naming convention is CamelCase, with leading lower case letters
+- The **naming convention** is CamelCase, with leading lower case letters
   that give clues about the "scope" of a variable.
 
   ```
@@ -41,7 +65,7 @@
   utilFun - a function in util.php (currently not used)
   ```
 
-- Format php code with phptidy.php.
+- **Format php code** with phptidy.php.
   [phptidy](https://github.com/cmrcx/phptidy) These are the default
   settings I changed (See bin/.phptidy-config.php)
 
@@ -64,7 +88,7 @@
   $tBin/phptidy.php replace *.php
   ```
 
-- Format bash code with
+- **Format bash code** with
   shfmt. [shfmt}(https://github.com/mvdan/sh/releases) These are the
   options I use:
 
@@ -77,8 +101,22 @@
       $tBin/shfmt -i 4 -ci -w $i;
   done
   ```
-  
-- bib commands are managed with bin/Makefile. For example: "bib
+
+- Run **make build-setup** to setup pre-commit hook and other things for
+  building the tool.
+
+- **pre-commit checks:**
+  - File names can only use letters, numbers, hypen, dash, and periods.
+  - File names cannot begin with hyphens or end with periods.
+  - File names cannot be all periods.
+  - These file names are not allowed: CON|PRN|AUX|NUL|COM[1-9]|LPT[1-9]
+  - No trailing spaces in files.
+  - No TABs in most files. (Makefile is an exception)
+  - "Large" binary files are not allowed.
+
+- Run **make check** before commiting code.
+
+- The **bib commands are managed with bin/Makefile.** For example: "bib
   connect" will call "make -f $cgBin/Makefile connect" All of conf.env
   values are available for use in the Makefile.  Using make keeps
   dependent files up-to-date. It is also easy to add
@@ -89,21 +127,21 @@
   bib connect
   bib import-lo import-lib backup-lo update-lo ref-new ref-update
   ```
-  
+
   That will execute all the commands in order, but if there is an
   error in one, the processing will stop. No need to write all the
   code to manage that! Just be consistent with return errors and
   ignore the ones that don't matter. (For example, ignore the error
   from removing a file that does not exist.)
 
-- A lot of options are managed with the conf.env file. This reduces
+- A lot of **options** are managed with the **conf.env file.** This reduces
   the need for a lot of script command line option processing.
 
-- The sanity-check.sh script verifies values of the conf.env
+- The **sanity-check.sh script** verifies values of the conf.env
   variables.  And is verifies the expected App and user files. This
   helps identify problem across the whole product, not just what is
   currently running.  This also eliminates most of the verification
   code that would have to be put in each script.
 
-- If there is a risk of data loss, back up the user's data. Either by
+- If there is a risk of data loss, **back up the user's data.** Either by
   cloning tables or copying files to the backup/ dir.
