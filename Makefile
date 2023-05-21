@@ -27,8 +27,10 @@ install : $(cgDirApp) check
 	find $(cgDirApp) -type d -exec chmod a+rx {} \;
 	find $(cgDirApp) -type f -exec chmod a+r {} \;
 	find $(cgDirApp) -type f -executable -exec chmod a+rx {} \;
-	ln -fs /opt/libre-bib/bin/bib /usr/local/bin/bib
 	build/bin/incver.sh -p src/VERSION
+
+#sudo ln -fs /opt/libre-bib/bin/bib /usr/local/bin/bib
+
 
 release :
 	build/bin/incver.sh -m src/VERSION
