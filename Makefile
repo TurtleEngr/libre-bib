@@ -28,6 +28,19 @@ install : $(cgDirApp) check
 	find $(cgDirApp) -type f -exec chmod a+r {} \;
 	find $(cgDirApp) -type f -executable -exec chmod a+rx {} \;
 	ln -fs /opt/libre-bib/bin/bib /usr/local/bin/bib
+	build/bin/incver.sh -p src/VERSION
+
+release :
+	build/bin/incver.sh -m src/VERSION
+	git commit -am "Inc Ver"
+	git push origin develop
+	git checkout main
+	git merge develop
+	git push origin main
+	git checkout develop
+	build/bin/incver.sh -p src/VERSION
+
+# ----------------------------------------
 
 mk-app-dir $(cgDirApp) :
 	sudo mkdir -p $(cgDirApp)
