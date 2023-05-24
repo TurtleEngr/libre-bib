@@ -25,7 +25,7 @@ version :
 	cat $(cgDirApp)/VERSION
 
 inc-ver :
-	echo '$$Revision: 1.4 $$ $$Date: 2023/05/18 02:24:32 $$ GMT' >$cgDirApp/VERSION
+	echo '$$Revision: 1.5 $$ $$Date: 2023/05/24 06:09:37 $$ GMT' >$cgDirApp/VERSION
 
 add edit :
 	emacs $(cgLoFile) &
@@ -104,7 +104,7 @@ $(cgDirStatus)/import-lo.date : conf.env $(cgLoFile)
 
 export-lo :
 	$(cgBin)/export-lo-2-txt.php -c
-	@echo "See: $(cgDirTmp)/$(cgLoFile)
+	@echo "See: $(cgDirTmp)/$(cgLoFile)"
 
 # ----------
 # backup: lo db
