@@ -155,7 +155,7 @@ mk-doc :
 	git config gitproj.hook.tab-exclude-list Makefile
 	git config --bool gitproj.hook.check-in-raw false
 	git config --bool gitproj.hook.check-for-big-files true
-	git config --int gitproj.hook.binary-file-size 20000
+	git config --int gitproj.hook.binary-file-size 30000
 	git config --bool gitproj.hook.verbose true
 
 build/etc/pre-commit :
