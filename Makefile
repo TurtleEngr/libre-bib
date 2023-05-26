@@ -22,12 +22,17 @@ mPackgeList = \
 	libpod-markdown-perl
 
 # --------------------
-clean:
+clean :
 	-find . -type f -name '*~' -exec rm {} \; &>/dev/null
 	-find . -type f -name '.phptidy-cache' -exec rm {} \; &>/dev/null
 	-find . -type f -name '*.tmp' -exec rm {} \; &>/dev/null
 	-find . -type f -name '*.bak' -exec rm {} \; &>/dev/null
-	-rm -rf test-dir
+
+dist-clean : clean
+	. test-dir/conf.env; echo "drop database $$cgDbName;" >cmd.tmp
+	-sudo mysql -u root <cmd.tmp
+	-rm cmd.tmp
+	-rm -rf test-dir dist pkg
 
 # --------------------
 build-setup : .git/hooks/pre-commit
@@ -42,7 +47,7 @@ package :
 
 # --------------------
 # Manual install - only for testing
-install : $(cgDirApp) check
+install : $(cgDirApp) check mk-doc
 	-find src -name '*~' -exec rm {} \; &>/dev/null
 	-mkdir $(cgDirApp)/etc/old &>/dev/null
 	cp --backup=t $$(find $(cgDirApp)/etc/* -prune -type f) $(cgDirApp)/etc/old/
@@ -50,11 +55,13 @@ install : $(cgDirApp) check
 	find $(cgDirApp) -type d -exec chmod a+rx {} \;
 	find $(cgDirApp) -type f -exec chmod a+r {} \;
 	find $(cgDirApp) -type f -executable -exec chmod a+rx {} \;
-
-#	build/bin/incver.sh -p src/VERSION
+	build/bin/incver.sh -p src/VERSION
+	@echo "Installed OK"
 
 #sudo ln -fs /opt/libre-bib/bin/bib /usr/local/bin/bib
 
+incver :
+	build/bin/incver.sh -m src/VERSION
 
 # --------------------
 release :
@@ -68,31 +75,45 @@ release :
 	build/bin/incver.sh -p src/VERSION
 
 # --------------------
-test : db-setup
+# So far these are just crude "happy-path" tests.
+test : db-setup check  # install
 	echo -e "show databases;\n quit" | mysql -u example
 	. test-dir/conf.env; echo "" >test-dir/$$cgDbPassCache
+	@echo -e "\n==========\nTest import-lo"
 	cd test-dir; bib import-lo
 	test -f test-dir/status/import-lo.date
 	echo 'show tables;' | mysql -u example biblio_example | grep lo
+	@echo -e "\n==========\nTest export-lo"
 	cd test-dir; bib export-lo
 	test -f test-dir/tmp/biblio.txt
 	if diff test-dir/biblio.txt test-dir/tmp/biblio.txt | grep 'Id: '; then exit 1; fi
+	@echo -e "\n==========\nTest backup-lo"
 	cd test-dir; bib backup-lo
 	test -f test-dir/status/backup-lo.date
 	test -f test-dir/backup/backup-lo.csv
+	@echo -e "\n==========\nTest import-lib"
 	cd test-dir; bib import-lib
 	test -f test-dir/status/import-lib.date
 	echo 'show tables;' | mysql -u example biblio_example | grep lib
+	@echo -e "\n==========\nTest ref-new"
 	cd test-dir; bib ref-new
 	test -f test-dir/status/bib-update.date
 	test -f test-dir/backup/example.odt
 	if diff -q test-dir/backup/example.odt test-dir/example.odt; then exit 1; fi
-	@echo "It is not clear why there is always a diff here."
+	@echo "It is not clear why there is always a diff here. Timestamp?"
 	cmp test-dir/example.odt test-ref/example.odt | grep 'byte 16166, line 60'
+	@echo -e "\n==========\nTest ref-update"
+	cd test-dir; bib ref-update
+	test -f test-dir/status/bib-update.date
+	test -f test-dir/backup/example.odt
+	cmp test-dir/example.odt test-ref/example.odt | grep 'byte 16166, line 60'
+	@echo -e "\n==========\nTest status-bib"
+	cd test-dir; bib status-bib
+	@echo -e "\n==========\nTest reset example.odt"
 	@echo "Reset, so test can be repeated"
 	mv -f test-dir/example.odt test-dir/tmp
-	mv test-dir/backup/example.odt test-dir/
-	cd test-dir; bib status-bib
+	cp -f src/doc/example/example.odt test-dir/
+	@echo -e "\n==========\nPassed"
 
 # --------------------
 db-setup : test-dir/conf.env test-dir/status-pkg.txt test-dir/status-db.txt
@@ -114,7 +135,7 @@ test-dir/status-pkg.txt :
 	date >$@
 
 test-dir/status-db.txt :
-	echo 'show databases' | mysql -u example | grep biblio_example; \
+	-echo 'show databases' | mysql -u example | grep biblio_example; \
 	if [ $$? -ne 0 ]; then \
 		. test-dir/conf.env; \
 		echo "create database $$cgDbName;" >cmd.tmp; \

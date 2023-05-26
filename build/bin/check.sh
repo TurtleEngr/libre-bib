@@ -26,7 +26,7 @@ done
 
 # --------------------
 for i in $cgBin/*.php; do
-    tFound=$(phptidy.php diff -q $i 2>/dev/null)
+    tFound=$(phptidy.php diff -q $i &>/dev/null)
     if [[ -n "$tFound" ]]; then
         ((++tErr))
         echo "$tFound"

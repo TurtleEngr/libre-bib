@@ -42,22 +42,26 @@ Install Package
 -   libreoffice (7.0)
 -   libreoffice-sdbc-mysql (7.0) - needed for libreoffice DB connection
 -   mariadb-client (10.5) - mysql
--   mariadb-server (10.5) - mariadbd (only on remote host)
+-   mariadb-server (10.5) - mariadbd (only needed on remote host)
 -   php (7.4)
 -   php-mysqlnd - php-PDO
 -   perl (5.32) for: pod2html, pod2man, pod2text, pod2usage
--   bash (5.1)
--   sed (4.7 probably not important)
--   tidy (5.6 probably not important)
+-   bash (5.1 version probably not too important)
+-   sed (4.7 version probably not important)
+-   tidy (5.6 version probably not important)
 -   make - for script and file management
 
 ### Optional Packages
 
--   pandoc
+-   pandoc - required to convert org to odt
 
 -   libpod-markdown-perl - pod2markdown
 
 -   pod2pdf
+
+-   shfmt - get from: ???? or include in pkg (give credit)
+
+-   phptidy.php - included src/bin (give credit)
 
 -   beekeeper - <https://github.com/beekeeper-studio/beekeeper-studio>
 
@@ -153,7 +157,7 @@ flush privileges;
 select user from mysql.user;
 show grants for 'root'@localhost;
 show grants for 'admin'@localhost;
-show grants for '$cgDbName'@localhost;
+show grants for '$cgDbUser'@localhost;
 
 quit;
 ```

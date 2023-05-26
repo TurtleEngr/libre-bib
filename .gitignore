@@ -5,3 +5,4 @@ int-doc/
 test/
 test-dir/
 test-dir
+cmd.tmp

@@ -48,25 +48,31 @@
     <li>libreoffice-sdbc-mysql (7.0) - needed for libreoffice DB
     connection</li>
     <li>mariadb-client (10.5) - mysql</li>
-    <li>mariadb-server (10.5) - mariadbd (only on remote host)</li>
+    <li>mariadb-server (10.5) - mariadbd (only needed on remote host)</li>
     <li>php (7.4)</li>
     <li>php-mysqlnd - php-PDO</li>
     <li>perl (5.32) for: pod2html, pod2man, pod2text, pod2usage</li>
-    <li>bash (5.1)</li>
-    <li>sed (4.7 probably not important)</li>
-    <li>tidy (5.6 probably not important)</li>
+    <li>bash (5.1 version probably not too important)</li>
+    <li>sed (4.7 version probably not important)</li>
+    <li>tidy (5.6 version probably not important)</li>
     <li>make - for script and file management</li>
   </ul>
   <h3 id="optional-packages">Optional Packages</h3>
   <ul>
     <li>
-      <p>pandoc</p>
+      <p>pandoc - required to convert org to odt</p>
     </li>
     <li>
       <p>libpod-markdown-perl - pod2markdown</p>
     </li>
     <li>
       <p>pod2pdf</p>
+    </li>
+    <li>
+      <p>shfmt - get from: ???? or include in pkg (give credit)</p>
+    </li>
+    <li>
+      <p>phptidy.php - included src/bin (give credit)</p>
     </li>
     <li>
       <p>beekeeper - <a href=
@@ -159,7 +165,7 @@ flush privileges;
 select user from mysql.user;
 show grants for 'root'@localhost;
 show grants for 'admin'@localhost;
-show grants for '$cgDbName'@localhost;
+show grants for '$cgDbUser'@localhost;
 
 quit;
 </pre>

@@ -73,7 +73,7 @@ Set these in conf.env
 
 =head1 HISTORY
 
- $Revision: 1.1 $ $Date: 2023/05/17 01:13:24 $ GMT
+ $Revision: 1.2 $ $Date: 2023/05/26 20:02:54 $ GMT
 
 =cut
 
@@ -288,11 +288,12 @@ function fProcessFile() {
     global $gOutH;
     global $gNumRef;
     global $cgDebug;
+    global $cgDirTmp;
 
     echo "Start processing [" . __LINE__ . "]\n";
 
-    $gInH = fopen('content.xml', 'r');
-    $gOutH = fopen('content-new.xml', 'w');
+    $gInH = fopen("$cgDirTmp/content.xml", 'r');
+    $gOutH = fopen("$cgDirTmp/content.new.xml", 'w');
 
     $gNumRef = 0;
     $tNumLine = 0;
@@ -309,57 +310,6 @@ function fProcessFile() {
     return;    # ---------->
 } # fProcessFile
 
-# -----------------------------
-function fUnpackFile() {
-    global $cgDocFile;
-    global $cgDebug;
-
-    $cTidyOpt = "-m -q --tidy-mark no --break-before-br yes --indent-attributes yes --indent-spaces 2 --indent auto --input-xml yes --output-xml yes --vertical-space no --wrap 78 -xml";
-
-    echo "Unpack $cgDocFile [" . __LINE__ . "]\n";
-    shell_exec("/bin/bash -c 'unzip -o $cgDocFile content.xml'");
-    if ( ! file_exists("content.xml"))
-        throw new Exception("Error: Could not extract content.xml [" . __LINE__ . "]");
-
-    # tidy content.xml
-    shell_exec("/bin/bash -c 'tidy $cTidyOpt content.xml &>/dev/null'");
-
-    return;    # ---------->
-} # fUnpackFile
-
-# -----------------------------
-function fPackFile() {
-    global $cgDocFile;
-    global $cgDebug;
-    global $cgNoExec;
-
-    $cTidyOpt = "-m -q --tidy-mark no --break-before-br no --indent-attributes no --indent no --input-xml yes --output-xml yes --vertical-space no --wrap 0 -xml";
-
-    if ( ! $cgNoExec) {
-        echo "Backup $cgDocFile [" . __LINE__ . "]\n";
-        shell_exec("/bin/bash -c 'cp --backup=t $cgDocFile $cgDocFile.bak'");
-    }
-
-    echo "Final clean-up with tidy [" . __LINE__ . "]\n";
-    shell_exec("/bin/bash -c 'tidy $cTidyOpt content-new.xml'");
-
-    # Remove newlines between tags, to remove any spaces in the text
-    shell_exec("/bin/bash -c \"tr -d '\n' <content-new.xml >content.xml\"");
-
-    if ($cgNoExec) {
-        echo "Nothing done to $cgDocFile [" . __LINE__ . "]\n";
-        echo "content-new.xml can be inspected for the changes. ["
-            . __LINE__ . "]\n";
-    } else {
-        echo "Repack $cgDocFile [" . __LINE__ . "]\n";
-        shell_exec("/bin/bash -c 'zip $cgDocFile content.xml'");
-        unlink("content.xml");
-        unlink("content-new.xml");
-    }
-
-    return;    # ---------->
-} # fPackFile
-
 # ========================================
 # Includes, GetOps, Validate, ReadOnly
 
@@ -374,9 +324,9 @@ try {
 # ========================================
 # Write section
 try {
-    fUnpackFile();
+    fUnpackFile($cgDocFile, "content");
     fProcessFile();
-    fPackFile();
+    fPackFile($cgDocFile, "content");
 } catch(Exception $e) {
     echo "Problem creating table: " . $e->getMessage() . " ["
         . __LINE__ . "]\n";

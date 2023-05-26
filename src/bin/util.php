@@ -73,6 +73,7 @@ function fDate($pStyle = "iso") {
     return date($tFmt[strtolower($pStyle)]);
 } # fDate
 
+# -----------------------------
 function fValidateCommon() {
     global $cgDbHost;
     global $cgDbName;
@@ -104,6 +105,7 @@ function fValidateCommon() {
     # This will throw a fatal error if cannot connect
 } # fValidateCommon
 
+# -----------------------------
 function fBool($pVal) {
     $tMap = array( "0"=>0, "1"=>1, "f"=>0, "false"=>0, "t"=>1,
         "true"=>1, "n"=>0, "no"=>0, "y"=>1, "yes"=>1, 0=>0, 1=>1);
@@ -112,7 +114,9 @@ function fBool($pVal) {
     if (in_array($pVal, $tMap))
         return $tMap[$pVal];
     return 0;
-} # fBoolf
+} # fBool
+
+# -----------------------------
 function fFixBool() {
     global $cgBackup;
     global $cgDebug;
@@ -146,8 +150,59 @@ function fFixBool() {
     }
 } # fFixBool
 
+# -----------------------------
+function fUnpackFile($pDocFile, $pFileList) {
+    global $cgDebug;
+    global $cgDirTmp;
+
+    $cTidyOpt = "-m -q --tidy-mark no --break-before-br yes --indent-attributes yes --indent-spaces 2 --indent auto --input-xml yes --output-xml yes --vertical-space no --wrap 78 -xml";
+
+    $tList = explode(" ", $pFileList);
+
+    echo "Unpack $pDocFile [" . __LINE__ . "]\n";
+    foreach ($tList as $tFile)
+        shell_exec("/bin/bash -c 'cd $cgDirTmp; unzip -o ../$pDocFile $tFile.xml'");
+
+    foreach ($tList as $tFile) {
+        if ( ! file_exists("$cgDirTmp/$tFile.xml"))
+            throw new Exception("Error: Could not extract $tFile.xml [" . __LINE__ . "]");
+    }
+
+    # tidy the xml files
+    foreach ($tList as $tFile)
+        shell_exec("/bin/bash -c 'cd $cgDirTmp; tidy $cTidyOpt $tFile.xml &>/dev/null'");
+
+    return;    # ---------->
+} # fUnpackFile
+
+# -----------------------------
+function fPackFile($pDocFile, $pFileList) {
+    global $cgDebug;
+    global $cgNoExec;
+    global $cgDirTmp;
+
+    $cTidyOpt = "-m -q --tidy-mark no --break-before-br no --indent-attributes no --indent no --input-xml yes --output-xml yes --vertical-space no --wrap 0 -xml";
+
+    if ($cgNoExec) {
+        echo "No changes to $pDocFile See $pFileList in $cgDirTmp [" . __LINE__ . "]\n";
+        return;    # ---------->
+    }
+    echo "Repack $pDocFile [" . __LINE__ . "]\n";
+
+    $tList = explode(" ", $pFileList);
+    foreach ($tList as $tFile) {
+        shell_exec("/bin/bash -c 'cd $cgDirTmp; tidy $cTidyOpt $tFile.new.xml'");
+        # Remove newlines between tags, to remove any spaces in the text
+        shell_exec("/bin/bash -c \"cd $cgDirTmp; tr -d '\n' <$tFile.new.xml >$tFile.xml\"");
+
+        shell_exec("/bin/bash -c 'cd $cgDirTmp; zip ../$pDocFile $tFile.xml'");
+    }
+
+    return;    # ---------->
+} # fPackFile
+
 # ========================================
-# Maps
+# Map Functions
 
 # --------------------
 function fLibCol() {

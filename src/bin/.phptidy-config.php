@@ -41,8 +41,8 @@ $curly_brace_newline = false;
 $open_tag = "<?php";
 
 // Keep short open echo tags even when using long open tags
-// Values: false  if long open tags are used, convert <?= to open tag and echo
-//         true   always leave <?= untouched
+// Values: false  if long open tags are used, convert < ?= to open tag and echo
+//         true   always leave < ?= untouched
 $keep_open_echo_tags = false;
 
 // Check encoding
