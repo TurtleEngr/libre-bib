@@ -13,7 +13,7 @@ Cmds:
     import-lo, export-lo, backup-lo, restore-lo
     import-lib, update-lo
     ref-new, ref-update
-    status, setup-bib, clean, connect, version, help
+    status-bib, setup-bib, clean, connect, version, help
 EOF
     exit 1
 } # fUsage

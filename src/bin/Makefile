@@ -25,7 +25,7 @@ version :
 	cat $(cgDirApp)/VERSION
 
 inc-ver :
-	echo '$$Revision: 1.5 $$ $$Date: 2023/05/24 06:09:37 $$ GMT' >$cgDirApp/VERSION
+	echo '$$Revision: 1.6 $$ $$Date: 2023/05/26 09:18:33 $$ GMT' >$cgDirApp/VERSION
 
 add edit :
 	emacs $(cgLoFile) &
@@ -149,7 +149,7 @@ ref-new : $(cgDocFile)
 	$(cgBin)/bib-ref-new.php -c
 	date +%F_%T >$(cgDirStatus)/bib-update.date
 
-ref-update :
+ref-update : $(cgDocFile)
 	cp --backup=t $(cgDocFile) $(cgDirBackup)
 	$(cgBin)/bib-ref-update.php -c
 	date +%F_%T >$(cgDirStatus)/bib-update.date

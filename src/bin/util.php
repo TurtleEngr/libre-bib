@@ -77,7 +77,7 @@ function fValidateCommon() {
     global $cgDbHost;
     global $cgDbName;
     global $cgDbPassCache;
-    global $cgDbPortLocaal;
+    global $cgDbPortLocal;
     global $cgDbPortRemote;
     global $cgDbUser;
     global $cgDebug;
@@ -90,7 +90,7 @@ function fValidateCommon() {
 
     $gPassword = rtrim(shell_exec("/bin/bash -c 'cat $cgDbPassCache'"));
     if ("$gPassword" == "")
-        throw new Exception("Error: password is not in $cgDbPassCache. [" . __LINE__ . "]");
+        echo "Warning: Password is null [" . __LINE__ . "]\n";
 
     # Create database connection
     $tDsn = "mysql:dbname=$cgDbName;charset=UTF8;host=$cgDbHost;port=";
@@ -100,7 +100,7 @@ function fValidateCommon() {
         $tDsn .= $cgDbPortLocal;
 
     if ($cgDebug) { echo "$tDsn, $cgDbUser \n"; }
-    $gDb = new PDO($tDsn, $cgDbUser, $gPassword);
+    $gDb = new PDO($tDsn, $cgDbUser, "$gPassword");
     # This will throw a fatal error if cannot connect
 } # fValidateCommon
 

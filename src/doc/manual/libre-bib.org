@@ -12,7 +12,6 @@
 * Libre Bib Manual
 
 * Install and Setup
-
 ** O.S. Requirments
 
 + A Linux system
@@ -75,7 +74,6 @@ Fix any errors then run it again, until no more errors.
 If you are planing on using a remote DB, then see the "Configure ssh" section.
 
 ** Configure the DB
-
 *** Install and test
 
 - The DB packages, mariadb-client and mariadb-server, have been
@@ -148,7 +146,7 @@ flush privileges;
 select user from mysql.user;
 show grants for 'root'@localhost;
 show grants for 'admin'@localhost;
-show grants for '$cgDbName'@localhost;
+show grants for '$cgDbUser'@localhost;
 
 quit;
 </pre>

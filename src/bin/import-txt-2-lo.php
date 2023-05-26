@@ -70,7 +70,7 @@ Set these in conf.env
 
 =head1 HISTORY
 
-$Revision: 1.2 $ $Date: 2023/05/19 21:11:42 $ GMT
+$Revision: 1.3 $ $Date: 2023/05/26 09:18:33 $ GMT
 
 =cut
 
@@ -181,6 +181,29 @@ function fParseLine($pLine) {
 } # fParseLine($pLine)
 
 # -----------------------------
+function fAddRec($pRec) {
+    global $gNumRec;;
+
+    ++$gNumRec;
+    if ($gNumRec % 50 == 0)
+        echo "+";
+
+    # Fixup Type/RepType mess (i.e. override Type setting)
+    if ($pRec["RepType"] == "") {
+        if (is_numeric($pRec["Type"])) {
+            $pRec["RepType"] = fType2Txt($pRec["Type"]);
+        } else {
+            echo "Warning: Missing Media and Type in " .
+                $pRec["Identifier"] . " [" . __LINE__ . "]\n";
+            $pRec["RepType"] = "unknown";
+        }
+    }
+    $pRec["Type"] = fRepType2Type($pRec["RepType"]);
+
+    fInsertRec($pRec);
+} # fAddRec
+
+# -----------------------------
 function fImportTxt() {
     global $gFileH;
     global $gNumLine;
@@ -221,23 +244,7 @@ function fImportTxt() {
 
         # If Id found, insert any previous record's values to DB
         if ($tData["key"] == "Id" and $tRec["Identifier"] != "") {
-            ++$gNumRec;
-            if ($gNumRec % 50 == 0)
-                echo "+";
-
-            # Fixup Type/RepType mess (i.e. override Type setting)
-            if ($tRec["RepType"] == "") {
-                if (is_numeric($tRec["Type"])) {
-                    $tRec["RepType"] = fType2Txt($tRec["Type"]);
-                } else {
-                    echo "Warning: Missing Media and Type in " .
-                        $tRec["Identifier"] . " [" . __LINE__ . "]\n";
-                    $tRec["RepType"] = "unknown";
-                }
-            }
-            $tRec["Type"] = fRepType2Type($tRec["RepType"]);
-
-            fInsertRec($tRec);
+            fAddRec($tRec);
             foreach (array_keys($tRec) as $tCol)
                 $tRec["$tCol"] = "";
             if ($tData["val"] == "")
@@ -260,6 +267,10 @@ function fImportTxt() {
 
         $tRec[$tLoCol] = $tData["val"];
     } # while
+
+    # Don't forget the last record!
+    fAddRec($tRec);
+
     echo "\nProcessed $gNumLine lines. [" . __LINE__ . "]\n";
     echo "Inserted $gNumRec records. [" . __LINE__ . "]\n";
     fclose($gFileH);
