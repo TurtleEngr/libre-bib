@@ -124,7 +124,7 @@ fields.
 
 =head1 HISTORY
 
-$Revision: 1.3 $ $Date: 2023/05/26 09:18:33 $ GMT
+$Revision: 1.4 $ $Date: 2023/05/26 09:23:57 $ GMT
 
 =cut
 
@@ -165,7 +165,7 @@ function fValidate() {
 
     fValidateCommon();
 
-    if (! $cgUseLib)
+    if ( ! $cgUseLib)
         throw new Exception("cgUseLib is not true. [" . __LINE__ . "]");
 
     if (($gHandle = fopen($cgLibFile, "r")) == FALSE)
