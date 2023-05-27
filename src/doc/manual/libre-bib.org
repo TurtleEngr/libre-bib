@@ -15,12 +15,27 @@
 ** O.S. Requirments
 
 + A Linux system
-  + mx linux (21.x)
-  + Ubuntu (18.04)
-  + Debian (not tested)
-  + RedHat (not tested)
-+ A Windows system setup with CygWin (not tested yet)
-+ A Mac with brew packages (not tested yet)
+  + mx linux (21.x) - works
+  + Ubuntu (18.04) - in progress
+  + Ubuntu (20+) - not tested, will probably work
+  + Debian - not tested, will probably work
+  + RedHat - not tested, packages will be different
++ Windows with CygWin - not tested yet, packages will be different
++ MacOS with brew packages - not tested yet, packages will be different
+
+#+BEGIN_EXPORT html
+<pre class="in">
+| OS Version         | Package | Tested      | Notes       |
+|--------------------+---------+-------------+-------------|
+| mx linux 21.x      | native  | in-progress |             |
+| Ubuntu 18.04       | native  | planned     |             |
+| Ubuntu 20+         | generic | no          | manual deps |
+| Debian ??          | generic | no          | manual deps |
+| RedHat ??          | generic | no          | manual deps |
+| Windows ??, CygWin | generic | planned     | manual deps |
+| MacOS ??, brew     | native  | planned     | manual deps |
+</pre>
+#+END_EXPORT
 
 ** Install Package
 

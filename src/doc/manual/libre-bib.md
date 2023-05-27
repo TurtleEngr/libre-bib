@@ -1,40 +1,42 @@
-------------------------------------------------------------------------
-
-------------------------------------------------------------------------
-
 Libre Bib Manual
 ================
 
-------------------------------------------------------------------------
-
-------------------------------------------------------------------------
-
 Install and Setup
 =================
-
-------------------------------------------------------------------------
 
 O.S. Requirments
 ----------------
 
 -   A Linux system
-    -   mx linux (21.x)
-    -   Ubuntu (18.04)
-    -   Debian (not tested)
-    -   RedHat (not tested)
--   A Windows system setup with CygWin (not tested yet)
--   A Mac with brew packages (not tested yet)
+    -   mx linux (21.x) - works
+    -   Ubuntu (18.04) - in progress
+    -   Ubuntu (20+) - not tested, will probably work
+    -   Debian - not tested, will probably work
+    -   RedHat - not tested, packages will be different
+-   Windows with CygWin - not tested yet, packages will be different
+-   MacOS with brew packages - not tested yet, packages will be
+    different
 
-------------------------------------------------------------------------
+``` {.in}
+| OS Version         | Package | Tested      | Notes       |
+|--------------------+---------+-------------+-------------|
+| mx linux 21.x      | native  | in-progress |             |
+| Ubuntu 18.04       | native  | planned     |             |
+| Ubuntu 20+         | generic | no          | manual deps |
+| Debian ??          | generic | no          | manual deps |
+| RedHat ??          | generic | no          | manual deps |
+| Windows ??, CygWin | generic | planned     | manual deps |
+| MacOS ??, brew     | native  | planned     | manual deps |
+```
 
 Install Package
 ---------------
 
 -   If you install with a libre-bib.deb package with a package manager
-    such as \"apt\", all of the required and most of the optional
-    packages will be installed.
+    such as "apt", all of the required and most of the optional packages
+    will be installed.
 
--   If you are installing from tgz file, then you\'ll need to install
+-   If you are installing from tgz file, then you'll need to install
     these manually.
 
 ### Required Packages
@@ -54,13 +56,9 @@ Install Package
 ### Optional Packages
 
 -   pandoc - required to convert org to odt
-
 -   libpod-markdown-perl - pod2markdown
-
 -   pod2pdf
-
 -   shfmt - get from: ???? or include in pkg (give credit)
-
 -   phptidy.php - included src/bin (give credit)
 
 -   beekeeper - <https://github.com/beekeeper-studio/beekeeper-studio>
@@ -68,27 +66,19 @@ Install Package
 ### Config
 
 -   run libreoffice at least once before doing more with libre-bib
-
 -   edit the cli/php.ini file (for example: /etc/php/7.4/cli/php.ini)
-    Change the `"variables_order"` to this:
-
-    > `variables_order = "EGPCS"`
-
-------------------------------------------------------------------------
+    Change the ="variables~order~"= to this: &lt;blockquote&gt;
+    =variables~order~ = "EGPCS"= &lt;/blockquote&gt;
 
 Setup libre-bib project
 -----------------------
 
-Run:
-
-> bib setup-bib
+Run: &lt;blockquote&gt; bib setup-bib &lt;/blockquote&gt;
 
 Fix any errors then run it again, until no more errors.
 
-If you are planing on using a remote DB, then see the \"Configure ssh\"
+If you are planing on using a remote DB, then see the "Configure ssh"
 section.
-
-------------------------------------------------------------------------
 
 Configure the DB
 ----------------
@@ -100,10 +90,10 @@ on the remote server (or local sever if you are doing this all on one
 server). Most likely the mariadbd process will already be running.
 Verify this with:
 
-> ps -fC mariadbd
+&lt;blockquote&gt; ps -fC mariadbd &lt;/blockquote&gt;
 
-If you don\'t see it running, you\'ll need to consult the mariadb docs
-to get it running.
+If you don't see it running, you'll need to consult the mariadb docs to
+get it running.
 
 -   <https://opensource.com/article/20/10/mariadb-mysql-linux> (alt:
     <https://archive.ph/yhDHm> )
@@ -114,10 +104,10 @@ your distribution, you may need to do things a bit differently.
 
 Test the connection on the server system
 
-> sudo mysql -P 3306 -u root -p
+&lt;blockquote&gt; sudo mysql -P 3306 -u root -p &lt;/blockquote&gt;
 
-Most likely you\'ll use your sudo password, or the password you setup
-for the mysql DB root user.
+Most likely you'll use your sudo password, or the password you setup for
+the mysql DB root user.
 
 ### Create Database, Users, and Grants
 
@@ -142,8 +132,8 @@ show databases;
 
 -   Create users
 
-    The create user and grants are best done with the \'root\' DB user
-    on the mysql system.
+    The create user and grants are best done with the 'root' DB user on
+    the mysql system.
 
 ``` {.in}
 create user 'admin'@'localhost' identified by 'ADMIN-PASS';
@@ -164,19 +154,18 @@ quit;
 
 -   Test a local connection with \$cgDbName
 
-    > mysql -P 3306 -u \$cgDbName -p -h 127.0.0.1 \$cgDbName
+    &lt;blockquote&gt; mysql -P 3306 -u \$cgDbName -p -h 127.0.0.1
+    \$cgDbName &lt;/blockquote&gt;
 
 -   If you will be using libre-bib on the same system as the DB, then
-    try connecting with the \"bib\" command.
+    try connecting with the "bib" command.
 
-    > bib connect
+    &lt;blockquote&gt; bib connect &lt;/blockquote&gt;
 
-If that doesn\'t work look at the cgDsn variable setting in
+If that doesn't work look at the cgDsn variable setting in
 project/conf.env. It should be set to \$cgLocalDsn for local access. Try
 again, If that works, your conf.env setting are good for continuing
 (skip the ssh section and other areas mentioning remote db access).
-
-------------------------------------------------------------------------
 
 Configure ssh
 -------------
@@ -199,14 +188,14 @@ setup properly edit your project/conf.env file. Set the variables:
 
 Remove \~/ssh/libre-bib.ssh file and run again:
 
-> bib setup-bib
+&lt;blockquote&gt; bib setup-bib &lt;/blockquote&gt;
 
 If the \~/ssh/libre-bib.ssh file looks OK, add following line top of
 your \~/.ssh/config file (or near a Host config for your system).
 
-> Include libre-bib.ssh
+&lt;blockquote&gt; Include libre-bib.ssh &lt;/blockquote&gt;
 
-If you want to add more ssh options for the Host, don\'t add them to
+If you want to add more ssh options for the Host, don't add them to
 libre-bib.ssh, because that could be overwritten if project/conf.env is
 changed. Create another Host line with the same host name and add the
 option you want.
@@ -218,40 +207,36 @@ locally.
 
 In a terminal ssh to the remote system.
 
-> ssh \$cgDbSshUser@\$cgDbHostRemote
+&lt;blockquote&gt; ssh \$cgDbSshUser@\$cgDbHostRemote
+&lt;/blockquote&gt;
 
 Leave the terminal window open and start another terminal window. In the
 new terminal window type:
 
-> telnet 127.0.0.1 \$cgDbPortRemote
+&lt;blockquote&gt; telnet 127.0.0.1 \$cgDbPortRemote &lt;/blockquote&gt;
 
-You should see \"Connected to 127.0.0.1\" and probably password prompt.
-Exit with ctrl-C or ctrl-\] then \"quit\".
+You should see "Connected to 127.0.0.1" and probably password prompt.
+Exit with ctrl-C or ctrl-\] then "quit".
 
 Now test the connection to the database:
 
-> mysql -P \$cgDbPortRemote -u \$cgDbUser -p -h 127.0.0.1 \$cgDbName
+&lt;blockquote&gt; mysql -P \$cgDbPortRemote -u \$cgDbUser -p -h
+127.0.0.1 \$cgDbName &lt;/blockquote&gt;
 
-If that doesn\'t work, look at the error message and see what needs to
-be fixed. Check: db user name, db name, ports, grants and other settings
-on the db system.
+If that doesn't work, look at the error message and see what needs to be
+fixed. Check: db user name, db name, ports, grants and other settings on
+the db system.
 
-If that does work, try connecting with the \"bib\" command.
+If that does work, try connecting with the "bib" command.
 
-> bib connect
+&lt;blockquote&gt; bib connect &lt;/blockquote&gt;
 
-If that doesn\'t work look at the cgDsn variable setting in
+If that doesn't work look at the cgDsn variable setting in
 project/conf.env. It should be set to \$cgRemoteDsn for remote access.
 Try again, If that works, your conf.env setting are good for continuing.
 
-------------------------------------------------------------------------
-
-------------------------------------------------------------------------
-
 Using libre-bib
 ===============
-
-------------------------------------------------------------------------
 
 Quick Start
 -----------
@@ -273,8 +258,6 @@ bib import-lo      # Import the biblio.txt file
 bib ref-new        # A DB values for any new REFs
 bib ref-update    # Update REFs with any DB changes
 ```
-
-------------------------------------------------------------------------
 
 A Full Example
 --------------
@@ -398,6 +381,7 @@ $ bib import-lo
 ```
 
 ``` {.out}
+
 Nothing was output. Edit conf.env and change cgVerbose to true.
 ```
 
@@ -471,16 +455,16 @@ Processed: 31 [221]
 date +%F_%T >status/import-lo.date
 ```
 
-This imported the biblio.txt file, creating the \"lo\" table. You can
-run \"bib connect\" and use sql commands to look the table. For example:
+This imported the biblio.txt file, creating the "lo" table. You can run
+"bib connect" and use sql commands to look the table. For example:
 
-``` {.in\"}
+``` {class-"in"=""}
 show tables;
 show fields from table lo;
 select Identifier,Booktitle from table lo;
 ```
 
-Now let\'s import the export from LibraryThing.
+Now let's import the export from LibraryThing.
 
 ``` {.in}
 $ bib import-lib
@@ -517,11 +501,10 @@ Created: bib_2023-05-17_01-40-14
 Processed: 31 [221]
 ```
 
-This will have created a join table with Titles are in the \"lo\" and
-\"lib\" tables. It then updated some empty \"lo\" fields from the
-\"lib\" data. For example: Publisher is tricky one. (Enhancement:
-Provide an option so some \"lib\" values will override the \'lo\'
-values.)
+This will have created a join table with Titles are in the "lo" and
+"lib" tables. It then updated some empty "lo" fields from the "lib"
+data. For example: Publisher is tricky one. (Enhancement: Provide an
+option so some "lib" values will override the 'lo' values.)
 
 ``` {.in}
 $ bib backup-lo
@@ -557,7 +540,7 @@ Repack example.odt [354]
 Done. [386]
 ```
 
-This updated the REF tags so they are now biblio entries. You\'ll also
+This updated the REF tags so they are now biblio entries. You'll also
 see the original example.odt was copied to the backup/ dir.
 
 Run: libreoffice to see how they have changed.
@@ -593,8 +576,6 @@ Done. [396]
 Now you can add the Bibliography to the end of your document, and setup
 the styles for the different Type of entries.
 
-------------------------------------------------------------------------
-
 libre-bib Tour
 --------------
 
@@ -605,10 +586,9 @@ project directory. The details will be describe in later sections as
 they are used.
 
 The bib commands will notice changes and rebuild any dependent files
-they need. So you might see more things running than what you\'ve seen
-before. The \"Env-Var\" column show the variable for the File-Dir. The
-Cmd column shows the command or commands that create or use the
-File-Dir.
+they need. So you might see more things running than what you've seen
+before. The "Env-Var" column show the variable for the File-Dir. The Cmd
+column shows the command or commands that create or use the File-Dir.
 
   File or Dir                    Var / Cmd
   ------------------------------ --------------------------------------------
@@ -642,10 +622,6 @@ File-Dir.
   join~liblo~       Cmd: update-lo
   ----------------- --------------------------------------------
 
-------------------------------------------------------------------------
-
-------------------------------------------------------------------------
-
 Var: \$cgLoFile - manage biblio.txt
 ===================================
 
@@ -655,23 +631,19 @@ information about a book, article, web page, video, etc.
 
 If you have setup a LibraryThing DB (see:
 <https://www.librarything.com/home>) you can export a tsv file of your
-LibraryThing DB to librarything.tsv. Then you can run \"bib update-lo\"
-to update empty \"lo\" table fields from the \"lib\" DB table. See the
-\"LibraryThing\" section for more details.
+LibraryThing DB to librarything.tsv. Then you can run "bib update-lo" to
+update empty "lo" table fields from the "lib" DB table. See the
+"LibraryThing" section for more details.
 
 The key.txt file just gives some quick tip on the kind of values you can
-put after the Tags. It isn\'t used anywhere else, so you can edit or
+put after the Tags. It isn't used anywhere else, so you can edit or
 delete the file.
-
-------------------------------------------------------------------------
 
 Cmd: import-lo
 --------------
 
 Import any changes to \$cgLoFile (biblio.txt). The lo table will be
 backed-up in the DB.
-
-------------------------------------------------------------------------
 
 Cmd: export-lo
 --------------
@@ -683,23 +655,15 @@ This will output: \$cfDirTmp/\$cgLoFile (tmp/biblio.txt). Do a diff
 between biblio.txt and tmp/biblio.txt to see if the new file looks OK.
 If yes, then cp tmp/biblio.txt to biblio.txt.
 
-------------------------------------------------------------------------
-
 Cmd: backup-lo
 --------------
 
 Export the lo table to a cvs file.
 
-------------------------------------------------------------------------
-
 Cmd: update-lo
 --------------
 
 Run this if import-lo or import-lib have been run.
-
-------------------------------------------------------------------------
-
-------------------------------------------------------------------------
 
 Var: \$cgLibFile - manage LibraryThing
 ======================================
@@ -707,24 +671,16 @@ Var: \$cgLibFile - manage LibraryThing
 Using LibraryThing export your DB to librarything.tsv file
 <https://www.librarything.com/home>
 
-------------------------------------------------------------------------
-
 Cmd: import-lib
 ---------------
 
 Import the librarything.tsv file to the lib table.
-
-------------------------------------------------------------------------
-
-------------------------------------------------------------------------
 
 Var: \$cgDocFile - Updating your Libreoffice Write file
 =======================================================
 
 This it the whole reason for this app and hopefully this shows why you
 went through the work of creating the biblio.txt file.
-
-------------------------------------------------------------------------
 
 Cmd: bib-new
 ------------
@@ -742,10 +698,8 @@ bib-update command.
 Internal: see /opt/libre-bib/etc/cite-new.xml for the template that will
 be used.
 
-This will format the entries with the \"Endnote Characters\" style, and
+This will format the entries with the "Endnote Characters" style, and
 insert the non-empty bib-field values.
-
-------------------------------------------------------------------------
 
 Cmd: bib-update
 ---------------
@@ -756,35 +710,29 @@ not modify any new {REF} tags.
 
 The original file will be found in the backup/ dir. So your odt file can
 be restored if there are problems. It could be there are no changes to
-the file, but this command doesn\'t check for difference, it just
+the file, but this command doesn't check for difference, it just
 replaces all of the biblio-entries it finds in the odt file.
 
 Internal: see /opt/libre-bib/etc/cite-update.xml for the template that
 will be used.
 
-This will only update non-empty bib-field values. The style won\'t be
+This will only update non-empty bib-field values. The style won't be
 touched.
-
-------------------------------------------------------------------------
-
-------------------------------------------------------------------------
 
 Appendix
 ========
 
-------------------------------------------------------------------------
-
 Backups
 -------
 
--   DB Tables: If a table exists and cgBackup is \"true\", then the
-    table will be copied to the table name with a datestamp
-    (~YYYY~-MM-DD~HH~-MM-SS) appended. For example, bib -\>
+-   DB Tables: If a table exists and cgBackup is "true", then the table
+    will be copied to the table name with a datestamp
+    (~YYYY~-MM-DD~HH~-MM-SS) appended. For example, bib -&gt;
     bib~2023~-04-02~14~-18-37
 
--   Files: If a file exist and cgBackup is \"true\", then the file will
-    be copied to FILE.bak. If the .bak file exist then a \".\~N\~\" will
-    be appended after that (larger Ns are more recent).
+-   Files: If a file exist and cgBackup is "true", then the file will be
+    copied to FILE.bak. If the .bak file exist then a ".\~N\~" will be
+    appended after that (larger Ns are more recent).
 
 -   Backup cleanup: run TBD????, it will prompt to confirm deletes of
     backup tables or files.
@@ -794,14 +742,12 @@ Backups
     drop table \`bib\`; RENAME TABLE \`bib~2023~-04-02~14~-18-37\` TO
     bib;
 
-------------------------------------------------------------------------
-
 Customizing the defaults
 ------------------------
 
 If you are managing multiple bibliographies, you might have some common
 settings. For example, most of the things related to a remote DB will be
-the same. You can change the application\'s etc/conf.env default file.
+the same. You can change the application's etc/conf.env default file.
 You can even add your own variables. Here are the steps.
 
 ``` {.in}
@@ -815,18 +761,14 @@ bib rebuild        # update user default file, and conf.php
 Source /opt/libre-bib/etc/conf.env and conf.env in a bash script call
 your own Makefile, other bash scripts, or php scripts to run things.
 Your php scripts could include /opt/libre-bib/etc/conf.php to define the
-ENV vars as globals, or just use \$~ENV~\[\'cgVarName\'\].
-
-------------------------------------------------------------------------
+ENV vars as globals, or just use \$~ENV~\['cgVarName'\].
 
 Build
 -----
 
-Use: \"make build\"
+Use: "make build"
 
 But first define cgBuild=true, so the sanity-check will be skipped.
-
-------------------------------------------------------------------------
 
 Maps
 ----
