@@ -52,6 +52,11 @@ if [[ "${cgBuild:-false}" != "true" ]]; then
     fi
 
     # User conf
+    if [[ -x $cgDirConf/conf.env ]]; then
+        . ./$cgDirConf/conf.env
+    fi
+
+    # User doc conf
     . ./conf.env
 fi
 

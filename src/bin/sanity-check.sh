@@ -71,20 +71,11 @@ fIsBool() {
         return 1 # ---------->
     fi
 
-    declare -l tTest=$gVal
-    case "$tTest" in
-        0) return 0 ;;
-        n) return 0 ;;
-        no) return 0 ;;
-        f) return 0 ;;
+    case "$gVal" in
         false) return 0 ;;
-        1) return 0 ;;
-        y) return 0 ;;
-        yes) return 0 ;;
-        t) return 0 ;;
         true) return 0 ;;
         *)
-            echo "Error: $gVar $gVal is not a valid boolean value"
+            echo "Error: $gVar $gVal can only be \"true\" or \"false\""
             ((++gErr))
             ;;
     esac
@@ -249,14 +240,23 @@ fCheckApp() {
         bin/util.php \
         doc/example/biblio-note.txt \
         doc/example/biblio.txt \
+        doc/example/conf.env \
+        doc/example/example-outline.css \
+        doc/example/example-outline.html \
+        doc/example/example-outline.odt \
+        doc/example/example-outline.org \
         doc/example/example.odt \
         doc/example/key.txt \
         doc/example/librarything.tsv \
+        doc/manual/libre-bib.html \
         doc/manual/libre-bib.md \
+        doc/manual/libre-bib.org \
         doc/ref/biblio.csv \
         doc/ref/biblio.dbf \
         doc/ref/biblio.dbt \
         doc/ref/librarything.tsv \
+        etc/bib-style.xml \
+        etc/bib-template.xml \
         etc/cite-new.xml \
         etc/cite-update.xml \
         etc/conf.env \
@@ -308,7 +308,9 @@ fCheckUser() {
     # ----------
     for gVar in \
         cgDirBackup \
+        cgDirEtc \
         cgDirConf \
+        cgDirLibreofficeConf \
         cgDirStatus \
         cgDirTmp; do
         if ! fVar; then
@@ -416,7 +418,11 @@ if ! bash -n ./conf.env &>/dev/null; then
 fi
 
 # This overrides the app's defaults, so not a good check for the
-# defaults.
+# defaults, but it does verify the values are probably good.
+
+if [[ -x $cgDirConf/conf.env ]]; then
+    . ./$cgDirConf/conf.env
+fi
 
 . ./conf.env
 
