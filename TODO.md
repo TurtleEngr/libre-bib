@@ -20,8 +20,3 @@ for the proiority. But no dates have been set.
   - if no xml files, cp them from app/etc/
   - run bib-style-update.php to use xml file in etc/ to update Doc
   - pack Doc
-
-- Remove cgNoExecCmd (not needed).
-- Remove cgBackup, always backup
-
-- Documented more in manual: files and vars
