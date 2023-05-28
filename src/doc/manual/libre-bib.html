@@ -324,7 +324,7 @@ bib ref-update    # Update REFs with any DB changes
       <p>File: <strong><strong>/opt/libre-bib/etc/conf.env</strong></strong>
       - System config</p>
       <p>All the default values must be defined in this file. You can edit
-      this file to overide things for all your bib directories, but it would
+      this file to override things for all your bib directories, but it would
       be better to edit ~/.config/libre-bib/conf.env. That way the app can be
       updated without overriding your changes.</p>
     </li>
@@ -336,9 +336,9 @@ bib ref-update    # Update REFs with any DB changes
       location and uncomment and change the values.</p>
       <p>If you use the same cgDbName for all the bibs, then you'll want to
       define different table name. Using different DB names is safer for
-      keeping the different bibs seperate, but more DB setup will be
+      keeping the different bibs separate, but more DB setup will be
       needed.</p>
-      <p>Typically these vars will be the same acorss all your bibs:
+      <p>Typically these vars will be the same across all your bibs:
       cgDbName, cgDbHost, cgDbPassCache, cgDbPassHint, cgDbUser, cgUseRemote
       cgDbHostRemote, cgDbPortRemote, cgSshUser, cgSshKey</p>
     </li>
@@ -359,7 +359,7 @@ bib ref-update    # Update REFs with any DB changes
 </pre>
   <h3 id="annotated-conf.env">Annotated conf.env</h3>
   <p>Understanding the variables in the conf.env file will probably give you
-  the best understanding of how the libre-bib applicaion works.</p>
+  the best understanding of how the libre-bib application works.</p>
   <p>The conf.env files are the core configuration files for the libre-bib
   app. They are executed in this order, so the last definition wins.</p>
   <pre class="in">$ cd $HOME
@@ -377,7 +377,7 @@ $PWD/conf.env
       <p>If "true" then things will be checked with non-destructive reads.
       Execution will stopped before anything would be changed.</p>
       <p>Note: this is not the same as the "-n" option. "-n" will show the
-      commnds that will be executed. cgNoExec forces the command to not make
+      commands that will be executed. cgNoExec forces the command to not make
       any destructive changes. Files might be copied to backup locations, but
       tables and files will not be changed.</p>
     </li>
@@ -411,14 +411,14 @@ $PWD/conf.env
     <li>
       <p>Var:
       <strong><strong>cgDirLibreofficeConf="$HOME/.config/libreoffice/4/user/database/biblio"</strong></strong></p>
-      <p>Thls is the location of Libreoffice's bibliography DB connection
+      <p>This is the location of Libreoffice's bibliography DB connection
       information.</p>
     </li>
     <li>
       <p>Var: <strong><strong>cgDirStatus="status"</strong></strong></p>
-      <p>When a command updates a file, a datestamped status file is created
+      <p>When a command updates a file, a date-stamped status file is created
       in the cgDirStatus directory. If dependent file has a newer time than
-      it's correspoinding status file, then the update command will be
+      it's corresponding status file, then the update command will be
       run.</p>
       <p>Deleting all the files in the cgDirStatus dir will force all of the
       commands to run. That is, they will not check to see if things are
@@ -429,7 +429,7 @@ $PWD/conf.env
       <p>Temporary working files are put in this dir. This is usually
       relative to $PWD. If set to an absolute location, be sure there is
       space and that it is unique across all users and bib processes that
-      couild be run. For example, do not define it to "/tmp" because when you
+      could be run. For example, do not define it to "/tmp" because when you
       run "bib clean" that would remove all files and dirs in /tmp !</p>
     </li>
     <li>
@@ -460,7 +460,7 @@ $PWD/conf.env
     <li>
       <p>Var:
       <strong><strong>cgDbPassCache="$cgDirTmp/.pass.tmp"</strong></strong></p>
-      <p>When you use commnds that need to connect to the DB you will be
+      <p>When you use commands that need to connect to the DB you will be
       prompted for the user's DB password. It will be saved here. It is not
       encrypted, so don't use the DB User/Pass for sensitive DBs.</p>
     </li>
@@ -545,7 +545,7 @@ $PWD/conf.env
       <p>Var:
       <strong><strong>cgLibFile="librarything.tsv"</strong></strong></p>
       <p>This is the name of the tsv (Tab Separated Value) file that was
-      exported from Libary Thing.</p>
+      exported from Library Thing.</p>
       <p>Using LibraryThing export your DB to librarything.tsv file <a href=
       "https://www.librarything.com/home">https://www.librarything.com/home</a></p>
     </li>
@@ -561,10 +561,10 @@ $PWD/conf.env
   <p>Just type "bib" for a quick list of commands.</p>
   <p>To bring up this manual in your default browser, type: "bib help"</p>
   <p>More than one command can be used. They will be run in order. Execution
-  will stop at the first command that fails. For example, you have modified
-  some entries in biblio.txt and you have modeified your libreoffice document
-  with these new references. You could run: "bib import-lo update-lo ref-new
-  ref-update"</p>
+  will stop at the first command that fails. ("ignored" errors are OK.) For
+  example, you have modified some entries in biblio.txt and you have modified
+  your libreoffice document with these new references. You could run: "bib
+  import-lo update-lo ref-new ref-update"</p>
   <p>If a command doesn't run, it could be the files are up-to-date. If you
   want to force a command to run, remove the status/ file associated with the
   command, or "touch" one of the dependent files. For example: import-lo will

@@ -340,7 +340,7 @@ $ cd $HOME
 -   File: ****/opt/libre-bib/etc/conf.env**** - System config
 
     All the default values must be defined in this file. You can edit
-    this file to overide things for all your bib directories, but it
+    this file to override things for all your bib directories, but it
     would be better to edit \~/.config/libre-bib/conf.env. That way the
     app can be updated without overriding your changes.
 
@@ -352,10 +352,10 @@ $ cd $HOME
 
     If you use the same cgDbName for all the bibs, then you\'ll want to
     define different table name. Using different DB names is safer for
-    keeping the different bibs seperate, but more DB setup will be
+    keeping the different bibs separate, but more DB setup will be
     needed.
 
-    Typically these vars will be the same acorss all your bibs:
+    Typically these vars will be the same across all your bibs:
     cgDbName, cgDbHost, cgDbPassCache, cgDbPassHint, cgDbUser,
     cgUseRemote cgDbHostRemote, cgDbPortRemote, cgSshUser, cgSshKey
 
@@ -378,7 +378,7 @@ $ cd $HOME
 ### Annotated conf.env
 
 Understanding the variables in the conf.env file will probably give you
-the best understanding of how the libre-bib applicaion works.
+the best understanding of how the libre-bib application works.
 
 The conf.env files are the core configuration files for the libre-bib
 app. They are executed in this order, so the last definition wins.
@@ -400,7 +400,7 @@ $PWD/conf.env
     Execution will stopped before anything would be changed.
 
     Note: this is not the same as the \"-n\" option. \"-n\" will show
-    the commnds that will be executed. cgNoExec forces the command to
+    the commands that will be executed. cgNoExec forces the command to
     not make any destructive changes. Files might be copied to backup
     locations, but tables and files will not be changed.
 
@@ -434,14 +434,14 @@ $PWD/conf.env
 -   Var:
     ****cgDirLibreofficeConf=\"\$HOME/.config/libreoffice/4/user/database/biblio\"****
 
-    Thls is the location of Libreoffice\'s bibliography DB connection
+    This is the location of Libreoffice\'s bibliography DB connection
     information.
 
 -   Var: ****cgDirStatus=\"status\"****
 
-    When a command updates a file, a datestamped status file is created
+    When a command updates a file, a date-stamped status file is created
     in the cgDirStatus directory. If dependent file has a newer time
-    than it\'s correspoinding status file, then the update command will
+    than it\'s corresponding status file, then the update command will
     be run.
 
     Deleting all the files in the cgDirStatus dir will force all of the
@@ -453,9 +453,8 @@ $PWD/conf.env
     Temporary working files are put in this dir. This is usually
     relative to \$PWD. If set to an absolute location, be sure there is
     space and that it is unique across all users and bib processes that
-    couild be run. For example, do not define it to \"/tmp\" because
-    when you run \"bib clean\" that would remove all files and dirs in
-    /tmp !
+    could be run. For example, do not define it to \"/tmp\" because when
+    you run \"bib clean\" that would remove all files and dirs in /tmp !
 
 -   Var: ****cgBackupNum=10****
 
@@ -483,7 +482,7 @@ $PWD/conf.env
 
 -   Var: ****cgDbPassCache=\"\$cgDirTmp/.pass.tmp\"****
 
-    When you use commnds that need to connect to the DB you will be
+    When you use commands that need to connect to the DB you will be
     prompted for the user\'s DB password. It will be saved here. It is
     not encrypted, so don\'t use the DB User/Pass for sensitive DBs.
 
@@ -566,7 +565,7 @@ $PWD/conf.env
 -   Var: ****cgLibFile=\"librarything.tsv\"****
 
     This is the name of the tsv (Tab Separated Value) file that was
-    exported from Libary Thing.
+    exported from Library Thing.
 
     Using LibraryThing export your DB to librarything.tsv file
     <https://www.librarything.com/home>
@@ -588,10 +587,10 @@ Just type \"bib\" for a quick list of commands.
 To bring up this manual in your default browser, type: \"bib help\"
 
 More than one command can be used. They will be run in order. Execution
-will stop at the first command that fails. For example, you have
-modified some entries in biblio.txt and you have modeified your
-libreoffice document with these new references. You could run: \"bib
-import-lo update-lo ref-new ref-update\"
+will stop at the first command that fails. (\"ignored\" errors are OK.)
+For example, you have modified some entries in biblio.txt and you have
+modified your libreoffice document with these new references. You could
+run: \"bib import-lo update-lo ref-new ref-update\"
 
 If a command doesn\'t run, it could be the files are up-to-date. If you
 want to force a command to run, remove the status/ file associated with
