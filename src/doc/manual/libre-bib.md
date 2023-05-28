@@ -332,6 +332,38 @@ $ cd $HOME
 | .... biblio.txt            | Var: $cgDirTmp/$cgLoFile; Cmd: export-lo |
 ```
 
+-   File: ****/opt/libre-bib/doc/example/conf.env**** - Example document
+    config
+
+    This file is copied to \$PWD/conf.env when you first run bib.
+
+-   File: ****/opt/libre-bib/etc/conf.env**** - System config
+
+    All the default values must be defined in this file. You can edit
+    this file to overide things for all your bib directories, but it
+    would be better to edit \~/.config/libre-bib/conf.env. That way the
+    app can be updated without overriding your changes.
+
+-   File: ****\~/.config/libre-bib/conf.env**** - User config
+
+    This is optional, but it is useful for defining all of the common
+    settings across all of your bib directories. Copy \$PWD/conf.env to
+    this location and uncomment and change the values.
+
+    If you use the same cgDbName for all the bibs, then you\'ll want to
+    define different table name. Using different DB names is safer for
+    keeping the different bibs seperate, but more DB setup will be
+    needed.
+
+    Typically these vars will be the same acorss all your bibs:
+    cgDbName, cgDbHost, cgDbPassCache, cgDbPassHint, cgDbUser,
+    cgUseRemote cgDbHostRemote, cgDbPortRemote, cgSshUser, cgSshKey
+
+-   File: ****\$PWD/conf.env**** - Document config
+
+    This is required, but everything can be commented out. Uncomment the
+    ones that are specific to the current bib document.
+
 ### DB Tables
 
 ``` {.in}
@@ -358,273 +390,222 @@ $ cd $HOME
 $PWD/conf.env
 ```
 
-File: ****/opt/libre-bib/doc/example/conf.env**** - Example document
-config
+-   Var: ****cgDebug=false****
 
-This file is copied to \$PWD/conf.env when you first run bib.
+    If \"true\" then some diagnostic messages will be output.
 
-File: ****/opt/libre-bib/etc/conf.env**** - System config
+    FYI: true/false values can also be defind with: y/n, yes/no, t/f, or
+    1/0. Uppper case can letters can be used too.
 
-All the default values must be defined in this file. You can edit this
-file to overide things for all your bib directories, but it would be
-better to edit \~/.config/libre-bib/conf.env. That way the app can be
-updated without overriding your changes.
+-   Var: ****cgNoExec=false****
 
-File: ****\~/.config/libre-bib/conf.env**** - User config
+    If \"true\" then things will be checked with non-destructive reads.
+    Execution will stopped before anything would be changed.
 
-This is optional, but it is useful for defining all of the common
-settings across all of your bib directories. Copy \$PWD/conf.env to this
-location and uncomment and change the values.
+    Note: this is not the same as the \"-n\" option. \"-n\" will show
+    the commnds that will be executed. cgNoExec forces the command to
+    not make any destructive changes. Files might be copied to backup
+    locations, but tables and files will not be changed.
 
-If you use the same cgDbName for all the bibs, then you\'ll want to
-define different table name. Using different DB names is safer for
-keeping the different bibs seperate, but more DB setup will be needed.
+-   Var: ****cgVerbose=true****
 
-Typically these vars will be the same acorss all your bibs: cgDbName,
-cgDbHost, cgDbPassCache, cgDbPassHint, cgDbUser, cgUseRemote
-cgDbHostRemote, cgDbPortRemote, cgSshUser, cgSshKey
+    If \"true\" the commands being executed will be shown and there
+    could be more status output as things are run.
 
-File: ****\$PWD/conf.env**** - Document config
+    Note: Currently some errors messages are not output if this is set
+    to \"false\". If you see no output and no changes, the set this to
+    \"true\" and try again.
 
-This is required, but everything can be commented out. Uncomment the
-ones that are specific to the current bib document.
+-   Var: ****cgDirBackup=\"backup\"****
 
-Var: ****cgDebug=false****
+    This is the directory name (or path) where backup files are put.
+    \"\~\" numbers will be put after duplicate backups. With no \"/\" at
+    the beginning, the name will be relative to \$PWD.
 
-If \"true\" then some diagnostic messages will be output.
+-   Var: ****cgDirConf=\"\$HOME/.config/libre-bib\"****
 
-FYI: true/false values can also be defind with: y/n, yes/no, t/f, or
-1/0. Uppper case can letters can be used too.
+    Config files that are common for your user can be put here. If you
+    have multiple bib directories, then this will be useful. This should
+    be an absolute path.
 
-Var: ****cgNoExec=false****
+-   Var: ****cgDirEtc=\"etc\"****
 
-If \"true\" then things will be checked with non-destructive reads.
-Execution will stopped before anything would be changed.
+    Templates and other doc related files are put here. Initially they
+    are copied from *opt/libre-bib/etc*. The files are copied to
+    cgDirBackup if a command would change any of the files.
 
-Note: this is not the same as the \"-n\" option. \"-n\" will show the
-commnds that will be executed. cgNoExec forces the command to not make
-any destructive changes. Files might be copied to backup locations, but
-tables and files will not be changed.
+-   Var:
+    ****cgDirLibreofficeConf=\"\$HOME/.config/libreoffice/4/user/database/biblio\"****
 
-Var: ****cgVerbose=true****
+    Thls is the location of Libreoffice\'s bibliography DB connection
+    information.
 
-If \"true\" the commands being executed will be shown and there could be
-more status output as things are run.
+-   Var: ****cgDirStatus=\"status\"****
 
-Note: Currently some errors messages are not output if this is set to
-\"false\". If you see no output and no changes, the set this to \"true\"
-and try again.
+    When a command updates a file, a datestamped status file is created
+    in the cgDirStatus directory. If dependent file has a newer time
+    than it\'s correspoinding status file, then the update command will
+    be run.
 
-Var: ****cgDirBackup=\"backup\"****
+    Deleting all the files in the cgDirStatus dir will force all of the
+    commands to run. That is, they will not check to see if things are
+    newer.
 
-This is the directory name (or path) where backup files are put. \"\~\"
-numbers will be put after duplicate backups. With no \"/\" at the
-beginning, the name will be relative to \$PWD.
+-   Var: ****cgDirTmp=\"tmp\"****
 
-Var: ****cgDirConf=\"\$HOME/.config/libre-bib\"****
+    Temporary working files are put in this dir. This is usually
+    relative to \$PWD. If set to an absolute location, be sure there is
+    space and that it is unique across all users and bib processes that
+    couild be run. For example, do not define it to \"/tmp\" because
+    when you run \"bib clean\" that would remove all files and dirs in
+    /tmp !
 
-Config files that are common for your user can be put here. If you have
-multiple bib directories, then this will be useful. This should be an
-absolute path.
+-   Var: ****cgBackupNum=10****
 
-Var: ****cgDirEtc=\"etc\"****
+    This variable defined the number of backup files or tables to be
+    kept. This can be set to 2 to 100.
 
-Templates and other doc related files are put here. Initially they are
-copied from *opt/libre-bib/etc*. The files are copied to cgDirBackup if
-a command would change any of the files.
+-   Var: ****cgDbHost=\"127.0.0.1\"****
 
-Var:
-****cgDirLibreofficeConf=\"\$HOME/.config/libreoffice/4/user/database/biblio\"****
+    Usually this will always be set to the localhost IP. That works
+    better than using a name or localhost.
 
-Thls is the location of Libreoffice\'s bibliography DB connection
-information.
+-   Var: ****cgDbName=\"biblio~example~\"****
 
-Var: ****cgDirStatus=\"status\"****
+    This is the name of the database.
 
-When a command updates a file, a datestamped status file is created in
-the cgDirStatus directory. If dependent file has a newer time than it\'s
-correspoinding status file, then the update command will be run.
+-   Var: ****cgDbUser=\"\$USER\"****
 
-Deleting all the files in the cgDirStatus dir will force all of the
-commands to run. That is, they will not check to see if things are
-newer.
+    This is the name of your DB user. Typically it is the same as your
+    login user name, but you can used any name.
 
-Var: ****cgDirTmp=\"tmp\"****
+-   Var: ****cgDbPassHint=\"b4n\"****
 
-Temporary working files are put in this dir. This is usually relative to
-\$PWD. If set to an absolute location, be sure there is space and that
-it is unique across all users and bib processes that couild be run. For
-example, do not define it to \"/tmp\" because when you run \"bib clean\"
-that would remove all files and dirs in /tmp !
+    This will be shown when you are prompted for the DB User\'s
+    password.
 
-Var: ****cgBackupNum=10****
+-   Var: ****cgDbPassCache=\"\$cgDirTmp/.pass.tmp\"****
 
-This variable defined the number of backup files or tables to be kept.
-This can be set to 2 to 100.
+    When you use commnds that need to connect to the DB you will be
+    prompted for the user\'s DB password. It will be saved here. It is
+    not encrypted, so don\'t use the DB User/Pass for sensitive DBs.
 
-Var: ****cgDbHost=\"127.0.0.1\"****
+-   Var: ****cgDbPortLocal=\"3306\"****
 
-Usually this will always be set to the localhost IP. That works better
-than using a name or localhost.
+    This is the port for the DB, on the system where the DB is running.
 
-Var: ****cgDbName=\"biblio~example~\"****
+-   Var: ****cgUseRemote=false****
 
-This is the name of the database.
+    If \"true\" then the remote DB will be accessed over a ssh tunnel.
+    See the ssh setup section for the details on setting up the tunnel.
 
-Var: ****cgDbUser=\"\$USER\"****
+-   Var: ****cgDbHostRemote=\"NAME.example.com\"****
 
-This is the name of your DB user. Typically it is the same as your login
-user name, but you can used any name.
+    If you are using a DB on another system, then define that system\'s
+    name here.
 
-Var: ****cgDbPassHint=\"b4n\"****
+-   Var: ****cgDbPortRemote=\"3308\"****
 
-This will be shown when you are prompted for the DB User\'s password.
+    This will be the port for the DB tunnel. It can be most any unused
+    port number.
 
-Var: ****cgDbPassCache=\"\$cgDirTmp/.pass.tmp\"****
+-   Var: ****cgSshUser=\"\$USER\"****
 
-When you use commnds that need to connect to the DB you will be prompted
-for the user\'s DB password. It will be saved here. It is not encrypted,
-so don\'t use the DB User/Pass for sensitive DBs.
+    This is your user name on the remote system.
 
-Var: ****cgDbPortLocal=\"3306\"****
+-   Var: ****cgSshKey=\"\$HOME/.ssh/id.KEY-NAME\"****
 
-This is the port for the DB, on the system where the DB is running.
+    This is the ssh key name for accessing the remote system. This will
+    be used to define the config file for setting up the ssh tunnel.
 
-Var: ****cgUseRemote=false****
+-   Var: ****cgDocFile=\"example.odt\"****
 
-If \"true\" then the remote DB will be accessed over a ssh tunnel. See
-the ssh setup section for the details on setting up the tunnel.
+    This it the whole reason for this app and hopefully this shows why
+    you went through the work of creating the biblio.txt file.
 
-Var: ****cgDbHostRemote=\"NAME.example.com\"****
+    This is your Libreoffice document file that contains bibliographic
+    references. {REFs}
 
-If you are using a DB on another system, then define that system\'s name
-here.
+-   Var: ****cgLoFile=\"biblio.txt\"****
 
-Var: ****cgDbPortRemote=\"3308\"****
+    This is the text file you will use for adding and updating
+    bibliographic entries. This is much easier to manage and backup than
+    using the DB for everything.
 
-This will be the port for the DB tunnel. It can be most any unused port
-number.
+    biblio.txt and biblio-note.txt are the files you will be editing the
+    most. biblio.txt is where you will be putting most of the
+    bibliographic information about a book, article, web page, video,
+    etc.
 
-Var: ****cgSshUser=\"\$USER\"****
+    If you have setup a LibraryThing DB (see:
+    <https://www.librarything.com/home>) you can export a tsv file of
+    your LibraryThing DB to librarything.tsv. Then you can run \"bib
+    update-lo\" to update empty \"lo\" table fields from the \"lib\" DB
+    table. See the \"LibraryThing\" section for more details.
 
-This is your user name on the remote system.
+    The key.txt file just gives some quick tip on the kind of values you
+    can put after the Tags. It isn\'t used anywhere else, so you can
+    edit or delete the file.
 
-Var: ****cgSshKey=\"\$HOME/.ssh/id.KEY-NAME\"****
+-   Var: ****cgDbLo=\"lo\"****
 
-This is the ssh key name for accessing the remote system. This will be
-used to define the config file for setting up the ssh tunnel.
+    This is the name of the primary LibreOffice bibliographic DB table.
 
-Var: ****cgDocFile=\"example.odt\"****
+-   Var: ****cgDbBib=\"bib\"****
 
-This it the whole reason for this app and hopefully this shows why you
-went through the work of creating the biblio.txt file.
+    When the lo table is updated this table is created to do some simple
+    formatting, so the bibliography will not be cluttered with duplicate
+    commas when there are empty values.
 
-This is your Libreoffice document file that contains bibliographic
-references. {REFs}
+-   Var: ****cgBackupFile=\"\$cgDirBackup/backup-lo.csv\"****
 
-Var: ****cgLoFile=\"biblio.txt\"****
+    If you run the backup-lo command this is where the backup will be
+    put. If there is already one there, then that will be backed up.
 
-This is the text file you will use for adding and updating bibliographic
-entries. This is much easier to manage and backup than using the DB for
-everything.
+-   Var: ****cgUseLib=false****
 
-biblio.txt and biblio-note.txt are the files you will be editing the
-most. biblio.txt is where you will be putting most of the bibliographic
-information about a book, article, web page, video, etc.
+    Set this to \"true\" if you will be using a Library Thing export.
 
-If you have setup a LibraryThing DB (see:
-<https://www.librarything.com/home>) you can export a tsv file of your
-LibraryThing DB to librarything.tsv. Then you can run \"bib update-lo\"
-to update empty \"lo\" table fields from the \"lib\" DB table. See the
-\"LibraryThing\" section for more details.
+-   Var: ****cgLibFile=\"librarything.tsv\"****
 
-The key.txt file just gives some quick tip on the kind of values you can
-put after the Tags. It isn\'t used anywhere else, so you can edit or
-delete the file.
+    This is the name of the tsv (Tab Separated Value) file that was
+    exported from Libary Thing.
 
-Var: ****cgDbLo=\"lo\"****
+    Using LibraryThing export your DB to librarything.tsv file
+    <https://www.librarything.com/home>
 
-This is the name of the primary LibreOffice bibliographic DB table.
+-   Var: ****cgDbLib=\"lib\"****
 
-Var: ****cgDbBib=\"bib\"****
-
-When the lo table is updated this table is created to do some simple
-formatting, so the bibliography will not be cluttered with duplicate
-commas when there are empty values.
-
-Var: ****cgBackupFile=\"\$cgDirBackup/backup-lo.csv\"****
-
-If you run the backup-lo command this is where the backup will be put.
-If there is already one there, then that will be backed up.
-
-Var: ****cgUseLib=false****
-
-Set this to \"true\" if you will be using a Library Thing export.
-
-Var: ****cgLibFile=\"librarything.tsv\"****
-
-This is the name of the tsv (Tab Separated Value) file that was exported
-from Libary Thing.
-
-Using LibraryThing export your DB to librarything.tsv file
-<https://www.librarything.com/home>
-
-Var: ****cgDbLib=\"lib\"****
-
-This is the name of the LibraryThing table that will be created from
-cgLibFile.
-
-### Commands
+    This is the name of the LibraryThing table that will be created from
+    cgLibFile.
 
 ------------------------------------------------------------------------
 
-Cmd: setup bib
---------------
+Commands
+--------
 
-------------------------------------------------------------------------
+### Cmd: setup bib
 
-Cmd: connect
-------------
+### Cmd: connect
 
-------------------------------------------------------------------------
+### Cmd: check
 
-Cmd: check
-----------
-
-------------------------------------------------------------------------
-
-Cmd: import-lo
---------------
+### Cmd: import-lo
 
 Import any changes to \$cgLoFile (biblio.txt). The lo table will be
 backed-up in the DB.
 
-------------------------------------------------------------------------
+### Cmd: export-lo
 
-Cmd: export-lo
---------------
+### Cmd: backup-lo
 
-------------------------------------------------------------------------
-
-Cmd: backup-lo
---------------
-
-------------------------------------------------------------------------
-
-Cmd: import-lib
----------------
+### Cmd: import-lib
 
 Import the librarything.tsv file to the lib table.
 
-------------------------------------------------------------------------
+### Cmd: update-lo
 
-Cmd: update-lo
---------------
-
-------------------------------------------------------------------------
-
-Cmd: ref-new
-------------
+### Cmd: ref-new
 
 New biblio {REF} tags have been added to your odt file. Run this command
 to update your odt file with the current biblio entries found in the lo
@@ -642,10 +623,7 @@ be used.
 This will format the entries with the \"Endnote Characters\" style, and
 insert the non-empty bib-field values.
 
-------------------------------------------------------------------------
-
-Cmd: ref-update
----------------
+### Cmd: ref-update
 
 If the lo table has been updated with different values, then run this
 command to update the odt file with the new values. This command will
@@ -662,40 +640,19 @@ will be used.
 This will only update non-empty bib-field values. The style won\'t be
 touched.
 
-------------------------------------------------------------------------
+### Cmd: save-style
 
-Cmd: save-style
----------------
+### Cmd: update-style
 
-------------------------------------------------------------------------
+### Cmd: status
 
-Cmd: update-style
------------------
+### Cmd: clean
 
-------------------------------------------------------------------------
+### Cmd: version
 
-Cmd: status
------------
+### Cmd: add, edit
 
-------------------------------------------------------------------------
-
-Cmd: clean
-----------
-
-------------------------------------------------------------------------
-
-Cmd: version
-------------
-
-------------------------------------------------------------------------
-
-Cmd: add, edit
---------------
-
-------------------------------------------------------------------------
-
-Cmd: help
----------
+### Cmd: help
 
 ------------------------------------------------------------------------
 
@@ -703,6 +660,51 @@ Cmd: help
 
 Appendix
 ========
+
+------------------------------------------------------------------------
+
+Backups
+-------
+
+-   DB Tables: If a table exists and cgBackup is \"true\", then the
+    table will be copied to the table name with a datestamp
+    (~YYYY~-MM-DD~HH~-MM-SS) appended. For example, bib -\>
+    bib~2023~-04-02~14~-18-37
+
+-   Files: If a file exist and cgBackup is \"true\", then the file will
+    be copied to FILE.bak. If the .bak file exist then a \".\~N\~\" will
+    be appended after that (larger Ns are more recent).
+
+-   Backup cleanup: run TBD????, it will prompt to confirm deletes of
+    backup tables or files.
+
+-   To restore a table. In mysql, follow this example:
+
+    drop table \`bib\`; RENAME TABLE \`bib~2023~-04-02~14~-18-37\` TO
+    bib;
+
+------------------------------------------------------------------------
+
+Customizing the defaults
+------------------------
+
+If you are managing multiple bibliographies, you might have some common
+settings. For example, most of the things related to a remote DB will be
+the same. You can change the application\'s etc/conf.env default file.
+You can even add your own variables. Here are the steps.
+
+``` {.in}
+cd /opt/libre-bib/etc
+edit conf.env
+bash -n conf.env   # syntax check
+cd BIB-PROJECT     # any of your bib project dirs
+bib rebuild        # update user default file, and conf.php
+```
+
+Source /opt/libre-bib/etc/conf.env and conf.env in a bash script call
+your own Makefile, other bash scripts, or php scripts to run things.
+Your php scripts could include /opt/libre-bib/etc/conf.php to define the
+ENV vars as globals, or just use \$~ENV~\[\'cgVarName\'\].
 
 ------------------------------------------------------------------------
 
@@ -716,7 +718,7 @@ the example files.
 $ cd $HOME
 $ mkdir -p project/biblio
 $ cd project/biblio
-$ bib 
+$ bib
 ```
 
 ``` {.out}
@@ -766,7 +768,7 @@ change:
     export cgUseRemote=false
     export cgSshKey="$HOME/.ssh/id.KEY-NAME"
     export cgUseLib=false
-to 
+to
     export cgDbHostRemote="myserver.example.com"
     export cgDbPassHint="fav-pet"
     export cgDbUser="example"
@@ -815,10 +817,10 @@ $ ssh myserver
 ```
 
 ``` {.out}
-Enter passphrase for key '/home/bob/.ssh/id.mysys': 
+Enter passphrase for key '/home/bob/.ssh/id.mysys':
 
 bob@mxlinux:/home/bob
-$ 
+$
 ```
 
 Minimize the terminal window.
@@ -924,7 +926,7 @@ Backup is on.
 UseRemote is on.
 UseLib is on.
 ............
-Processed: 12 
+Processed: 12
 date +%F_%T >status/import-lib.date
 head -n 1 librarything.tsv | sed 's/ /_/g' >tmp/lib-schema.tsv
 diff /opt/libre-bib/etc/lib-schema.tsv tmp/lib-schema.tsv
@@ -942,7 +944,7 @@ Run this after lib-db, lo-db
 Processed: 19
 ...........
 Processed: 11
-Created: bib_2023-05-17_01-40-14 
+Created: bib_2023-05-17_01-40-14
 
 Processed: 31 [221]
 ```
@@ -960,7 +962,7 @@ $ bib backup-lo
 ``` {.out}
 cp: cannot stat 'backup/backup-lo.csv': No such file or directory
 ...............................
-Processed: 31 
+Processed: 31
 ```
 
 ``` {.in}
@@ -1022,51 +1024,6 @@ Done. [396]
 
 Now you can add the Bibliography to the end of your document, and setup
 the styles for the different Type of entries.
-
-------------------------------------------------------------------------
-
-Backups
--------
-
--   DB Tables: If a table exists and cgBackup is \"true\", then the
-    table will be copied to the table name with a datestamp
-    (~YYYY~-MM-DD~HH~-MM-SS) appended. For example, bib -\>
-    bib~2023~-04-02~14~-18-37
-
--   Files: If a file exist and cgBackup is \"true\", then the file will
-    be copied to FILE.bak. If the .bak file exist then a \".\~N\~\" will
-    be appended after that (larger Ns are more recent).
-
--   Backup cleanup: run TBD????, it will prompt to confirm deletes of
-    backup tables or files.
-
--   To restore a table. In mysql, follow this example:
-
-    drop table \`bib\`; RENAME TABLE \`bib~2023~-04-02~14~-18-37\` TO
-    bib;
-
-------------------------------------------------------------------------
-
-Customizing the defaults
-------------------------
-
-If you are managing multiple bibliographies, you might have some common
-settings. For example, most of the things related to a remote DB will be
-the same. You can change the application\'s etc/conf.env default file.
-You can even add your own variables. Here are the steps.
-
-``` {.in}
-cd /opt/libre-bib/etc
-edit conf.env
-bash -n conf.env   # syntax check
-cd BIB-PROJECT     # any of your bib project dirs
-bib rebuild        # update user default file, and conf.php
-```
-
-Source /opt/libre-bib/etc/conf.env and conf.env in a bash script call
-your own Makefile, other bash scripts, or php scripts to run things.
-Your php scripts could include /opt/libre-bib/etc/conf.php to define the
-ENV vars as globals, or just use \$~ENV~\[\'cgVarName\'\].
 
 ------------------------------------------------------------------------
 
