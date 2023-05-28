@@ -113,17 +113,25 @@ function fValidate() {
 # -----------------------------
 function fProcessLine($pLine) {
     $tStartRegEx = '/<text:bibliography-configuration text:prefix=""/';
-    $tEndRegEx1   = '/<\/text:bibliography-configuration>/';
-    $tEndRegEx2   = '/ \/>$/';
+    $tEndRegEx1   = '/ \/>$/';
+    $tEndRegEx2   = '/>$/';
+    $tEndRegEx3   = '/<\/text:bibliography-configuration>/';
 
-    # Two end states: '<text:bibliography-configuration' ends with '
-    # />$' after attributes. Or it ends with:
-    # </text:bibliography-configuration>$'
+    # The first '/>$' ends bibliography-configuration
+    # If '>$' is seen, then don't look for '/>$', look for end tag
 
     if (preg_match($tStartRegEx, $pLine))
         return "start";    # ---------->
-    if (preg_match($tEndRegEx, $pLine))
-        return "end";    # ---------->
+
+    if (preg_match($tEndRegEx1, $pLine))
+        return "end1";    # ---------->
+
+    if (preg_match($tEndRegEx3, $pLine))
+        return "end3";    # ---------->
+
+    if (preg_match($tEndRegEx2, $pLine))
+        return "end2";    # ---------->
+
     return "";    # ---------->
 } # fProcessLine
 
@@ -144,17 +152,31 @@ function fProcessFile() {
 
     $tFound = 0;
     $tIn = 0;
+    $tInAttr = 0;
     $tNumLine = 0;
     while ($tLine = fgets($gInH)) {
         ++$tNumLine;
         $tResult = fProcessLine($tLine);
         if ($tResult == "start") {
             $tIn = 1;
+            $tInAttr = 1;
             $tFound = 1;
         }
         if ($tIn)
             fputs($gOutH, $tLine);
-        if ($tResult == "end")
+
+        # if '/>', done
+        if ($tIn && $tInAttr && $tResult == "end1") {
+            $tIn = 0;
+            $tInAttr = 0;
+        }
+
+        # if '>', now just look for end tag
+        if ($tIn && $tInAttr && $tResult == "end2")
+            $tInAttr = 0;
+
+        # End tag?
+        if ($tIn && $tResult == "end3")
             $tIn = 0;
     }
     echo "\nProcessed $tNumLine lines. [" . __LINE__ . "]\n";
