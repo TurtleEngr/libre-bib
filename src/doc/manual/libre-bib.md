@@ -581,7 +581,25 @@ $PWD/conf.env
 Commands
 --------
 
-### Cmd: setup bib
+Commands are entered after \"bib\". For example: \"bib setup-bib\"
+
+Just type \"bib\" for a quick list of commands.
+
+To bring up this manual in your default browser, type: \"bib help\"
+
+More than one command can be used. They will be run in order. Execution
+will stop at the first command that fails. For example, you have
+modified some entries in biblio.txt and you have modeified your
+libreoffice document with these new references. You could run: \"bib
+import-lo update-lo ref-new ref-update\"
+
+If a command doesn\'t run, it could be the files are up-to-date. If you
+want to force a command to run, remove the status/ file associated with
+the command, or \"touch\" one of the dependent files. For example:
+import-lo will only run if the biblio.txt file is newer than the last
+time import-lo was run. To force it to run: \"rm status/import.lo.date\"
+
+### Cmd: setup-bib
 
 ### Cmd: connect
 
