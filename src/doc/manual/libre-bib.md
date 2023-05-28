@@ -394,9 +394,6 @@ $PWD/conf.env
 
     If \"true\" then some diagnostic messages will be output.
 
-    FYI: true/false values can also be defind with: y/n, yes/no, t/f, or
-    1/0. Uppper case can letters can be used too.
-
 -   Var: ****cgNoExec=false****
 
     If \"true\" then things will be checked with non-destructive reads.

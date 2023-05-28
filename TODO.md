@@ -20,3 +20,8 @@ for the proiority. But no dates have been set.
   - if no xml files, cp them from app/etc/
   - run bib-style-update.php to use xml file in etc/ to update Doc
   - pack Doc
+
+- Change the bib-ref* scripts to use the cit*.xml files in cgDirEtc
+
+- Bool config vars can only be "true" or "false". It is hard to make
+  them other values in bash and php scripts.

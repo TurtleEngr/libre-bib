@@ -128,7 +128,8 @@ $(cgDirEtc)/cite-update.xml : $(cgDirApp)/etc/cite-update.xml
 
 # --------------------
 save-style : $(cgDirEtc) $(cgDirBackup) $(cgDocFile) $(cgDirEtc)/bib-style.xml $(cgDirEtc)/bib-template.xml
-	-cp $(cgDirEtc)/*.xml $(cgDirBackup)
+	-cp --backup=t $(cgDirEtc)/bib-style.xml $(cgDirBackup)
+	-cp --backup=t $(cgDirEtc)/bib-template.xml $(cgDirBackup)
 	$(cgBin)/bib-style-save.php -c
 
 # --------------------
@@ -137,11 +138,11 @@ update-style : $(cgDirEtc) $(cgDirEtc)/bib-style.xml $(cgDirEtc)/bib-template.xm
 
 $(cgDirEtc)/bib-style.xml : $(cgDirApp)/etc/bib-style.xml
 	-cp --backup=t $@ $(cgDirBackup)
-	cp --backup=t $? $@
+	cp $? $@
 
 $(cgDirEtc)/bib-template.xml : $(cgDirApp)/etc/bib-template.xml
 	-cp --backup=t $@ $(cgDirBackup)
-	cp --backup=t $? $@
+	cp $? $@
 
 # --------------------
 status-bib :
