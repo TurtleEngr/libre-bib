@@ -1,4 +1,3 @@
-
 # -c config/conf.php can be ignored. Just include:
 # $_ENV["cgDirApp"]/etc/conf.php
 
@@ -8,6 +7,8 @@
 SHELL = /bin/bash
 
 mConfigDB = ~/.config/libreoffice/4/user/database
+
+mDate = $$(date +%F_%T)
 
 mTidyXhtml = tidy -m -q -i -w 78 -asxhtml --break-before-br yes --indent-attributes yes --indent-spaces 2 --tidy-mark no --vertical-space no
 
@@ -63,7 +64,7 @@ import-lo : $(cgDirStatus)/import-lo.date
 $(cgDirStatus)/import-lo.date : conf.env $(cgLoFile)
 	$(cgBin)/import-txt-2-lo.php -c
 	$(cgBin)/convert-lo-2-bib.php -c
-	date +%F_%T >$@
+	echo "$(mDate) import-lo" >$@
 
 # ----------
 # export: tmp/biblio.txt
@@ -78,10 +79,14 @@ export-lo :
 backup-lo :
 	-cp --backup=t $(cgDirBackup)/backup-lo.csv $(cgDirBackup)/backup-lo.csv.sav
 	$(cgBin)/export-lo-2-tcsv.php -c -s c
-	date +%F_%T >$(cgDirStatus)/backup-lo.date
+	echo "$(mDate) backup-lo" >$(cgDirStatus)/$@.date
 
 restore-lo :
+	echo "Are you sure you want to replace the $(cgDbLo) table?"
+	read -p "y/n: "
+	if [[ $$REPLY != "y" ]]; then exit 10; fi
 	$(cgBin)/import-tcsv-2-lo-db.php -c -s c
+	echo "$(mDate) restore-lo" >$(cgDirStatus)/$@.date
 
 # ----------
 # If lib-db or lo-db is changed, then run this
@@ -91,7 +96,7 @@ update-lo :
 	@echo "Run this after lib-db, lo-db"
 	$(cgBin)/update-lib-2-lo.php -c
 	$(cgBin)/convert-lo-2-bib.php -c
-	date +%F_%T >$(cgDirStatus)/update-lo.date
+	echo "$(mDate) update-lo" >$@
 
 # --------------------
 # Update lib-db
@@ -105,36 +110,48 @@ $(cgDirStatus)/import-lib.date : $(cgLibFile)
 	head -n 1 $(cgLibFile) | sed 's/ /_/g' >$(cgDirTmp)/lib-schema.tsv
 	-diff $(cgDirApp)/etc/lib-schema.tsv $(cgDirTmp)/lib-schema.tsv
 	@echo "Warning: If there are differences, there could be problems."
+	echo "$(mDate) import-lib" >$@
 
 # --------------------
-ref-new : $(cgDocFile) $(cgDirEtc)/cite-new.xml
+ref-new : $(cgDirStatus)/ref-new.date
+
+$(cgDirStatus)/bib-update.date : $(cgDocFile) $(cgDirEtc)/cite-new.xml
 	cp --backup=t $(cgDocFile) $(cgDirBackup)
 	$(cgBin)/bib-ref-new.php -c
-	date +%F_%T >$(cgDirStatus)/bib-update.date
+	echo "$(mDate) ref-new" >$@
 
 $(cgDirEtc)/cite-new.xml : $(cgDirApp)/etc/cite-new.xml
 	-cp --backup=t $@ $(cgDirBackup)
 	cp $? $@
 
 # --------------------
-ref-update : $(cgDocFile) $(cgDirEtc)/cite-update.xml
+ref-update : $(cgDirStatus)/ref-update.date
+
+$(cgDirStatus)/ref-update.date : $(cgDocFile) $(cgDirEtc)/cite-update.xml
 	cp --backup=t $(cgDocFile) $(cgDirBackup)
 	$(cgBin)/bib-ref-update.php -c
-	date +%F_%T >$(cgDirStatus)/bib-update.date
+	echo "$(mDate) ref-update" >$@
 
 $(cgDirEtc)/cite-update.xml : $(cgDirApp)/etc/cite-update.xml
 	-cp --backup=t $@ $(cgDirBackup)
 	cp $? $@
 
 # --------------------
-save-style : $(cgDirEtc) $(cgDirBackup) $(cgDocFile) $(cgDirEtc)/bib-style.xml $(cgDirEtc)/bib-template.xml
+style-save : $(cgDirStatus)/style-save.date
+
+$(cgDirStatus)/style-save.date : $(cgDocFile)
 	-cp --backup=t $(cgDirEtc)/bib-style.xml $(cgDirBackup)
 	-cp --backup=t $(cgDirEtc)/bib-template.xml $(cgDirBackup)
 	$(cgBin)/bib-style-save.php -c
+	echo "$(mDate) style-save" >$@
 
 # --------------------
-update-style : $(cgDirEtc) $(cgDirEtc)/bib-style.xml $(cgDirEtc)/bib-template.xml
+style-update : $(cgDirStatus)/style-update.date
+
+$(cgDirStatus)/style-update.date : $(cgDocFile) $(cgDirEtc)/bib-style.xml $(cgDirEtc)/bib-template.xml
+	cp --backup=t $(cgDocFile) $(cgDirBackup)
 	$(cgBin)/bib-style-update.php -c
+	echo "$(mDate) style-update" >$@
 
 $(cgDirEtc)/bib-style.xml : $(cgDirApp)/etc/bib-style.xml
 	-cp --backup=t $@ $(cgDirBackup)
@@ -146,7 +163,9 @@ $(cgDirEtc)/bib-template.xml : $(cgDirApp)/etc/bib-template.xml
 
 # --------------------
 status-bib :
-	$(cgBin)/bib-status.php -c
+	$(cgBin)/bib-status.php -c | more
+	echo "Last run commands:"
+	cat $(cgStatus)/*.date | sort
 
 # ========================================
 # Rules supporting cmds
@@ -157,7 +176,7 @@ conf.env : $(cgDirApp)/doc/example/conf.env
 	    chmod a+rx $@; \
 	else \
 	    echo 'A new conf.env has been copied to $(cgDirTmp)'; \
-	    cp -v --backup=t $? $(cgDirTmp); \
+	    cp -v $? $(cgDirTmp); \
 	    chmod a+rx $(cgDirTmp)/$@; \
 	    touch $@; \
 	    diff -ZBbw $? $@; \
@@ -231,7 +250,7 @@ $(cgDirApp)/doc/ref/biblio.csv: $(cgDirApp)/doc/ref/biblio.dbf
 
 $(cgDirLoConf)/biblio.dbf :
 	@echo "Error: It looks like Libreoffice is not installed"
-	exit 10
+	exit 11
 
 $(cgDirApp)/doc/ref/biblio.dbf : $(cgDirLibreofficeConf)/biblio.dbf
 	cp $(cgDirLibreofficeConf)/biblio.db* $(cgDirApp)/doc/ref/
