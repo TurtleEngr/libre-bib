@@ -15,14 +15,16 @@ function fusage() {
 
 =head1 NAME
 
-bib-style-save.php - extract the biliography style settings
+bib-style-update.php - Update the biliography style settings
 
 =head1 SYNOPSIS
 
- ./bib-style-save.php -c [-h]
+ ./bib-style-update.php -c [-h]
 
 =head1 DESCRIPTION
 
+Update the biliography style settings in cgDirEtc/: bib-style.xml,
+bib-template.xml
 
 =head1 OPTIONS
 
@@ -60,7 +62,7 @@ This help.
 
 =head1 HISTORY
 
- $Revision: 1.4 $ $Date: 2023/05/28 23:25:15 $ GMT
+ $Revision: 1.2 $ $Date: 2023/05/28 23:25:15 $ GMT
 
 =cut
 
@@ -101,12 +103,16 @@ function fValidate() {
     global $cgDbBib;
     global $cgBin;
     global $cgDirApp;
+    global $cgDirEtc;
 
     # DB not used
     #fValidateCommon();
 
-    if ( ! file_exists("$cgDocFile"))
-        throw new Exception("Missing: cgDocFile $cgDocFile [" . __LINE__ . "]");
+    if ( ! file_exists("$cgDirEtc/bib-style.xml"))
+        throw new Exception("Missing: $cgDirEtc/bib-style.xml [" . __LINE__ . "]");
+
+    if ( ! file_exists("$cgDirEtc/bib-template.xml"))
+        throw new Exception("Missing: $cgDirEtc/bib-template.xml [" . __LINE__ . "]");
 
     return;    # ---------->
 } # fValidate
@@ -140,6 +146,7 @@ function fProcessStyleLine($pLine) {
 function fProcessStyleFile() {
     global $gInH;
     global $gOutH;
+    global $gEtcH;
     global $cgDebug;
     global $cgDocFile;
     global $cgDirEtc;
@@ -151,7 +158,8 @@ function fProcessStyleFile() {
     echo "Start processing styles.xml [" . __LINE__ . "]\n";
 
     $gInH = fopen("$cgDirTmp/styles.xml", 'r');
-    $gOutH = fopen("$cgDirEtc/bib-style.xml", 'w');
+    $gNewH = fopen("$cgDirEtc/bib-style.xml", 'r');
+    $gOutH = fopen("$cgDirTmp/styles.new.xml", 'w');
 
     $tFound = 0;
     $tIn = 0;
@@ -163,15 +171,20 @@ function fProcessStyleFile() {
             echo '.';
 
         $tResult = fProcessStyleLine($tLine);
-        if ($tResult == "start")
+        if ($tResult == "start") {
             $tIn = $tInAttr = $tFound = 1;
+            while ($tNewLine = fgets($gNewH))
+                fputs($gOutH, $tNewLine);
+            continue;
+        }
 
-        if ($tIn)
+        # Skip over the old section
+        if ( ! $tIn)
             fputs($gOutH, $tLine);
 
         # if '/>', done
         if ($tIn && $tInAttr && $tResult == "end1")
-            break;
+            $tIn = $tInAttr = 0;
 
         # if '>', now just look for end tag
         if ($tIn && $tInAttr && $tResult == "end2")
@@ -179,7 +192,7 @@ function fProcessStyleFile() {
 
         # End tag?
         if ($tIn && $tResult == "end3")
-            break;
+            $tIn = 0;
     }
     echo "\nProcessed $tNumLine lines in styles.xml. [" . __LINE__ . "]\n";
 
@@ -187,6 +200,7 @@ function fProcessStyleFile() {
         throw new Exception("Error: A bibliography has not been added to $cgDocFile. [" . __LINE__ . "]");
 
     fclose($gInH);
+    fclose($gNewH);
     fclose($gOutH);
 
     return;    # ---------->
@@ -221,7 +235,8 @@ function fProcessContentFile() {
     echo "Start processing content.xml [" . __LINE__ . "]\n";
 
     $gInH = fopen("$cgDirTmp/content.xml", 'r');
-    $gOutH = fopen("$cgDirEtc/bib-template.xml", 'w');
+    $gNewH = fopen("$cgDirEtc/bib-template.xml", 'r');
+    $gOutH = fopen("$cgDirTmp/content.new.xml", 'w');
 
     $tFound = 0;
     $tIn = 0;
@@ -232,14 +247,19 @@ function fProcessContentFile() {
             echo '.';
 
         $tResult = fProcessContentLine($tLine);
-        if ($tResult == "start")
+        if ($tResult == "start") {
             $tIn = $tFound = 1;
+            while ($tNewLine = fgets($gNewH))
+                fputs($gOutH, $tNewLine);
+            continue;
+        }
 
-        if ($tIn)
+        # Skip over the old section
+        if ( ! $tIn)
             fputs($gOutH, $tLine);
 
         if ($tIn && $tResult == "end")
-            break;
+            $tIn = 0;
     }
     echo "\nProcessed $tNumLine lines in content.xml. [" . __LINE__ . "]\n";
 
@@ -247,6 +267,7 @@ function fProcessContentFile() {
         throw new Exception("Error: A bibliography has not been added to $cgDocFile. [" . __LINE__ . "]");
 
     fclose($gInH);
+    fclose($gNewH);
     fclose($gOutH);
 
     return;    # ---------->
@@ -269,6 +290,7 @@ try {
     fUnpackFile($cgDocFile, "content styles");
     fProcessStyleFile();
     fProcessContentFile();
+    fPackFile($cgDocFile, "content styles");
 } catch(Exception $e) {
     echo "Problem: " . $e->getMessage() . " ["
         . __LINE__ . "]\n";

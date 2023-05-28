@@ -1,0 +1,269 @@
+        <text:bibliography-source>
+          <text:index-title-template text:style-name="Bibliography_20_Heading">
+          Bibliography</text:index-title-template>
+          <text:bibliography-entry-template text:bibliography-type="article"
+                                            text:style-name="Bibliography_20_1">
+
+            <text:index-entry-span>{</text:index-entry-span>
+            <text:index-entry-bibliography text:style-name="Strong_20_Emphasis"
+                                           text:bibliography-data-field="identifier" />
+            <text:index-entry-span>}</text:index-entry-span>
+            <text:index-entry-bibliography text:bibliography-data-field="author" />
+            <text:index-entry-span>"</text:index-entry-span>
+            <text:index-entry-bibliography text:bibliography-data-field="booktitle" />
+            <text:index-entry-span>"</text:index-entry-span>
+            <text:index-entry-bibliography text:bibliography-data-field="year" />
+            <text:index-entry-bibliography text:bibliography-data-field="publisher" />
+            <text:index-entry-bibliography text:bibliography-data-field="report-type" />
+            <text:index-entry-bibliography text:bibliography-data-field="isbn" />
+            <text:index-entry-bibliography text:bibliography-data-field="url" />
+          </text:bibliography-entry-template>
+          <text:bibliography-entry-template text:bibliography-type="book"
+                                            text:style-name="Bibliography_20_1">
+
+            <text:index-entry-span>{</text:index-entry-span>
+            <text:index-entry-bibliography text:style-name="Strong_20_Emphasis"
+                                           text:bibliography-data-field="identifier" />
+            <text:index-entry-span>}</text:index-entry-span>
+            <text:index-entry-bibliography text:bibliography-data-field="author" />
+            <text:index-entry-span></text:index-entry-span>
+            <text:index-entry-bibliography text:style-name="Emphasis"
+                                           text:bibliography-data-field="booktitle" />
+            <text:index-entry-bibliography text:bibliography-data-field="year" />
+            <text:index-entry-bibliography text:bibliography-data-field="publisher" />
+            <text:index-entry-bibliography text:bibliography-data-field="report-type" />
+            <text:index-entry-bibliography text:bibliography-data-field="isbn" />
+            <text:index-entry-bibliography text:bibliography-data-field="url" />
+          </text:bibliography-entry-template>
+          <text:bibliography-entry-template text:bibliography-type="booklet"
+                                            text:style-name="Bibliography_20_1">
+
+            <text:index-entry-bibliography text:bibliography-data-field="identifier" />
+            <text:index-entry-span>:</text:index-entry-span>
+            <text:index-entry-bibliography text:bibliography-data-field="author" />
+            <text:index-entry-span>,</text:index-entry-span>
+            <text:index-entry-bibliography text:bibliography-data-field="title" />
+            <text:index-entry-span>,</text:index-entry-span>
+            <text:index-entry-bibliography text:bibliography-data-field="year" />
+          </text:bibliography-entry-template>
+          <text:bibliography-entry-template text:bibliography-type="conference"
+                                            text:style-name="Bibliography_20_1">
+
+            <text:index-entry-bibliography text:bibliography-data-field="identifier" />
+            <text:index-entry-span>:</text:index-entry-span>
+            <text:index-entry-bibliography text:bibliography-data-field="author" />
+            <text:index-entry-span>,</text:index-entry-span>
+            <text:index-entry-bibliography text:bibliography-data-field="title" />
+            <text:index-entry-span>,</text:index-entry-span>
+            <text:index-entry-bibliography text:bibliography-data-field="year" />
+          </text:bibliography-entry-template>
+          <text:bibliography-entry-template text:bibliography-type="custom1"
+                                            text:style-name="Bibliography_20_1">
+
+            <text:index-entry-bibliography text:bibliography-data-field="identifier" />
+            <text:index-entry-span>:</text:index-entry-span>
+            <text:index-entry-bibliography text:bibliography-data-field="author" />
+            <text:index-entry-span>,</text:index-entry-span>
+            <text:index-entry-bibliography text:bibliography-data-field="title" />
+            <text:index-entry-span>,</text:index-entry-span>
+            <text:index-entry-bibliography text:bibliography-data-field="year" />
+          </text:bibliography-entry-template>
+          <text:bibliography-entry-template text:bibliography-type="custom2"
+                                            text:style-name="Bibliography_20_1">
+
+            <text:index-entry-bibliography text:bibliography-data-field="identifier" />
+            <text:index-entry-span>:</text:index-entry-span>
+            <text:index-entry-bibliography text:bibliography-data-field="author" />
+            <text:index-entry-span>,</text:index-entry-span>
+            <text:index-entry-bibliography text:bibliography-data-field="title" />
+            <text:index-entry-span>,</text:index-entry-span>
+            <text:index-entry-bibliography text:bibliography-data-field="year" />
+          </text:bibliography-entry-template>
+          <text:bibliography-entry-template text:bibliography-type="custom3"
+                                            text:style-name="Bibliography_20_1">
+
+            <text:index-entry-bibliography text:bibliography-data-field="identifier" />
+            <text:index-entry-span>:</text:index-entry-span>
+            <text:index-entry-bibliography text:bibliography-data-field="author" />
+            <text:index-entry-span>,</text:index-entry-span>
+            <text:index-entry-bibliography text:bibliography-data-field="title" />
+            <text:index-entry-span>,</text:index-entry-span>
+            <text:index-entry-bibliography text:bibliography-data-field="year" />
+          </text:bibliography-entry-template>
+          <text:bibliography-entry-template text:bibliography-type="custom4"
+                                            text:style-name="Bibliography_20_1">
+
+            <text:index-entry-bibliography text:bibliography-data-field="identifier" />
+            <text:index-entry-span>:</text:index-entry-span>
+            <text:index-entry-bibliography text:bibliography-data-field="author" />
+            <text:index-entry-span>,</text:index-entry-span>
+            <text:index-entry-bibliography text:bibliography-data-field="title" />
+            <text:index-entry-span>,</text:index-entry-span>
+            <text:index-entry-bibliography text:bibliography-data-field="year" />
+          </text:bibliography-entry-template>
+          <text:bibliography-entry-template text:bibliography-type="custom5"
+                                            text:style-name="Bibliography_20_1">
+
+            <text:index-entry-bibliography text:bibliography-data-field="identifier" />
+            <text:index-entry-span>:</text:index-entry-span>
+            <text:index-entry-bibliography text:bibliography-data-field="author" />
+            <text:index-entry-span>,</text:index-entry-span>
+            <text:index-entry-bibliography text:bibliography-data-field="title" />
+            <text:index-entry-span>,</text:index-entry-span>
+            <text:index-entry-bibliography text:bibliography-data-field="year" />
+          </text:bibliography-entry-template>
+          <text:bibliography-entry-template text:bibliography-type="email"
+                                            text:style-name="Bibliography_20_1">
+
+            <text:index-entry-bibliography text:bibliography-data-field="identifier" />
+            <text:index-entry-span>:</text:index-entry-span>
+            <text:index-entry-bibliography text:bibliography-data-field="author" />
+            <text:index-entry-span>,</text:index-entry-span>
+            <text:index-entry-bibliography text:bibliography-data-field="title" />
+            <text:index-entry-span>,</text:index-entry-span>
+            <text:index-entry-bibliography text:bibliography-data-field="year" />
+          </text:bibliography-entry-template>
+          <text:bibliography-entry-template text:bibliography-type="inbook"
+                                            text:style-name="Bibliography_20_1">
+
+            <text:index-entry-span>{</text:index-entry-span>
+            <text:index-entry-bibliography text:style-name="Strong_20_Emphasis"
+                                           text:bibliography-data-field="identifier" />
+            <text:index-entry-span>}</text:index-entry-span>
+            <text:index-entry-bibliography text:bibliography-data-field="author" />
+            <text:index-entry-span>"</text:index-entry-span>
+            <text:index-entry-bibliography text:bibliography-data-field="booktitle" />
+            <text:index-entry-span>"</text:index-entry-span>
+            <text:index-entry-bibliography text:bibliography-data-field="year" />
+            <text:index-entry-bibliography text:bibliography-data-field="publisher" />
+            <text:index-entry-bibliography text:bibliography-data-field="report-type" />
+            <text:index-entry-bibliography text:bibliography-data-field="isbn" />
+            <text:index-entry-bibliography text:bibliography-data-field="url" />
+          </text:bibliography-entry-template>
+          <text:bibliography-entry-template text:bibliography-type="incollection"
+                                            text:style-name="Bibliography_20_1">
+
+            <text:index-entry-bibliography text:bibliography-data-field="identifier" />
+            <text:index-entry-span>:</text:index-entry-span>
+            <text:index-entry-bibliography text:bibliography-data-field="author" />
+            <text:index-entry-span>,</text:index-entry-span>
+            <text:index-entry-bibliography text:bibliography-data-field="title" />
+            <text:index-entry-span>,</text:index-entry-span>
+            <text:index-entry-bibliography text:bibliography-data-field="year" />
+          </text:bibliography-entry-template>
+          <text:bibliography-entry-template text:bibliography-type="inproceedings"
+                                            text:style-name="Bibliography_20_1">
+
+            <text:index-entry-bibliography text:bibliography-data-field="identifier" />
+            <text:index-entry-span>:</text:index-entry-span>
+            <text:index-entry-bibliography text:bibliography-data-field="author" />
+            <text:index-entry-span>,</text:index-entry-span>
+            <text:index-entry-bibliography text:bibliography-data-field="title" />
+            <text:index-entry-span>,</text:index-entry-span>
+            <text:index-entry-bibliography text:bibliography-data-field="year" />
+          </text:bibliography-entry-template>
+          <text:bibliography-entry-template text:bibliography-type="journal"
+                                            text:style-name="Bibliography_20_1">
+
+            <text:index-entry-bibliography text:bibliography-data-field="identifier" />
+            <text:index-entry-span>:</text:index-entry-span>
+            <text:index-entry-bibliography text:bibliography-data-field="author" />
+            <text:index-entry-span>,</text:index-entry-span>
+            <text:index-entry-bibliography text:bibliography-data-field="title" />
+            <text:index-entry-span>,</text:index-entry-span>
+            <text:index-entry-bibliography text:bibliography-data-field="year" />
+          </text:bibliography-entry-template>
+          <text:bibliography-entry-template text:bibliography-type="manual"
+                                            text:style-name="Bibliography_20_1">
+
+            <text:index-entry-bibliography text:bibliography-data-field="identifier" />
+            <text:index-entry-span>:</text:index-entry-span>
+            <text:index-entry-bibliography text:bibliography-data-field="author" />
+            <text:index-entry-span>,</text:index-entry-span>
+            <text:index-entry-bibliography text:bibliography-data-field="title" />
+            <text:index-entry-span>,</text:index-entry-span>
+            <text:index-entry-bibliography text:bibliography-data-field="year" />
+          </text:bibliography-entry-template>
+          <text:bibliography-entry-template text:bibliography-type="mastersthesis"
+                                            text:style-name="Bibliography_20_1">
+
+            <text:index-entry-bibliography text:bibliography-data-field="identifier" />
+            <text:index-entry-span>:</text:index-entry-span>
+            <text:index-entry-bibliography text:bibliography-data-field="author" />
+            <text:index-entry-span>,</text:index-entry-span>
+            <text:index-entry-bibliography text:bibliography-data-field="title" />
+            <text:index-entry-span>,</text:index-entry-span>
+            <text:index-entry-bibliography text:bibliography-data-field="year" />
+          </text:bibliography-entry-template>
+          <text:bibliography-entry-template text:bibliography-type="misc"
+                                            text:style-name="Bibliography_20_1">
+
+            <text:index-entry-span>{</text:index-entry-span>
+            <text:index-entry-bibliography text:style-name="Strong_20_Emphasis"
+                                           text:bibliography-data-field="identifier" />
+            <text:index-entry-span>}</text:index-entry-span>
+            <text:index-entry-bibliography text:bibliography-data-field="author" />
+            <text:index-entry-span>"</text:index-entry-span>
+            <text:index-entry-bibliography text:bibliography-data-field="booktitle" />
+            <text:index-entry-span>"</text:index-entry-span>
+            <text:index-entry-bibliography text:bibliography-data-field="year" />
+            <text:index-entry-bibliography text:bibliography-data-field="publisher" />
+            <text:index-entry-bibliography text:bibliography-data-field="report-type" />
+            <text:index-entry-bibliography text:bibliography-data-field="url" />
+          </text:bibliography-entry-template>
+          <text:bibliography-entry-template text:bibliography-type="phdthesis"
+                                            text:style-name="Bibliography_20_1">
+
+            <text:index-entry-bibliography text:bibliography-data-field="identifier" />
+            <text:index-entry-span>:</text:index-entry-span>
+            <text:index-entry-bibliography text:bibliography-data-field="author" />
+            <text:index-entry-span>,</text:index-entry-span>
+            <text:index-entry-bibliography text:bibliography-data-field="title" />
+            <text:index-entry-span>,</text:index-entry-span>
+            <text:index-entry-bibliography text:bibliography-data-field="year" />
+          </text:bibliography-entry-template>
+          <text:bibliography-entry-template text:bibliography-type="proceedings"
+                                            text:style-name="Bibliography_20_1">
+
+            <text:index-entry-bibliography text:bibliography-data-field="identifier" />
+            <text:index-entry-span>:</text:index-entry-span>
+            <text:index-entry-bibliography text:bibliography-data-field="author" />
+            <text:index-entry-span>,</text:index-entry-span>
+            <text:index-entry-bibliography text:bibliography-data-field="title" />
+            <text:index-entry-span>,</text:index-entry-span>
+            <text:index-entry-bibliography text:bibliography-data-field="year" />
+          </text:bibliography-entry-template>
+          <text:bibliography-entry-template text:bibliography-type="techreport"
+                                            text:style-name="Bibliography_20_1">
+
+            <text:index-entry-bibliography text:bibliography-data-field="identifier" />
+            <text:index-entry-span>:</text:index-entry-span>
+            <text:index-entry-bibliography text:bibliography-data-field="author" />
+            <text:index-entry-span>,</text:index-entry-span>
+            <text:index-entry-bibliography text:bibliography-data-field="title" />
+            <text:index-entry-span>,</text:index-entry-span>
+            <text:index-entry-bibliography text:bibliography-data-field="year" />
+          </text:bibliography-entry-template>
+          <text:bibliography-entry-template text:bibliography-type="unpublished"
+                                            text:style-name="Bibliography_20_1">
+
+            <text:index-entry-bibliography text:bibliography-data-field="identifier" />
+            <text:index-entry-span>:</text:index-entry-span>
+            <text:index-entry-bibliography text:bibliography-data-field="author" />
+            <text:index-entry-span>,</text:index-entry-span>
+            <text:index-entry-bibliography text:bibliography-data-field="title" />
+            <text:index-entry-span>,</text:index-entry-span>
+            <text:index-entry-bibliography text:bibliography-data-field="year" />
+          </text:bibliography-entry-template>
+          <text:bibliography-entry-template text:bibliography-type="www"
+                                            text:style-name="Bibliography_20_1">
+
+            <text:index-entry-bibliography text:bibliography-data-field="identifier" />
+            <text:index-entry-span>:</text:index-entry-span>
+            <text:index-entry-bibliography text:bibliography-data-field="author" />
+            <text:index-entry-span>,</text:index-entry-span>
+            <text:index-entry-bibliography text:bibliography-data-field="title" />
+            <text:index-entry-span>,</text:index-entry-span>
+            <text:index-entry-bibliography text:bibliography-data-field="year" />
+          </text:bibliography-entry-template>
+        </text:bibliography-source>

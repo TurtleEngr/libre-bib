@@ -115,7 +115,7 @@ $(cgDirStatus)/import-lib.date : $(cgLibFile)
 # --------------------
 ref-new : $(cgDirStatus)/ref-new.date
 
-$(cgDirStatus)/bib-update.date : $(cgDocFile) $(cgDirEtc)/cite-new.xml
+$(cgDirStatus)/ref-new.date : $(cgDocFile) $(cgDirEtc)/cite-new.xml
 	cp --backup=t $(cgDocFile) $(cgDirBackup)
 	$(cgBin)/bib-ref-new.php -c
 	echo "$(mDate) ref-new" >$@
