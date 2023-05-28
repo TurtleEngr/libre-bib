@@ -297,10 +297,8 @@ fCheckUser() {
 
     # ----------
     for gVar in \
-        cgBackup \
         cgDebug \
         cgNoExec \
-        cgNoExecCmd \
         cgUseLib \
         cgUseRemote \
         cgVerbose; do

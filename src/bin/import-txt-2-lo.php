@@ -70,7 +70,7 @@ Set these in conf.env
 
 =head1 HISTORY
 
-$Revision: 1.3 $ $Date: 2023/05/26 09:18:33 $ GMT
+$Revision: 1.4 $ $Date: 2023/05/28 01:09:05 $ GMT
 
 =cut
 
@@ -120,10 +120,9 @@ function fValidate() {
 function fCreateTable() {
     global $cgDbLo;
     global $gBackupName;
-    global $cgBackup;
 
     $gBackupName = "";
-    if ($cgBackup and fTableExists($cgDbLo))
+    if (fTableExists($cgDbLo))
         $gBackupName = fRenameTable($cgDbLo);
 
     if (fTableExists($cgDbLo))
@@ -293,8 +292,7 @@ try {
     fImportTxt();
 } catch(Exception $e) {
     echo "Problem creating table: " . $e->getMessage() . "\n";
-    if ($cgBackup)
-        echo "Concider restoring $cgDbLo from $gBackupName\n";
+    echo "Concider restoring $cgDbLo from $gBackupName\n";
     exit(2);     # ---------->
 }
 

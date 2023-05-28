@@ -92,7 +92,7 @@ Set these in conf.env
 
 =head1 HISTORY
 
-$Revision: 1.2 $ $Date: 2023/05/19 21:11:42 $ GMT
+$Revision: 1.3 $ $Date: 2023/05/28 01:09:05 $ GMT
 
 =cut
 
@@ -180,10 +180,9 @@ class ManageBiblio {
 
     # --------------------
     public function backup($pTable) {
-        global $cgBackup;
 
         $tCount = $this->gDbH->query("SHOW TABLES LIKE '" . $pTable . "'")->rowCount();
-        if ($cgBackup and $tCount > 0) {
+        if ($tCount > 0) {
             # Append: "_MM-DD_HH-MM"
             $tNewName = "$pTable" . "_" . fDate("iso");
             $tSql = "CREATE TABLE `$tNewName` SELECT * FROM `$pTable`";

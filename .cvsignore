@@ -3,3 +3,4 @@
 .phptidy-cache
 src/bin/.phptidy-cache
 cmd.tmp
+test-dir

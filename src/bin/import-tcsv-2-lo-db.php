@@ -103,7 +103,7 @@ Set these in conf.env
 
 =head1 HISTORY
 
-$Revision: 1.1 $ $Date: 2023/05/17 01:13:24 $ GMT
+$Revision: 1.2 $ $Date: 2023/05/28 01:09:05 $ GMT
 
 =cut
 
@@ -175,10 +175,9 @@ function fCreateTable() {
     global $gBackupName;
     global $gFieldList;
     global $gFiileH;
-    global $cgBackup;
 
     $gBackupName = "";
-    if ($cgBackup and fTableExists($cgDbLo))
+    if (fTableExists($cgDbLo))
         $gBackupName = fRenameTable($cgDbLo);
 
     #  Get the fields from the first row
@@ -256,8 +255,7 @@ try {
     fInsertRec();
 } catch(Exception $e) {
     echo "Problem creating table: " . $e->getMessage() . "\n";
-    if ($cgBackup)
-        echo "Concider restoring $cgDbLo from $gBackupName\n";
+    echo "Concider restoring $cgDbLo from $gBackupName\n";
     exit(3);     # ---------->
 }
 

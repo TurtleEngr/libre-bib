@@ -6,29 +6,26 @@ $cgDebug=$_ENV["cgDebug"];
 global $cgNoExec;
 $cgNoExec=$_ENV["cgNoExec"];
 
-global $cgNoExecCmd;
-$cgNoExecCmd=$_ENV["cgNoExecCmd"];
-
 global $cgVerbose;
 $cgVerbose=$_ENV["cgVerbose"];
 
-global $cgBackup;
-$cgBackup=$_ENV["cgBackup"];
+global $cgDirBackup;
+$cgDirBackup=$_ENV["cgDirBackup"];
+
+global $cgDirConf;
+$cgDirConf=$_ENV["cgDirConf"];
+
+global $cgDirEtc;
+$cgDirEtc=$_ENV["cgDirEtc"];
+
+global $cgDirLibreofficeConf;
+$cgDirLibreofficeConf=$_ENV["cgDirLibreofficeConf"];
 
 global $cgDirStatus;
 $cgDirStatus=$_ENV["cgDirStatus"];
 
 global $cgDirTmp;
 $cgDirTmp=$_ENV["cgDirTmp"];
-
-global $cgDirConf;
-$cgDirConf=$_ENV["cgDirConf"];
-
-global $cgDirLibreofficeConf;
-$cgDirLibreofficeConf=$_ENV["cgDirLibreofficeConf"];
-
-global $cgDirBackup;
-$cgDirBackup=$_ENV["cgDirBackup"];
 
 global $cgBackupNum;
 $cgBackupNum=$_ENV["cgBackupNum"];

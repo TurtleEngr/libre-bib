@@ -16,19 +16,17 @@ mTidyWide = tidy -q -i -w 4000 -asxhtml --break-before-br no --indent-attributes
 mTidyXml = tidy -q -i -w 78 -xml --break-before-br yes --indent-attributes yes --indent-spaces 2 --tidy-mark no --vertical-space no
 
 # ----------
+# bib Commands
 
 check :
 	@echo 'OK'
 	@exit 0
 
-version :
+version ver :
 	cat $(cgDirApp)/VERSION
 
-inc-ver :
-	echo '$$Revision: 1.6 $$ $$Date: 2023/05/26 09:18:33 $$ GMT' >$cgDirApp/VERSION
-
 add edit :
-	emacs $(cgLoFile) &
+	$(EDITOR) $(cgLoFile) &
 	@echo "When done run: make import-lo"
 
 clean :
@@ -39,55 +37,23 @@ help :
 	@echo "See file: $(cgDirApp)/doc/manual/libre-bib.html"
 	sensible-browser file://$(cgDirApp)/doc/manual/libre-bib.html
 
-commit-all :
-	cd ..; cvs ci -m Updated
-	git ci -am Updated
-	git push origin develop
-
-release :
-	git co main; git merge develop
-	git push origin main
-	git co develop
-
-$(cgDbPassCache) :
-	read -srp 'Password ($(cgDbPassHint))? '; \
-	echo $$REPLY >$@
-
 connect : $(cgDbPassCache)
-	@echo First define tunnel: ssh HOST.example.com
-	@echo See: ~/ssh/config
-	@echo "show databases; use DBNAME; show tables;"
 	@echo
+	@echo "Test: show databases; use DBNAME; show tables; quit"
 	if [[ "$(cgUseRemote)" == "true" ]]; then \
 	    tPort=$(cgDbPortRemote); \
+	    echo First define tunnel: ssh HOST.example.com; \
+	    echo See: ~/ssh/config; \
 	else \
 	    tPort=$(cgDbPortLocal); \
 	fi; \
 	mysql -P $$tPort -u $(cgDbUser) --password=$$(cat $(cgDbPassCache)) -h $(cgDbHost) $(cgDbName)
 
-connect-admin :
-	mysql -P $(gPortRemote) -u admin -p -h $(gHost)
+$(cgDbPassCache) :
+	read -srp 'Password ($(cgDbPassHint))? '; \
+	echo $$REPLY >$@
 
-$(cgDirStatus) $(cgDirTmp) $(cgDirBackup) $(cgDirConf) ~/.ssh :
-	mkdir -p $@
-
-# ========================================
-# Normal update of src/$(cgLoFile) and the lo db
-
-# Edit src/$(cgLoFile)
-  # Run: make import-lo
-  # cvs ci -m Updated
-  # This is a full copy from $(cgLoFile), not a merge
-
-# If lo db is modified,
-  # Run: make export-lo
-  # Diffs can be merged into $(cgLoFile) to create an updated lo db
-  # If OK, cp gen/biblio-new.txt to src/$(cgLoFile)
-  # cvs ci -m Updated
-
-# Backup
-  # Run: make backup-lo
-  # cvs ci -m Updated
+setup-bib : $(cgDirEtc) $(cgDirStatus) $(cgDirTmp) $(cgDirBackup) $(cgDirConf) $(cgLoFile) $(cgLibFile) $(cgDocFile) ~/.ssh/libre-bib.ssh
 
 # ----------
 # Import: $(cgLoFile)
@@ -100,14 +66,14 @@ $(cgDirStatus)/import-lo.date : conf.env $(cgLoFile)
 	date +%F_%T >$@
 
 # ----------
-# export: biblio-new.txt
+# export: tmp/biblio.txt
 
 export-lo :
 	$(cgBin)/export-lo-2-txt.php -c
 	@echo "See: $(cgDirTmp)/$(cgLoFile)"
 
 # ----------
-# backup: lo db
+# backup: lo-db to backup/
 
 backup-lo :
 	-cp --backup=t $(cgDirBackup)/backup-lo.csv $(cgDirBackup)/backup-lo.csv.sav
@@ -115,7 +81,6 @@ backup-lo :
 	date +%F_%T >$(cgDirStatus)/backup-lo.date
 
 restore-lo :
-	cgBackup=true; \
 	$(cgBin)/import-tcsv-2-lo-db.php -c -s c
 
 # ----------
@@ -131,9 +96,6 @@ update-lo :
 # --------------------
 # Update lib-db
 
-## -c config/conf.php is not needed. conf.env valuse will be used to
-## create AppDir/etc/conf.php -c
-
 import-lib : $(cgDirStatus)/import-lib.date
 
 $(cgDirStatus)/import-lib.date : $(cgLibFile)
@@ -144,18 +106,64 @@ $(cgDirStatus)/import-lib.date : $(cgLibFile)
 	-diff $(cgDirApp)/etc/lib-schema.tsv $(cgDirTmp)/lib-schema.tsv
 	@echo "Warning: If there are differences, there could be problems."
 
-ref-new : $(cgDocFile)
+# --------------------
+ref-new : $(cgDocFile) $(cgDirEtc)/cite-new.xml
 	cp --backup=t $(cgDocFile) $(cgDirBackup)
 	$(cgBin)/bib-ref-new.php -c
 	date +%F_%T >$(cgDirStatus)/bib-update.date
 
-ref-update : $(cgDocFile)
+$(cgDirEtc)/cite-new.xml : $(cgDirApp)/etc/cite-new.xml
+	-cp --backup=t $@ $(cgDirBackup)
+	cp $? $@
+
+# --------------------
+ref-update : $(cgDocFile) $(cgDirEtc)/cite-update.xml
 	cp --backup=t $(cgDocFile) $(cgDirBackup)
 	$(cgBin)/bib-ref-update.php -c
 	date +%F_%T >$(cgDirStatus)/bib-update.date
 
-# ----------
-setup-bib : $(cgDirStatus) $(cgDirTmp) $(cgDirBackup) $(cgDirConf) $(cgDocFile) $(cgLoFile) $(cgLibFile) ~/.ssh/libre-bib.ssh
+$(cgDirEtc)/cite-update.xml : $(cgDirApp)/etc/cite-update.xml
+	-cp --backup=t $@ $(cgDirBackup)
+	cp $? $@
+
+# --------------------
+save-style : $(cgDirEtc) $(cgDirBackup) $(cgDocFile) $(cgDirEtc)/bib-style.xml $(cgDirEtc)/bib-template.xml
+	-cp $(cgDirEtc)/*.xml $(cgDirBackup)
+	$(cgBin)/bib-style-save.php -c
+
+# --------------------
+update-style : $(cgDirEtc) $(cgDirEtc)/bib-style.xml $(cgDirEtc)/bib-template.xml
+	$(cgBin)/bib-style-update.php -c
+
+$(cgDirEtc)/bib-style.xml : $(cgDirApp)/etc/bib-style.xml
+	-cp --backup=t $@ $(cgDirBackup)
+	cp --backup=t $? $@
+
+$(cgDirEtc)/bib-template.xml : $(cgDirApp)/etc/bib-template.xml
+	-cp --backup=t $@ $(cgDirBackup)
+	cp --backup=t $? $@
+
+# --------------------
+status-bib :
+	$(cgBin)/bib-status.php -c
+
+# ========================================
+# Rules supporting cmds
+
+conf.env : $(cgDirApp)/doc/example/conf.env
+	@if [[ ! -f conf.env  ]]; then \
+	    cp -v $? $@; \
+	    chmod a+rx $@; \
+	else \
+	    echo 'A new conf.env has been copied to $(cgDirTmp)'; \
+	    cp -v --backup=t $? $(cgDirTmp); \
+	    chmod a+rx $(cgDirTmp)/$@; \
+	    touch $@; \
+	    diff -ZBbw $? $@; \
+	fi
+
+$(cgDirBackup) $(cgDirConf) $(cgDirEtc) $(cgDirStatus) $(cgDirTmp) ~/.ssh :
+	mkdir -p $@
 
 $(cgLoFile) :
 	@echo -e '\nMissing: $@. Copy an example from'
@@ -178,11 +186,7 @@ $(cgLibFile) :
 	touch $@
 
 # ----------
-status-bib :
-	$(cgBin)/bib-status.php -c
-
-# ----------
-# Rules
+# Extension Rules
 
 %.md : %.html
 	pandoc -f html -t markdown < $<  > $@
@@ -198,7 +202,7 @@ status-bib :
 	-$(mTidyXhtml) $@
 
 # ========================================
-# Fixup user customization in etc/
+# Fixup user customizations in etc/
 
 # ----------
 rebuild : $(cgDirApp)/etc/conf.php $(cgDirApp)/doc/example/conf.env
@@ -211,18 +215,7 @@ $(cgDirApp)/etc/conf.php : $(cgDirApp)/etc/conf.env
 	echo -e '$$cgDirApp=$$_ENV["cgDirApp"];' >>$@
 
 $(cgDirApp)/doc/example/conf.env : $(cgDirApp)/etc/conf.env
-	sed 's/^export /#export /' <$? >$@
-	chmod a+rx $@
-
-conf.env : $(cgDirApp)/doc/example/conf.env
-	@if [[ ! -f conf.env  ]]; then \
-	    cp -v $? $@; \
-	else \
-	    echo 'A new conf.env has been copied to $(cgDirTmp)'; \
-	    cp -v --backup=t $? $(cgDirTmp); \
-	    chmod a+rx $(cgDirTmp)/$@; \
-	    touch $@; \
-	fi
+	sed 's/^export /    #/' <$? >$@
 	chmod a+rx $@
 
 # ----------
@@ -272,35 +265,3 @@ verify-lib-schema : $(cgLibFile)
 	    echo '$(cgDirApp)/etc/lib-schema.tsv and'; \
 	    echo '$(cgDirTmp)/lib-schema.tsv'; \
 	fi
-
-# ----------
-test-reset :
-	-rm ../test/example*
-	-rm ../test/*~
-
-test-add test-new : ../test/example.odt
-	$(cgBin)/bib-ref-new.php -f ../test/example.odt
-	mv ../test/example.odt ../test/example-add.odt
-	@echo "Verify: libreoffice ../test/example-add.odt"
-
-test-update : ../test/example-add.odt
-	cp $? ../test/example.odt
-	$(cgBin)/bib-ref-update.php -f ../test/example.odt
-	mv ../test/example.odt ../test/example-update.odt
-	@echo "Verify: libreoffice ../test/example.odt"
-
-test-dup-add : ../test/example-add.odt
-	cp $? ../test/example.odt
-	$(cgBin)/bib-ref-new.php -f ../test/example.odt -d
-	@echo "Should be 0 references"
-
-test-dup-update : ../test/example-update.odt
-	cp $? ../test/example.odt
-	$(cgBin)/bib-ref-update.php -f ../test/example-update.odt
-	@echo "Should be lots of references"
-
-../test/example.odt : ../doc/example/example.odt
-	cp $? $@
-
-# Optional
-#../doc/example/example.odt : ../doc/example/example.org

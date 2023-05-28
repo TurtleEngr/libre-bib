@@ -4,7 +4,7 @@ export SHELL = /bin/bash
 export cgDirApp = /opt/libre-bib
 export cgBin = $(cgDirApp)/bin
 
-mMake = . src/etc/conf.env; make -f src/bin/Makefile
+mMake = . src/etc/conf.env; cgDirApp=$(PWD)/src; cgBin=$(PWD)/src/bin; make -f src/bin/Makefile
 
 mPackgeList = \
 	libreoffice \
@@ -47,7 +47,7 @@ package :
 
 # --------------------
 # Manual install - only for testing
-install : $(cgDirApp) check mk-doc
+install : $(cgDirApp) check mk-doc clean
 	-find src -name '*~' -exec rm {} \; &>/dev/null
 	-mkdir $(cgDirApp)/etc/old &>/dev/null
 	cp --backup=t $$(find $(cgDirApp)/etc/* -prune -type f) $(cgDirApp)/etc/old/
@@ -162,9 +162,14 @@ mk-app-dir $(cgDirApp) :
 	sudo find $(cgDirApp) -type d -exec chmod a+rx {} \;
 	sudo find $(cgDirApp) -type f -exec chmod a+r {} \;
 
+# Use the rules
 mk-doc :
+	-$(mMake) src/doc/manual/libre-bib.html
 	-$(mMake) src/doc/manual/libre-bib.md
 	-$(mMake) src/doc/example/example-outline.html
+
+rebuild :
+	-$(mMake) rebuild
 
 .git/hooks/pre-commit : build/etc/pre-commit
 	cp $? $@

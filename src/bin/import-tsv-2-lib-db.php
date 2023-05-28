@@ -124,7 +124,7 @@ fields.
 
 =head1 HISTORY
 
-$Revision: 1.4 $ $Date: 2023/05/26 09:23:57 $ GMT
+$Revision: 1.5 $ $Date: 2023/05/28 01:09:05 $ GMT
 
 =cut
 
@@ -181,7 +181,6 @@ function fCreateTable() {
     global $cgDebug;
     global $cgDbLib;
     global $gBackupName;
-    global $cgBackup;
 
     #  Get the fields from the first row
     $tTmpList = fgetcsv($gHandle, 15000, "\t");
@@ -193,7 +192,7 @@ function fCreateTable() {
     }
 
     $gBackupName = "";
-    if ($cgBackup and fTableExists($cgDbLib))
+    if (fTableExists($cgDbLib))
         $gBackupName = fRenameTable($cgDbLib);
 
     if (fTableExists($cgDbLib))

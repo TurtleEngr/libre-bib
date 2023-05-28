@@ -118,18 +118,14 @@ function fBool($pVal) {
 
 # -----------------------------
 function fFixBool() {
-    global $cgBackup;
     global $cgDebug;
     global $cgNoExec;
-    global $cgNoExecCmd;
     global $cgUseLib;
     global $cgUseRemote;
     global $cgVerbose;
 
-    $cgBackup = fBool($cgBackup);
     $cgDebug = fBool($cgDebug);
     $cgNoExec = fBool($cgNoExec);
-    $cgNoExecCmd = fBool($cgNoExecCmd);
     $cgUseLib = fBool($cgUseLib);
     $cgUseRemote = fBool($cgUseRemote);
     $cgVerbose = fBool($cgVerbose);
@@ -141,8 +137,6 @@ function fFixBool() {
             echo "NoExec is on.\n";
         if ($cgVerbose)
             echo "Verbose is on.\n";
-        if ($cgBackup)
-            echo "Backup is on.\n";
         if ($cgUseRemote)
             echo "UseRemote is on.\n";
         if ($cgUseLib)

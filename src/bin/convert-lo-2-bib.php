@@ -23,8 +23,8 @@ convert-lo-2-bib.php - copy lo table to create partially formatted bib fields.
 
 =head1 DESCRIPTION
 
-Generate the cgDbBib table from the $cgDbLo table. If $cgBackup, make
-a backup of the cgDbBib table.
+Generate the cgDbBib table from the $cgDbLo table. Make a backup of
+the cgDbBib table.
 
 =head1 OPTIONS
 
@@ -50,7 +50,6 @@ Set these in conf.env
 
     cgDbBib
     cgDbLo
-    cgBackup
 
 =for comment =head1 FILES
 
@@ -70,7 +69,7 @@ Set these in conf.env
 
 =head1 HISTORY
 
-$Revision: 1.2 $ $Date: 2023/05/19 21:11:42 $ GMT
+$Revision: 1.3 $ $Date: 2023/05/28 01:09:05 $ GMT
 
 =cut
 
@@ -106,7 +105,6 @@ function fGetOps() {
 # -----------------------------
 function fValidate() {
     global $cgBin;
-    global $cgBackup;
     global $cgDbLo;
 
     fValidateCommon();
@@ -117,11 +115,10 @@ function fValidate() {
 
 # -----------------------------
 function fCreateBibTable() {
-    global $cgBackup;
     global $cgDbLo;
     global $cgDbBib;
 
-    if ($cgBackup and fTableExists($cgDbBib))
+    if (fTableExists($cgDbBib))
         fRenameTable($cgDbBib);
 
     if (fTableExists($cgDbBib))

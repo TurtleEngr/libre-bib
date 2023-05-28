@@ -55,19 +55,13 @@ if [[ "${cgBuild:-false}" != "true" ]]; then
     . ./conf.env
 fi
 
-tRun=""
-if [[ "$cgNoExecCmd" == "true" ]]; then
-    tRun="-n"
-    tSilent=""
-fi
-
 tSilent="-s"
 if [[ "$cgVerbose" == "true" ]]; then
     tSilent=""
 fi
 
 # Commands are executed with make
-make -f $cgBin/Makefile $tRun $tSilent $pParm
+make -f $cgBin/Makefile $tSilent $pParm
 
 if [[ "${cgBuild:-false}" != "true" ]]; then
     if [[ $? -ne 0 ]]; then
