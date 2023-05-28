@@ -60,7 +60,7 @@ This help.
 
 =head1 HISTORY
 
- $Revision: 1.1 $ $Date: 2023/05/28 01:09:04 $ GMT
+ $Revision: 1.2 $ $Date: 2023/05/28 19:48:56 $ GMT
 
 =cut
 
@@ -111,7 +111,7 @@ function fValidate() {
 } # fValidate
 
 # -----------------------------
-function fProcessLine($pLine) {
+function fProcessStyleLine($pLine) {
     $tStartRegEx = '/<text:bibliography-configuration text:prefix=""/';
     $tEndRegEx1   = '/ \/>$/';
     $tEndRegEx2   = '/>$/';
@@ -133,19 +133,21 @@ function fProcessLine($pLine) {
         return "end2";    # ---------->
 
     return "";    # ---------->
-} # fProcessLine
+} # fProcessStyleLine
 
 # -----------------------------
-function fProcessFile() {
+function fProcessStyleFile() {
     global $gInH;
     global $gOutH;
-    global $gNumRef;
     global $cgDebug;
     global $cgDocFile;
     global $cgDirEtc;
     global $cgDirTmp;
 
-    echo "Start processing [" . __LINE__ . "]\n";
+    # This assumes there is only one "bibliography-configuration" tag
+    # in the styles.xml file.
+
+    echo "Start processing styles.xml [" . __LINE__ . "]\n";
 
     $gInH = fopen("$cgDirTmp/styles.xml", 'r');
     $gOutH = fopen("$cgDirEtc/bib-style.xml", 'w');
@@ -156,20 +158,19 @@ function fProcessFile() {
     $tNumLine = 0;
     while ($tLine = fgets($gInH)) {
         ++$tNumLine;
-        $tResult = fProcessLine($tLine);
-        if ($tResult == "start") {
-            $tIn = 1;
-            $tInAttr = 1;
-            $tFound = 1;
-        }
+        if ($tNumLine % 100 == 0)
+            echo '.';
+
+        $tResult = fProcessStyleLine($tLine);
+        if ($tResult == "start")
+            $tIn = $tInAttr = $tFound = 1;
+
         if ($tIn)
             fputs($gOutH, $tLine);
 
         # if '/>', done
-        if ($tIn && $tInAttr && $tResult == "end1") {
-            $tIn = 0;
-            $tInAttr = 0;
-        }
+        if ($tIn && $tInAttr && $tResult == "end1")
+            break;
 
         # if '>', now just look for end tag
         if ($tIn && $tInAttr && $tResult == "end2")
@@ -177,9 +178,9 @@ function fProcessFile() {
 
         # End tag?
         if ($tIn && $tResult == "end3")
-            $tIn = 0;
+            break;
     }
-    echo "\nProcessed $tNumLine lines. [" . __LINE__ . "]\n";
+    echo "\nProcessed $tNumLine lines in styles.xml. [" . __LINE__ . "]\n";
 
     if ( ! $tFound)
         throw new Exception("Error: A bibliography has not been added to $cgDocFile. [" . __LINE__ . "]");
@@ -188,7 +189,67 @@ function fProcessFile() {
     fclose($gOutH);
 
     return;    # ---------->
-} # fProcessFile
+} # fProcessStyleFile
+
+# -----------------------------
+function fProcessContentLine($pLine) {
+    $tStartRegEx = '/<text:bibliography-source>/';
+    $tEndRegEx   = '<\/text:bibliography-source>';
+
+    if (preg_match($tStartRegEx, $pLine))
+        return "start";    # ---------->
+
+    if (preg_match($tEndRegEx, $pLine))
+        return "end";    # ---------->
+
+    return "";    # ---------->
+} # fProcessContentLine
+
+# -----------------------------
+function fProcessContentFile() {
+    global $gInH;
+    global $gOutH;
+    global $cgDebug;
+    global $cgDocFile;
+    global $cgDirEtc;
+    global $cgDirTmp;
+
+    # This assumes there is only one "bibliography-source" tag in the
+    # content.xml file.
+
+    echo "Start processing content.xml [" . __LINE__ . "]\n";
+
+    $gInH = fopen("$cgDirTmp/content.xml", 'r');
+    $gOutH = fopen("$cgDirEtc/bib-template.xml", 'w');
+
+    $tFound = 0;
+    $tIn = 0;
+    $tNumLine = 0;
+    while ($tLine = fgets($gInH)) {
+        ++$tNumLine;
+        if ($tNumLine % 500 == 0)
+            echo '.';
+
+        $tResult = fProcessContentLine($tLine);
+        if ($tResult == "start")
+            $tIn = $tFound = 1;
+
+        if ($tIn)
+            fputs($gOutH, $tLine);
+
+        if ($tIn && $tResult == "end")
+            break;
+    }
+    echo "\nProcessed $tNumLine lines in content.xml. [" . __LINE__ . "]\n";
+
+    if ( ! $tFound)
+        throw new Exception("Error: A bibliography has not been added to $cgDocFile. [" . __LINE__ . "]");
+
+    fclose($gInH);
+    fclose($gOutH);
+
+    return;    # ---------->
+} # fProcessContentFile
 
 # ========================================
 # Includes, GetOps, Validate, ReadOnly
@@ -205,7 +266,8 @@ try {
 # Write section
 try {
     fUnpackFile($cgDocFile, "content styles");
-    fProcessFile();
+    fProcessStyleFile();
+    fProcessContentFile();
 } catch(Exception $e) {
     echo "Problem: " . $e->getMessage() . " ["
         . __LINE__ . "]\n";
