@@ -4,7 +4,7 @@ export SHELL = /bin/bash
 export cgDirApp = /opt/libre-bib
 export cgBin = $(cgDirApp)/bin
 
-mMake = . src/etc/conf.env; cgDirApp=$(PWD)/src; cgBin=$(PWD)/src/bin; make -f src/bin/Makefile
+mMake = . src/etc/conf.env; cgDirApp=$(PWD)/src; cgBin=$(PWD)/src/bin; make -f src/bin/bib-cmd.mak
 
 mPackgeList = \
 	libreoffice \
@@ -178,7 +178,7 @@ rebuild :
 	git config --bool gitproj.hook.check-whitespace true
 	git config --bool gitproj.hook.check-for-tabs true
 	git config gitproj.hook.tab-include-list
-	git config gitproj.hook.tab-exclude-list Makefile
+	git config gitproj.hook.tab-exclude-list Makefile bib-cmd.mak
 	git config --bool gitproj.hook.check-in-raw false
 	git config --bool gitproj.hook.check-for-big-files true
 	git config --int gitproj.hook.binary-file-size 30000

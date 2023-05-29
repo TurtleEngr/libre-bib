@@ -130,7 +130,7 @@ fIsWrite() {
 
 # ------------------------------
 fCheckSh() {
-    for gVal in $(grep -rl 'env bash' $cgBin/* | grep -Ev 'Makefile'); do
+    for gVal in $(grep -rl 'env bash' $cgBin/* | grep -Ev 'bib-cmd.mak'); do
         if ! fFileExec; then
             continue
         fi
@@ -147,7 +147,7 @@ fCheckPhp() {
     for gVal in \
         $cgBin/util.php \
         $cgDirApp/etc/conf.php \
-        $(grep -rl 'env php' $cgBin/* | grep -Ev 'Makefile'); do
+        $(grep -rl 'env php' $cgBin/* | grep -Ev 'bib-cmd.mak'); do
         if ! fFileExec; then
             continue
         fi
@@ -223,7 +223,7 @@ fCheckApp() {
     gVar=""
     for tFile in \
         VERSION \
-        bin/Makefile \
+        bin/bib-cmd.mak \
         bin/bib \
         bin/bib-ref-new.php \
         bin/bib-ref-update.php \
@@ -273,17 +273,17 @@ fCheckApp() {
     fCheckPhp
 
     # ----------
-    if ! make -s -n -f $cgBin/Makefile check &>/dev/null; then
-        echo "Error in Makefile [1]"
+    if ! make -s -n -f $cgBin/bib-cmd.mak check &>/dev/null; then
+        echo "Error in bib-cmd.mak [1]"
         ((++gErr))
     fi
-    tResult=$(make -s -f $cgBin/Makefile check 2>&1)
+    tResult=$(make -s -f $cgBin/bib-cmd.mak check 2>&1)
     if [[ $? -ne 0 ]]; then
-        echo "Error in Makefile [2]"
+        echo "Error in bib-cmd.mak [2]"
         ((++gErr))
     fi
     if [[ "$tResult" != "OK" ]]; then
-        echo "Error in Makefile [3], $tResult"
+        echo "Error in bib-cmd.mak [3], $tResult"
         ((++gErr))
     fi
     fNotOk # ?---------->

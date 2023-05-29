@@ -589,6 +589,10 @@ $PWD/conf.env
 *** Cmd: setup-bib
 *** Cmd: connect
 *** Cmd: check
+*** Cmd: edit
+
+This will run: $EDITOR $cgDocFile &
+
 *** Cmd: import-lo
 - Import any changes to $cgLoFile (biblio.txt). The lo table will be
   backed-up in the DB.
@@ -766,7 +770,7 @@ biblio-note.txt  conf.env*   example.odt  librarything.tsv  tmp/
 <pre class="in">$ bib import-lo</pre>
 <pre class="out">
 Problem with setup: SQLSTATE[HY000] [2002] Connection refused
-make: *** [/opt/libre-bib/bin/Makefile:100: status/import-lo.date] Error 1
+make: *** [/opt/libre-bib/bin/bib-cmd.mak:100: status/import-lo.date] Error 1
 </pre>
 
 <p>Open another terminal:</p>
@@ -796,7 +800,7 @@ UseRemote is on.
 UseLib is on.
 Problem with setup: Missing: cgDbPassCache tmp/.pass.tmp. To set it,
 run: bib connect [89]
-make: *** [/opt/libre-bib/bin/Makefile:100: status/import-lo.date] Error 1
+make: *** [/opt/libre-bib/bin/bib-cmd.mak:100: status/import-lo.date] Error 1
 </pre>
 
 <pre class="in">$ bib connect</pre>

@@ -10,7 +10,7 @@ fUsage() {
 Usage:
     bib [-n] Cmds...
 Cmds:
-    import-lo, export-lo, backup-lo, restore-lo
+    edit, import-lo, export-lo, backup-lo, restore-lo
     import-lib, update-lo
     ref-new, ref-update, style-save, style-update
     status-bib, setup-bib, connect, clean, version, help
@@ -49,7 +49,7 @@ fi
 if [[ "${cgBuild:-false}" != "true" ]]; then
     if [ ! -f conf.env ]; then
         echo 'Error: Missing conf.env, copying it now'
-        make -f $cgBin/Makefile conf.env
+        make -f $cgBin/bib-cmd.mak conf.env
         echo 'Edit conf.env with your details. Uncomment the ones you'
         echo 'are changing, then run: bib setup-bib'
         fUsage
@@ -70,7 +70,7 @@ if [[ "$cgVerbose" == "true" ]]; then
 fi
 
 # Commands are executed with make
-make -f $cgBin/Makefile $tSilent $pParm
+make -f $cgBin/bib-cmd.mak $tSilent $pParm
 
 if [[ "${cgBuild:-false}" != "true" ]]; then
     if [[ $? -ne 0 ]]; then

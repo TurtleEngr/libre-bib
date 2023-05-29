@@ -111,16 +111,17 @@
   - File names cannot be all periods.
   - These file names are not allowed: CON|PRN|AUX|NUL|COM[1-9]|LPT[1-9]
   - No trailing spaces in files.
-  - No TABs in most files. (Makefile is an exception)
+  - No TABs in most files. (Makefile and bib-cmd.mak are exceptions)
   - "Large" binary files are not allowed.
 
 - Run **make check** before commiting code.
 
-- The **bib commands are managed with bin/Makefile.** For example: "bib
-  connect" will call "make -f $cgBin/Makefile connect" All of conf.env
-  values are available for use in the Makefile.  Using make keeps
-  dependent files up-to-date. It is also easy to add
-  commands. Chaining commands works too. Consider this:
+- The **bib commands are managed with bin/bib-cmd.mak (a Makefile)**
+  For example: "bib connect" will call "make -f $cgBin/bib-cmd.mak
+  connect" All of conf.env values are available for use in
+  bib-cmd.mak.  Using make keeps dependent files up-to-date. It is
+  also easy to add commands. Chaining commands works too. Consider
+  this:
 
   ```
   cd PROJECT/

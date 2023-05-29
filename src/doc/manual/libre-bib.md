@@ -604,6 +604,10 @@ time import-lo was run. To force it to run: \"rm status/import.lo.date\"
 
 ### Cmd: check
 
+### Cmd: edit
+
+This will run: \$EDITOR \$cgDocFile &
+
 ### Cmd: import-lo
 
 Import any changes to \$cgLoFile (biblio.txt). The lo table will be
@@ -821,7 +825,7 @@ $ bib import-lo
 
 ``` {.out}
 Problem with setup: SQLSTATE[HY000] [2002] Connection refused
-make: *** [/opt/libre-bib/bin/Makefile:100: status/import-lo.date] Error 1
+make: *** [/opt/libre-bib/bin/bib-cmd.mak:100: status/import-lo.date] Error 1
 ```
 
 Open another terminal:
@@ -859,7 +863,7 @@ UseRemote is on.
 UseLib is on.
 Problem with setup: Missing: cgDbPassCache tmp/.pass.tmp. To set it,
 run: bib connect [89]
-make: *** [/opt/libre-bib/bin/Makefile:100: status/import-lo.date] Error 1
+make: *** [/opt/libre-bib/bin/bib-cmd.mak:100: status/import-lo.date] Error 1
 ```
 
 ``` {.in}
