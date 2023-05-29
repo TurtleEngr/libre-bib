@@ -1,10 +1,13 @@
 # Product Makefile
 
+# ========================================
 export SHELL = /bin/bash
 export cgDirApp = /opt/libre-bib
 export cgBin = $(cgDirApp)/bin
 
 mMake = . src/etc/conf.env; cgDirApp=$(PWD)/src; cgBin=$(PWD)/src/bin; make -f src/bin/bib-cmd.mak
+
+# See also:
 
 mPackgeList = \
 	libreoffice \
@@ -21,7 +24,7 @@ mPackgeList = \
 	pandoc \
 	libpod-markdown-perl
 
-# --------------------
+# ========================================
 clean :
 	-find . -type f -name '*~' -exec rm {} \; &>/dev/null
 	-find . -type f -name '.phptidy-cache' -exec rm {} \; &>/dev/null
@@ -36,18 +39,22 @@ dist-clean : clean
 	-rm cmd.tmp
 	-rm -rf test-dir dist pkg
 
-# --------------------
-build-setup : .git/hooks/pre-commit
+# ========================================
 
 # --------------------
 # Cleanup and make dist/ area
-build : build-setup check
+build :
+	cd build; make build-setup check
 
-# --------------------
+# ========================================
 # Make deb package
 package :
 
-# --------------------
+# ========================================
+# Push packages to release repositories
+release :
+
+# ========================================
 # Manual install - only for testing
 install : $(cgDirApp) check mk-doc clean
 	-find src -name '*~' -exec rm {} \; &>/dev/null
@@ -62,6 +69,7 @@ install : $(cgDirApp) check mk-doc clean
 
 #sudo ln -fs /opt/libre-bib/bin/bib /usr/local/bin/bib
 
+# ========================================
 incver :
 	build/bin/incver.sh -m src/VERSION
 
@@ -76,7 +84,7 @@ release :
 	git checkout develop
 	build/bin/incver.sh -p src/VERSION
 
-# --------------------
+# ========================================
 # So far these are just crude "happy-path" tests.
 test : db-setup check # install
 	echo -e "show databases;\n quit" | mysql -u example
@@ -176,27 +184,6 @@ mk-doc :
 
 rebuild :
 	-$(mMake) rebuild
-
-
-# The detault gitproj.hook.tab-include-list is '*"
-#     Only text files are looked at.
-# gitproj.hook.tab-exclude-list is a "grep -E" pattern
-.git/hooks/pre-commit : build/etc/pre-commit
-	cp $? $@
-	git config --bool gitproj.hook.pre-commit-enabled true
-	git config --bool gitproj.hook.check-file-names true
-	git config --bool gitproj.hook.check-whitespace true
-	git config --bool gitproj.hook.check-for-tabs true
-	git config gitproj.hook.tab-include-list
-	git config gitproj.hook.tab-exclude-list 'Makefile|*.mak'
-	git config --bool gitproj.hook.check-in-raw false
-	git config --bool gitproj.hook.check-for-big-files true
-	git config --int gitproj.hook.binary-file-size 30000
-	git config --bool gitproj.hook.verbose true
-
-build/etc/pre-commit :
-	cp -a ~/ver/public/app/gitproj/gitproj/doc/hooks/pre-commit $@
-	# See gitproj repo
 
 check :
 	build/bin/check.sh

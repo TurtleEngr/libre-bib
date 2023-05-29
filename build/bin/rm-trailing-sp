@@ -1,8 +1,7 @@
 #!/bin/bash
 
 # --------------------
-fIsBinary()
-{
+fIsBinary() {
     local pFile="$1"
     grep -Hm1 '^' <"$pFile" | grep -q '^Binary'
     # Copied from: https://unix.stackexchange.com/questions/275516/is-there-a-convenient-way-to-classify-files-as-binary-or-text
