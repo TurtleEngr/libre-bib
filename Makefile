@@ -171,6 +171,10 @@ mk-doc :
 rebuild :
 	-$(mMake) rebuild
 
+
+# The detault gitproj.hook.tab-include-list is '*"
+#     Only text files are looked at.
+# gitproj.hook.tab-exclude-list is a "grep -E" pattern
 .git/hooks/pre-commit : build/etc/pre-commit
 	cp $? $@
 	git config --bool gitproj.hook.pre-commit-enabled true
@@ -178,7 +182,7 @@ rebuild :
 	git config --bool gitproj.hook.check-whitespace true
 	git config --bool gitproj.hook.check-for-tabs true
 	git config gitproj.hook.tab-include-list
-	git config gitproj.hook.tab-exclude-list Makefile bib-cmd.mak
+	git config gitproj.hook.tab-exclude-list 'Makefile|*.mak'
 	git config --bool gitproj.hook.check-in-raw false
 	git config --bool gitproj.hook.check-for-big-files true
 	git config --int gitproj.hook.binary-file-size 30000
