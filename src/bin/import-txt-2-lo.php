@@ -256,7 +256,7 @@ function fImportTxt() {
 
         $tKey = $tData["key"];
         $tLoCol = uTxt2LoMap($tKey);
-        if ($tLoCol == "") {
+        if ($tLoCol == "Unknown") {
             echo "Warning: $tKey not found in KeyMap at: FileLine: $gNumLine, Rec: $gNumRec [" . __LINE__ . "]\n";
             continue;
         }

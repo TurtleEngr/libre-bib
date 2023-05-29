@@ -70,7 +70,10 @@ function uDate($pStyle = "iso") {
         "ymd"=>"Y-m-d"
     );
 
-    return date($tFmt[strtolower($pStyle)]);
+    $pStyle = strtolower($pStyle);
+    if (in_array($pStyle, $tFmt))
+        return date($tFmt[$pStyle]);
+    return date($tFmt["iso"]);
 } # fDate
 
 # -----------------------------
@@ -383,15 +386,19 @@ function uTxt2LoMap($pTxt = "") {
     );
 
     if ("$pTxt" != "") {
-        $tName = $tMap["$pTxt"];
-        if ($tName != "")
+        if (in_array($pTxt, $tMap)) {
+            $tName = $tMap["$pTxt"];
             return $tName;
+        }
 
-        # Try to match with lowercase names
-        foreach (array_key($tMap) as $tKey)
+        # Make a lowercase map
+        foreach (array_key($tMap) as $tKey) {
             $tLowerMap[strtolower($tKey)] = $tMap[$tKey];
-
-        return $tLowerMap[strtolower($pTxt)];
+        }
+        $pTxt = strtolower($pTxt);
+        if (in_array($pTxt, $tLowerMap))
+            return $tLowerMap[$pTxt];
+        return "Unknown";
     } else {
         return $tMap;
     }
@@ -436,10 +443,13 @@ function uLo2TxtMap($pLo = "") {
         "Volume"=>"Volume",
         "Year"=>"Date"
     );
-    if ("$pLo" != "")
-        return $tMap["$pLo"];
-    else
+    if ("$pLo" != "") {
+        if (in_array($pLo, $tMap))
+            return $tMap["$pLo"];
+        return "Unknown";
+    } else {
         return $tMap;
+    }
 } # fLo2TxtMap
 
 # --------------------
@@ -530,25 +540,31 @@ function uRepType2Type($pMedia = "") {
         "website"=>16,
         "youtube"=>10
     );
-    if ("$pMedia" != "")
-        return $tMap[strtolower($pMedia)];
-    else
+    if ("$pMedia" != "") {
+        $pMedia = strtolower($pMedia);
+        if (in_array($pMedia, $tMap))
+            return $tMap[$pMedia];
+        return 16;
+    } else {
         return $tMap;
+    }
 } # fRepType2Type
 
 # --------------------
 function uType2Txt($pType = "") {
-
     $tMap = array(
         0=>"article",
         1=>"book",
         10=>"media",
         16=>"site"
     );
-    if ("$pType" != "")
-        return $tMap[$pType];
-    else
+    if ("$pType" != "") {
+        if (in_array($pType, $tMap))
+            return $tMap[$pType];
+        return "site";
+    } else {
         return $tMap;
+    }
 } # fType2Txt
 
 # --------------------
@@ -583,12 +599,14 @@ function uLib2Lo($pCol = "") {
         "ISBN"=>"ISBN",
         "Work_id"=>"Custom3"
     );
-    if ("$pCol" != "")
-        return $tMap["$pCol"];
-    else
+    if ("$pCol" != "") {
+        if (in_array($pCol, $tMap))
+            return $tMap["$pCol"];
+        return "Unknown";
+    } else {
         return $tMap;
+    }
 }; # fLib2Lo
-
 
 # --------------------
 function uBib2Xml($pCol = "") {
@@ -629,10 +647,13 @@ function uBib2Xml($pCol = "") {
         "Custom5"=>"custom5",
         "ISBN"=>"isbn"
     );
-    if ("$pCol" != "")
-        return $tMap["$pCol"];
-    else
+    if ("$pCol" != "") {
+        if (in_array($pCol, $tMap))
+            return $tMap["$pCol"];
+        return "custom5";
+    } else {
         return $tMap;
+    }
 } # fBib2Xml
 
 # --------------------
@@ -647,10 +668,13 @@ function uBibType2Xml($pType = "") {
         10=>'misc',
         16=>'www'
     );
-    if ("$pType" != "")
-        return $tMap["$pType"];
-    else
+    if ("$pType" != "") {
+        if (in_array($pType, $tMap))
+            return $tMap["$pType"];
+        return "www";
+    } else {
         return $tMap;
+    }
 } # fBibType2Xml
 
 ?>
