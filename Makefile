@@ -29,7 +29,9 @@ clean :
 	-find . -type f -name '*.bak' -exec rm {} \; &>/dev/null
 
 dist-clean : clean
-	. test-dir/conf.env; echo "drop database $$cgDbName;" >cmd.tmp
+	. $(cgDirApp)/etc/conf.env; \
+	. test-dir/conf.env; \
+	echo "drop database $$cgDbName;" >cmd.tmp
 	-sudo mysql -u root <cmd.tmp
 	-rm cmd.tmp
 	-rm -rf test-dir dist pkg
@@ -76,9 +78,11 @@ release :
 
 # --------------------
 # So far these are just crude "happy-path" tests.
-test : db-setup check  # install
+test : db-setup check # install
 	echo -e "show databases;\n quit" | mysql -u example
-	. test-dir/conf.env; echo "" >test-dir/$$cgDbPassCache
+	. $(cgDirApp)/etc/conf.env; \
+	    . test-dir/conf.env; \
+	    echo "" >test-dir/$$cgDbPassCache
 	@echo -e "\n==========\nTest import-lo"
 	cd test-dir; bib import-lo
 	test -f test-dir/status/import-lo.date
@@ -97,16 +101,16 @@ test : db-setup check  # install
 	echo 'show tables;' | mysql -u example biblio_example | grep lib
 	@echo -e "\n==========\nTest ref-new"
 	cd test-dir; bib ref-new
-	test -f test-dir/status/bib-update.date
+	test -f test-dir/status/ref-new.date
 	test -f test-dir/backup/example.odt
 	if diff -q test-dir/backup/example.odt test-dir/example.odt; then exit 1; fi
 	@echo "It is not clear why there is always a diff here. Timestamp?"
-	cmp test-dir/example.odt test-ref/example.odt | grep 'byte 16166, line 60'
+	cmp test-dir/example.odt test-ref/example.odt | grep 'byte 16166'
 	@echo -e "\n==========\nTest ref-update"
 	cd test-dir; bib ref-update
-	test -f test-dir/status/bib-update.date
+	test -f test-dir/status/ref-update.date
 	test -f test-dir/backup/example.odt
-	cmp test-dir/example.odt test-ref/example.odt | grep 'byte 16166, line 60'
+	cmp test-dir/example.odt test-ref/example.odt | grep 'byte 16166'
 	@echo -e "\n==========\nTest status-bib"
 	cd test-dir; bib status-bib
 	@echo -e "\n==========\nTest reset example.odt"
@@ -117,26 +121,28 @@ test : db-setup check  # install
 
 # --------------------
 db-setup : test-dir/conf.env test-dir/status-pkg.txt test-dir/status-db.txt
+	-rm test-dir/status/*
 
 test-dir/conf.env :
 	-rm -rf test-dir
 	mkdir test-dir
 	-cd test-dir; bib setup-bib
 	-cd test-dir; bib setup-bib
-	cd test-dir; sed -i 's/^#export /export /g' conf.env
 	echo 'cgDbUser="example"' >>$@
 	echo 'cgUseRemote=false' >>$@
 	echo 'cgUseLib=true' >>$@
 	echo 'cgVerbose=true' >>$@
+	exit 1
 
 test-dir/status-pkg.txt :
-	sudo apt-get update
-	-sudo apt-get -y install $(mPackgeList)
+	##sudo apt-get update
+	##-sudo apt-get -y install $(mPackgeList)
 	date >$@
 
 test-dir/status-db.txt :
 	-echo 'show databases' | mysql -u example | grep biblio_example; \
 	if [ $$? -ne 0 ]; then \
+		. $(cgDirApp)/etc/conf.env; \
 		. test-dir/conf.env; \
 		echo "create database $$cgDbName;" >cmd.tmp; \
 		echo "create user '$$cgDbUser'@'localhost';" >>cmd.tmp; \

@@ -62,7 +62,7 @@ This help.
 
 =head1 HISTORY
 
- $Revision: 1.2 $ $Date: 2023/05/28 23:25:15 $ GMT
+ $Revision: 1.3 $ $Date: 2023/05/29 02:54:22 $ GMT
 
 =cut
 
@@ -92,7 +92,7 @@ function fGetOps() {
     $tConf = $_ENV['cgDirApp'] . "/etc/conf.php";
     require_once "$tConf";
     require_once "$cgBin/util.php";
-    fFixBool();
+    uFixBool();
 
     return;    # ---------->
 } # fGetOps
@@ -106,7 +106,7 @@ function fValidate() {
     global $cgDirEtc;
 
     # DB not used
-    #fValidateCommon();
+    #uValidateCommon();
 
     if ( ! file_exists("$cgDirEtc/bib-style.xml"))
         throw new Exception("Missing: $cgDirEtc/bib-style.xml [" . __LINE__ . "]");
@@ -287,10 +287,10 @@ try {
 # ========================================
 # Write section
 try {
-    fUnpackFile($cgDocFile, "content styles");
+    uUnpackFile($cgDocFile, "content styles");
     fProcessStyleFile();
     fProcessContentFile();
-    fPackFile($cgDocFile, "content styles");
+    uPackFile($cgDocFile, "content styles");
 } catch(Exception $e) {
     echo "Problem: " . $e->getMessage() . " ["
         . __LINE__ . "]\n";

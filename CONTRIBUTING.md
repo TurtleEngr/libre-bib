@@ -55,14 +55,14 @@
   that give clues about the "scope" of a variable.
 
   ```
-  gpVar - global parameter (may be external to the script)
-  gVar  - global variable (may be external to the script)
-  cgVar - a global config constant (may be external to the script)
-  cVar  - a local config constant
+  gpVar - global parameter (could be external to the script)
+  cgVar - a global config constant (could be external to the script)
+  gVar  - global variable (within current file)
+  cVar  - a local config constant (within current file)
   pVar  - a function parameter (local)
   tVar  - temporary variable (usually local to a function)
-  fFun  - function
-  utilFun - a function in util.php (currently not used)
+  fFun  - function in the current file
+  uFun  - a function in util.php
   ```
 
 - **Format php code** with phptidy.php.

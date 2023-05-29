@@ -92,7 +92,7 @@ Set these in conf.env
 
 =head1 HISTORY
 
-$Revision: 1.3 $ $Date: 2023/05/28 01:09:05 $ GMT
+$Revision: 1.4 $ $Date: 2023/05/29 02:54:23 $ GMT
 
 =cut
 
@@ -121,7 +121,7 @@ function fGetOps() {
     $tConf = $_ENV['cgDirApp'] . "/etc/conf.php";
     require_once "$tConf";
     require_once "$cgBin/util.php";
-    fFixBool();
+    uFixBool();
 
 } # fGetOps
 
@@ -131,12 +131,12 @@ function fValidate() {
     global $cgDbLo;
     global $cgDbLib;
 
-    fValidateCommon();
+    uValidateCommon();
 
-    if ( ! fTableExists($cgDbLo))
+    if ( ! uTableExists($cgDbLo))
         throw new Exception("Error: Missing $cgDbLo Table. [" . __LINE__ . "]");
 
-    if ( ! fTableExists($cgDbLib))
+    if ( ! uTableExists($cgDbLib))
         throw new Exception("Error: Missing $cgDbLib Table. [" . __LINE__ . "]");
 } # fValidate
 
@@ -184,7 +184,7 @@ class ManageBiblio {
         $tCount = $this->gDbH->query("SHOW TABLES LIKE '" . $pTable . "'")->rowCount();
         if ($tCount > 0) {
             # Append: "_MM-DD_HH-MM"
-            $tNewName = "$pTable" . "_" . fDate("iso");
+            $tNewName = "$pTable" . "_" . uDate("iso");
             $tSql = "CREATE TABLE `$tNewName` SELECT * FROM `$pTable`";
             $this->gDbH->query("$tSql");
         }
@@ -212,7 +212,7 @@ class ManageBiblio {
 
     # --------------------
     protected function replaceBlanksInBooks($pLoResult, $pLibResult) {
-        $tMedia2RepType = fMedia2RepType();
+        $tMedia2RepType = uMedia2RepType();
 
         # Replace empty values in tLoResult
         # Author,         Custom2,          Publisher,   Year, RepType, ISBN, Costom3
@@ -349,8 +349,8 @@ class ManageBiblio {
         global $cgDbLo;
         global $cgDbLib;
 
-        $tMedia2RepType = fMedia2RepType();
-        $tType2Txt = fType2Txt();
+        $tMedia2RepType = uMedia2RepType();
+        $tType2Txt = uType2Txt();
 
         $tCount = 0;
         while ($tRecResult = $pRecH->fetch(PDO::FETCH_ASSOC)) {
@@ -381,7 +381,7 @@ class ManageBiblio {
 
             $tMedia = $tLibResult["Media"];
             $tLoResult["RepType"] = $tMedia2RepType[strtolower("$tMedia")];
-            $tLoResult["Type"] = fRepType2Type("$tMedia");
+            $tLoResult["Type"] = uRepType2Type("$tMedia");
 
             $tNote = $tType2Txt[$tLoResult["Type"]];
             if (preg_match("/$tNote/", $tLoResult["Note"]) == 0)

@@ -70,7 +70,7 @@ Set these in conf.env
 
 =head1 HISTORY
 
-$Revision: 1.4 $ $Date: 2023/05/28 01:09:05 $ GMT
+$Revision: 1.5 $ $Date: 2023/05/29 02:54:23 $ GMT
 
 =cut
 
@@ -98,7 +98,7 @@ function fGetOps() {
     $tConf = $_ENV['cgDirApp'] . "/etc/conf.php";
     require_once "$tConf";
     require_once "$cgBin/util.php";
-    fFixBool();
+    uFixBool();
 
 } # fGetOps
 
@@ -108,7 +108,7 @@ function fValidate() {
     global $gFileH;
     global $cgLoFile;
 
-    fValidateCommon();
+    uValidateCommon();
 
     if ( ! file_exists("$cgLoFile"))
         throw new Exception("Error: Missing file: $cgLoFile. [" . __LINE__ . "]");
@@ -122,20 +122,20 @@ function fCreateTable() {
     global $gBackupName;
 
     $gBackupName = "";
-    if (fTableExists($cgDbLo))
-        $gBackupName = fRenameTable($cgDbLo);
+    if (uTableExists($cgDbLo))
+        $gBackupName = uRenameTable($cgDbLo);
 
-    if (fTableExists($cgDbLo))
-        fExecSql("drop table $cgDbLo");
+    if (uTableExists($cgDbLo))
+        uExecSql("drop table $cgDbLo");
 
-    $cLoCol = fLoCol();
+    $cLoCol = uLoCol();
     $tSql = "CREATE TABLE $cgDbLo (";
     foreach (array_values($cLoCol) as $tCol)
         $tSql .= "`$tCol` VARCHAR(255),";
     $tSql = rtrim($tSql, ",") . ")";
 
-    fExecSql("$tSql");
-    fExecSql("alter table $cgDbLo add primary key (Identifier)");
+    uExecSql("$tSql");
+    uExecSql("alter table $cgDbLo add primary key (Identifier)");
 } # fCreateTable
 
 # -----------------------------
@@ -149,7 +149,7 @@ function fInsertRec($pRec) {
         "`) VALUES (\"" .
         implode('","', array_values($pRec)) .
         '")';
-    if (fExecSql("$tSql") == false)
+    if (uExecSql("$tSql") == false)
         throw new Exception("Error: FileLine: $gNumLine, Rec: $gNumRec Failed: $tSql [" . __LINE__ . "]");
 } # fInsertRec
 
@@ -190,14 +190,14 @@ function fAddRec($pRec) {
     # Fixup Type/RepType mess (i.e. override Type setting)
     if ($pRec["RepType"] == "") {
         if (is_numeric($pRec["Type"])) {
-            $pRec["RepType"] = fType2Txt($pRec["Type"]);
+            $pRec["RepType"] = uType2Txt($pRec["Type"]);
         } else {
             echo "Warning: Missing Media and Type in " .
                 $pRec["Identifier"] . " [" . __LINE__ . "]\n";
             $pRec["RepType"] = "unknown";
         }
     }
-    $pRec["Type"] = fRepType2Type($pRec["RepType"]);
+    $pRec["Type"] = uRepType2Type($pRec["RepType"]);
 
     fInsertRec($pRec);
 } # fAddRec
@@ -211,7 +211,7 @@ function fImportTxt() {
     global $cgDbLo;
     global $cgVerbose;
 
-    $tRec = fLoColValue();
+    $tRec = uLoColValue();
 
     # Get lines from txt file
     $gNumLine = 0;
@@ -255,14 +255,14 @@ function fImportTxt() {
             continue;
 
         $tKey = $tData["key"];
-        $tLoCol = fTxt2LoMap($tKey);
+        $tLoCol = uTxt2LoMap($tKey);
         if ($tLoCol == "") {
             echo "Warning: $tKey not found in KeyMap at: FileLine: $gNumLine, Rec: $gNumRec [" . __LINE__ . "]\n";
             continue;
         }
 
         if ($tLoCol == "Type")
-            $tData["val"] = fRepType2Type($tData["val"]);
+            $tData["val"] = uRepType2Type($tData["val"]);
 
         $tRec[$tLoCol] = $tData["val"];
     } # while

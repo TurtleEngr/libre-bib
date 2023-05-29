@@ -8,7 +8,7 @@ These globals are expected for some functions.
 */
 
 # -----------------------------
-function fExecSql($pSql) {
+function uExecSql($pSql) {
     global $gDb;
     global $cgDebug;
     global $cgNoExec;
@@ -20,18 +20,18 @@ function fExecSql($pSql) {
 } # fExecSql
 
 # --------------------
-function fRenameTable($pTable) {
+function uRenameTable($pTable) {
     global $cgNoExec;
 
     # Append: "_MM-DD_HH-MM"
-    $tNewName = "$pTable" . "_" . fDate("iso");
+    $tNewName = "$pTable" . "_" . uDate("iso");
 
     $tSql = "RENAME TABLE `$pTable` TO `$tNewName`";
-    fExecSql("$tSql");
+    uExecSql("$tSql");
     if ($cgNoExec)
         return $tNewName;
 
-    if ( ! fTableExists("$tNewName"))
+    if ( ! uTableExists("$tNewName"))
         throw new Exception("Error: Backup failed: $tSql \n" . __FILE__ . "[" . __LINE__ . "]");
 
     echo "Created: $tNewName \n";
@@ -39,14 +39,14 @@ function fRenameTable($pTable) {
 } # fRenameTable
 
 # --------------------
-function fTableExists($pName) {
+function uTableExists($pName) {
     global $gDb;
 
     return $gDb->query("SHOW TABLES LIKE '" . $pName . "'")->rowCount() > 0;
 } # fTableExists
 
 # --------------------
-function fListBackup($pName) {
+function uListBackup($pName) {
     global $gDb;
 
     $tRecH = $gDb->prepare("SHOW TABLES LIKE '" . $pName . "_%'");
@@ -56,7 +56,7 @@ function fListBackup($pName) {
 } # fListBackup
 
 # --------------------
-function fDate($pStyle = "iso") {
+function uDate($pStyle = "iso") {
     # iso - 2004-02-12_15-19-21
     # min - 02-12_15-19
     # num - 20040212151921
@@ -74,7 +74,7 @@ function fDate($pStyle = "iso") {
 } # fDate
 
 # -----------------------------
-function fValidateCommon() {
+function uValidateCommon() {
     global $cgDbHost;
     global $cgDbName;
     global $cgDbPassCache;
@@ -106,7 +106,7 @@ function fValidateCommon() {
 } # fValidateCommon
 
 # -----------------------------
-function fBool($pVal) {
+function uBool($pVal) {
     #$tMap = array("0"=>0, "1"=>1, "f"=>0, "false"=>0, "t"=>1,
     #    "true"=>1, "n"=>0, "no"=>0, "y"=>1, "yes"=>1, 0=>0, 1=>1);
     #$pVal = strtolower($pVal);
@@ -119,18 +119,18 @@ function fBool($pVal) {
 } # fBool
 
 # -----------------------------
-function fFixBool() {
+function uFixBool() {
     global $cgDebug;
     global $cgNoExec;
     global $cgUseLib;
     global $cgUseRemote;
     global $cgVerbose;
 
-    $cgDebug = fBool($cgDebug);
-    $cgNoExec = fBool($cgNoExec);
-    $cgUseLib = fBool($cgUseLib);
-    $cgUseRemote = fBool($cgUseRemote);
-    $cgVerbose = fBool($cgVerbose);
+    $cgDebug = uBool($cgDebug);
+    $cgNoExec = uBool($cgNoExec);
+    $cgUseLib = uBool($cgUseLib);
+    $cgUseRemote = uBool($cgUseRemote);
+    $cgVerbose = uBool($cgVerbose);
 
     if ($cgVerbose) {
         if ($cgDebug)
@@ -147,7 +147,7 @@ function fFixBool() {
 } # fFixBool
 
 # -----------------------------
-function fUnpackFile($pDocFile, $pFileList) {
+function uUnpackFile($pDocFile, $pFileList) {
     global $cgDebug;
     global $cgDirTmp;
 
@@ -172,7 +172,7 @@ function fUnpackFile($pDocFile, $pFileList) {
 } # fUnpackFile
 
 # -----------------------------
-function fPackFile($pDocFile, $pFileList) {
+function uPackFile($pDocFile, $pFileList) {
     global $cgDebug;
     global $cgNoExec;
     global $cgDirTmp;
@@ -201,7 +201,7 @@ function fPackFile($pDocFile, $pFileList) {
 # Map Functions
 
 # --------------------
-function fLibCol() {
+function uLibCol() {
     # Return zero based array of column names for lib tables.
 
     $tCol = array(
@@ -259,7 +259,7 @@ function fLibCol() {
 } # fLibCol
 
 # --------------------
-function fLoCol() {
+function uLoCol() {
     # Return zero based array of column names for lo and bib tables.
 
     $tCol = array(
@@ -298,15 +298,15 @@ function fLoCol() {
     return $tCol;
 } # fLoCol
 
-function fLoColValue() {
-    $tColList = fLoCol();
+function uLoColValue() {
+    $tColList = uLoCol();
     foreach (array_values($tColList) as $tCol)
         $tColVal["$tCol"] = "";
     return $tColVal;
 } # fLoColValue
 
 # --------------------
-function fTxt2LoMap($pTxt = "") {
+function uTxt2LoMap($pTxt = "") {
     # Return associative array for txt name to lo col names.
     # or if pTxt is defined, return the matching value.
     # (some are aliases)
@@ -398,7 +398,7 @@ function fTxt2LoMap($pTxt = "") {
 } # fTxt2LoMap
 
 # --------------------
-function fLo2TxtMap($pLo = "") {
+function uLo2TxtMap($pLo = "") {
     # Return associative array for lo col names to txt names
     # or if pLo is defined, return the matching value.
     # What if no match?
@@ -443,7 +443,7 @@ function fLo2TxtMap($pLo = "") {
 } # fLo2TxtMap
 
 # --------------------
-function fMedia2RepType($pMedia = "") {
+function uMedia2RepType($pMedia = "") {
     # Return associative array for lib Media names to lo RepType names
     # or if pMedia is defined, return the matching value.
     # What if no match?
@@ -497,7 +497,7 @@ function fMedia2RepType($pMedia = "") {
 } # fMedia2RepType
 
 # --------------------
-function fRepType2Type($pMedia = "") {
+function uRepType2Type($pMedia = "") {
     # Return associative array for RepType Media names to Type numbers
     # or if pMedia is defined, return the matching value.
     # What if no match?
@@ -537,7 +537,7 @@ function fRepType2Type($pMedia = "") {
 } # fRepType2Type
 
 # --------------------
-function fType2Txt($pType = "") {
+function uType2Txt($pType = "") {
 
     $tMap = array(
         0=>"article",
@@ -552,17 +552,17 @@ function fType2Txt($pType = "") {
 } # fType2Txt
 
 # --------------------
-function fTxt2Type($pType = "") {
-    return fRepType2Type($pType);
+function uTxt2Type($pType = "") {
+    return uRepType2Type($pType);
 } # fTxt2Type
 
 # --------------------
-function fTxt2RepType($pTxt = "") {
-    return fMedia2RepType($pTxt);
+function uTxt2RepType($pTxt = "") {
+    return uMedia2RepType($pTxt);
 } # fTxt2RepType
 
 # --------------------
-function fLib2Lo($pCol = "") {
+function uLib2Lo($pCol = "") {
     # Return associative array for Lib col names to Lo col names
     # or if pCol is defined, return the matching value.
     # What if no match?
@@ -591,7 +591,7 @@ function fLib2Lo($pCol = "") {
 
 
 # --------------------
-function fBib2Xml($pCol = "") {
+function uBib2Xml($pCol = "") {
     # Return associative array for Bib col names to XML names
     # or if pCol is defined, return the matching value.
     # What if no match?
@@ -636,7 +636,7 @@ function fBib2Xml($pCol = "") {
 } # fBib2Xml
 
 # --------------------
-function fBibType2Xml($pType = "") {
+function uBibType2Xml($pType = "") {
     # Return associative array for Bib Type to Txt names
     # or if pCol is defined, return the matching value.
     # What if no match?

@@ -72,7 +72,7 @@ Set these in conf.env
 
 =head1 HISTORY
 
- $Revision: 1.2 $ $Date: 2023/05/26 20:02:54 $ GMT
+ $Revision: 1.3 $ $Date: 2023/05/29 02:54:22 $ GMT
 
 =cut
 
@@ -101,7 +101,7 @@ function fGetOps() {
     require_once "$tConf";
     require_once "$cgBin/util.php";
     $cgVerbose = "true";
-    fFixBool();
+    uFixBool();
 
     return; # ---------->
 } # fGetOps
@@ -112,17 +112,15 @@ function fValidate() {
     global $cgDocFile;
     global $cgDbBib;
     global $cgDirApp;
+    global $cgDirEtc;
 
-    fValidateCommon();
+    uValidateCommon();
 
-    if ( ! file_exists("$cgDocFile"))
-        throw new Exception("Error: Missing file: $cgDocFile. [" . __LINE__ . "]");
-
-    if ( ! fTableExists($cgDbBib))
+    if ( ! uTableExists($cgDbBib))
         throw new Exception("Error: -t Table $gpFromTable does not exist. [" . __LINE__ . "]");
 
-    if ( ! file_exists("$cgDirApp/etc/cite-update.xml"))
-        throw new Exception("Error: Missing file: $cgDirApp/etc/cite-update.xml [" . __LINE__ . "]");
+    if ( ! file_exists("$cgDirEtc/cite-update.xml"))
+        throw new Exception("Error: Missing file: $cgDirEtc/cite-update.xml [" . __LINE__ . "]");
 
     return;    # ---------->
 } # fValidate
@@ -131,8 +129,9 @@ function fValidate() {
 function fUseTemplate($pRef) {
     global $cgDebug;
     global $cgDirApp;
+    global $cgDirEtc;
 
-    $tTemplate = file_get_contents("$cgDirApp/etc/cite-update.xml");
+    $tTemplate = file_get_contents("$cgDirEtc/cite-update.xml");
     #    '
     #      text:bibliography-type="{BibType}"
     #      {BibData}>
@@ -150,7 +149,7 @@ function fBibLookup($pRef) {
     global $cgDbBib;
     global $cgDebug;
 
-    $cBib2Xml = fBib2Xml();
+    $cBib2Xml = uBib2Xml();
 
     $pRef['tag'] = "";
     $pRef['data'] = "";
@@ -169,7 +168,7 @@ function fBibLookup($pRef) {
         return;    # ---------->
     }
 
-    $pRef['type'] = fBibType2Xml($tRow['Type']);
+    $pRef['type'] = uBibType2Xml($tRow['Type']);
     $pRef['data'] = "";
 
     foreach (array_keys($tRow) as $tCol) {
@@ -335,9 +334,9 @@ try {
 # ========================================
 # Write section
 try {
-    fUnpackFile($cgDocFile, "content");
+    uUnpackFile($cgDocFile, "content");
     fProcessFile();
-    fPackFile($cgDocFile, "content");
+    uPackFile($cgDocFile, "content");
 } catch(Exception $e) {
     echo "Problem creating table: " . $e->getMessage() . "\n";
     exit(4);    # ---------->

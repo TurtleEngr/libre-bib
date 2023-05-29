@@ -69,7 +69,7 @@ Set these in conf.env
 
 =head1 HISTORY
 
-$Revision: 1.3 $ $Date: 2023/05/28 01:09:05 $ GMT
+$Revision: 1.4 $ $Date: 2023/05/29 02:54:22 $ GMT
 
 =cut
 
@@ -98,7 +98,7 @@ function fGetOps() {
     $tConf = $_ENV['cgDirApp'] . "/etc/conf.php";
     require_once "$tConf";
     require_once "$cgBin/util.php";
-    fFixBool();
+    uFixBool();
 
 } # fGetOps
 
@@ -107,9 +107,9 @@ function fValidate() {
     global $cgBin;
     global $cgDbLo;
 
-    fValidateCommon();
+    uValidateCommon();
 
-    if ( ! fTableExists($cgDbLo))
+    if ( ! uTableExists($cgDbLo))
         throw new Exception("Error: Missing $cgDbLo Table. [" . __LINE__ . "]");
 } # fValidate
 
@@ -118,14 +118,14 @@ function fCreateBibTable() {
     global $cgDbLo;
     global $cgDbBib;
 
-    if (fTableExists($cgDbBib))
-        fRenameTable($cgDbBib);
+    if (uTableExists($cgDbBib))
+        uRenameTable($cgDbBib);
 
-    if (fTableExists($cgDbBib))
-        fExecSql("drop table $cgDbBib");
+    if (uTableExists($cgDbBib))
+        uExecSql("drop table $cgDbBib");
 
-    fExecSql("CREATE TABLE $cgDbBib SELECT * FROM $cgDbLo");
-    fExecSql("alter table $cgDbBib add primary key (Identifier)");
+    uExecSql("CREATE TABLE $cgDbBib SELECT * FROM $cgDbLo");
+    uExecSql("alter table $cgDbBib add primary key (Identifier)");
 } # fCreateBibTable
 
 # -----------------------------
@@ -158,7 +158,7 @@ function fUpdateRec($pRec) {
     $tSql = preg_replace('/",$/', '"', $tSql);
     $tSql .= ' where Identifier = "' . $pRec['Identifier'] . '"';
 
-    fExecSql($tSql);
+    uExecSql($tSql);
 } # fUpdateRec
 
 # -----------------------------

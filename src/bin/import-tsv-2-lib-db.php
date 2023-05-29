@@ -124,7 +124,7 @@ fields.
 
 =head1 HISTORY
 
-$Revision: 1.5 $ $Date: 2023/05/28 01:09:05 $ GMT
+$Revision: 1.6 $ $Date: 2023/05/29 02:54:23 $ GMT
 
 =cut
 
@@ -153,7 +153,7 @@ function fGetOps() {
     $tConf = $_ENV['cgDirApp'] . "/etc/conf.php";
     require_once "$tConf";
     require_once "$cgBin/util.php";
-    fFixBool();
+    uFixBool();
 }
 
 
@@ -163,7 +163,7 @@ function fValidate() {
     global $cgLibFile;
     global $cgUseLib;
 
-    fValidateCommon();
+    uValidateCommon();
 
     if ( ! $cgUseLib)
         throw new Exception("cgUseLib is not true. [" . __LINE__ . "]");
@@ -192,11 +192,11 @@ function fCreateTable() {
     }
 
     $gBackupName = "";
-    if (fTableExists($cgDbLib))
-        $gBackupName = fRenameTable($cgDbLib);
+    if (uTableExists($cgDbLib))
+        $gBackupName = uRenameTable($cgDbLib);
 
-    if (fTableExists($cgDbLib))
-        fExecSql("drop table $cgDbLib");
+    if (uTableExists($cgDbLib))
+        uExecSql("drop table $cgDbLib");
 
     # Create the table from header record
     $tSql = "CREATE TABLE $cgDbLib (";
@@ -205,8 +205,8 @@ function fCreateTable() {
     }
     $tSql = rtrim($tSql, ",") . ")";
 
-    fExecSql("$tSql");
-    fExecSql("alter table $cgDbLib add primary key (Book_Id)");
+    uExecSql("$tSql");
+    uExecSql("alter table $cgDbLib add primary key (Book_Id)");
 } # fCreateTable
 
 # -----------------------------

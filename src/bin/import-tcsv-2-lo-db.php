@@ -103,7 +103,7 @@ Set these in conf.env
 
 =head1 HISTORY
 
-$Revision: 1.2 $ $Date: 2023/05/28 01:09:05 $ GMT
+$Revision: 1.3 $ $Date: 2023/05/29 02:54:23 $ GMT
 
 =cut
 
@@ -138,7 +138,7 @@ function fGetOps() {
     $tConf = $_ENV['cgDirApp'] . "/etc/conf.php";
     require_once "$tConf";
     require_once "$cgBin/util.php";
-    fFixBool();
+    uFixBool();
 
 } # fGetOps
 
@@ -150,7 +150,7 @@ function fValidate() {
     global $cgDebug;
     global $cgBackupFile;
 
-    fValidateCommon();
+    uValidateCommon();
 
     if ("$gpSep" == "")
         throw new Exception("Error: Missing -s option. [" . __LINE__ . "]");
@@ -177,8 +177,8 @@ function fCreateTable() {
     global $gFiileH;
 
     $gBackupName = "";
-    if (fTableExists($cgDbLo))
-        $gBackupName = fRenameTable($cgDbLo);
+    if (uTableExists($cgDbLo))
+        $gBackupName = uRenameTable($cgDbLo);
 
     #  Get the fields from the first row
     $tTmpList = fgetcsv($gFiileH, 15000, $gSep);
@@ -194,8 +194,8 @@ function fCreateTable() {
     foreach ($gFieldList as $tField)
         $tSql .= "`$tField` VARCHAR(255),";
     $tSql = rtrim($tSql, ",") . ")";
-    fExecSql("$tSql");
-    fExecSql("alter table $cgDbLo add primary key (Identifier)");
+    uExecSql("$tSql");
+    uExecSql("alter table $cgDbLo add primary key (Identifier)");
 } # fCreateTable
 
 # -----------------------------

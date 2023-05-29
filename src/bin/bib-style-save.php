@@ -60,7 +60,7 @@ This help.
 
 =head1 HISTORY
 
- $Revision: 1.4 $ $Date: 2023/05/28 23:25:15 $ GMT
+ $Revision: 1.5 $ $Date: 2023/05/29 02:54:22 $ GMT
 
 =cut
 
@@ -90,7 +90,7 @@ function fGetOps() {
     $tConf = $_ENV['cgDirApp'] . "/etc/conf.php";
     require_once "$tConf";
     require_once "$cgBin/util.php";
-    fFixBool();
+    uFixBool();
 
     return;    # ---------->
 } # fGetOps
@@ -103,7 +103,7 @@ function fValidate() {
     global $cgDirApp;
 
     # DB not used
-    #fValidateCommon();
+    #uValidateCommon();
 
     if ( ! file_exists("$cgDocFile"))
         throw new Exception("Missing: cgDocFile $cgDocFile [" . __LINE__ . "]");
@@ -266,7 +266,7 @@ try {
 # ========================================
 # Write section
 try {
-    fUnpackFile($cgDocFile, "content styles");
+    uUnpackFile($cgDocFile, "content styles");
     fProcessStyleFile();
     fProcessContentFile();
 } catch(Exception $e) {

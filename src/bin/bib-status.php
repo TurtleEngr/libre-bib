@@ -82,7 +82,7 @@ Most of variables in the conf.env are used by this script.
 
 =head1 HISTORY
 
- $Revision: 1.1 $ $Date: 2023/05/17 01:13:24 $ GMT
+ $Revision: 1.2 $ $Date: 2023/05/29 02:54:22 $ GMT
 
 =cut
 
@@ -111,7 +111,7 @@ function fGetOps() {
     require_once "$tConf";
     require_once "$cgBin/util.php";
     $cgVerbose = "true";
-    fFixBool();
+    uFixBool();
 
     return;    # ---------->
 } # fGetOps
@@ -122,7 +122,7 @@ function fValidate() {
     global $cgDbBib;
     global $cgBin;
 
-    fValidateCommon();
+    uValidateCommon();
 
     return;    # ---------->
 } # fValidate
@@ -206,47 +206,47 @@ function fDbStatus() {
     if ($cgUseRemote)
         echo "Connected to remote DB at: $cgDbHostRemote\n";
 
-    $tStmt = fExecSql("show databases");
+    $tStmt = uExecSql("show databases");
     $tResult = $tStmt->fetchAll(PDO::FETCH_COLUMN);
     echo "show databases\n\t", implode("\n\t", $tResult) . "\n";
     echo "Your DB is: $cgDbName\n";
 
-    $tStmt = fExecSql("show tables");
+    $tStmt = uExecSql("show tables");
     $tResult = $tStmt->fetchAll(PDO::FETCH_COLUMN);
     echo "show tables\n\t" . implode("\n\t", $tResult) . "\n";
 
-    if ( ! fTableExists($cgDbLo)) {
+    if ( ! uTableExists($cgDbLo)) {
         echo "$cgDbLo table is not defined. Create with: bib import-lo";
     } else {
-        $tStmt = fExecSql("select column_name from information_schema.columns where table_name = '" . $cgDbLo . "'");
+        $tStmt = uExecSql("select column_name from information_schema.columns where table_name = '" . $cgDbLo . "'");
         $tResult = $tStmt->fetchAll(PDO::FETCH_COLUMN);
         echo "\nfields for table $cgDbLo\n\t" . implode(", ", $tResult) . "\n";
 
-        $tStmt = fExecSql("select count(*) from $cgDbLo");
+        $tStmt = uExecSql("select count(*) from $cgDbLo");
         $tResult = $tStmt->fetchAll(PDO::FETCH_COLUMN);
         echo "\t" . $tResult[0] . " rows\n";
     }
 
-    if ( ! fTableExists($cgDbBib)) {
+    if ( ! uTableExists($cgDbBib)) {
         echo "$cgDbBib table is not defined. Create with: bib import-lo";
     } else {
-        $tStmt = fExecSql("select column_name from information_schema.columns where table_name = '" . $cgDbBib . "'");
+        $tStmt = uExecSql("select column_name from information_schema.columns where table_name = '" . $cgDbBib . "'");
         $tResult = $tStmt->fetchAll(PDO::FETCH_COLUMN);
         echo "\nfields for table $cgDbBib\n\t" . implode(", ", $tResult) . "\n";
 
-        $tStmt = fExecSql("select count(*) from $cgDbBib");
+        $tStmt = uExecSql("select count(*) from $cgDbBib");
         $tResult = $tStmt->fetchAll(PDO::FETCH_COLUMN);
         echo "\t" . $tResult[0] . " rows\n";
     }
 
     if ($cgUseLib) {
-        if ( ! fTableExists($cgDbLib)) {
+        if ( ! uTableExists($cgDbLib)) {
             echo "$cgDbLib table is not defined. Create with: bib import-lib";
         } else {
-            $tStmt = fExecSql("select column_name from information_schema.columns where table_name = '" . $cgDbLib . "'");
+            $tStmt = uExecSql("select column_name from information_schema.columns where table_name = '" . $cgDbLib . "'");
             $tResult = $tStmt->fetchAll(PDO::FETCH_COLUMN);
             echo "\nfields for table $cgDbLib\n\t" . implode(", ", $tResult) . "\n";
-            $tStmt = fExecSql("select count(*) from $cgDbLib");
+            $tStmt = uExecSql("select count(*) from $cgDbLib");
             $tResult = $tStmt->fetchAll(PDO::FETCH_COLUMN);
             echo "\t" . $tResult[0] . " rows\n";
         }

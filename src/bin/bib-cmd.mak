@@ -1,3 +1,5 @@
+# -*- mode: makefile -*-
+
 # -c config/conf.php can be ignored. Just include:
 # $_ENV["cgDirApp"]/etc/conf.php
 
@@ -163,9 +165,10 @@ $(cgDirEtc)/bib-template.xml : $(cgDirApp)/etc/bib-template.xml
 
 # --------------------
 status-bib :
-	$(cgBin)/bib-status.php -c | more
-	echo "Last run commands:"
-	cat $(cgStatus)/*.date | sort
+	$(cgBin)/bib-status.php -c
+	@echo
+	@echo "Last run commands:"
+	@cat $(cgDirStatus)/*.date | sort
 
 # ========================================
 # Rules supporting cmds
