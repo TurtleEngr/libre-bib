@@ -45,14 +45,15 @@ build :
 	cd build; make build-setup check
 
 # ========================================
-git-release :
+release :
 	build/bin/incver.sh -m src/VERSION
 	git commit -am "Inc Ver"
 	git push origin develop
 	git checkout main
+	git pull origin main
 	git merge develop
 	git tag -f -F src/VERSION "v$(cat src/VERSION)"
-	git push --tabs origin main
+	git push --tags origin main
 	git checkout develop
 	build/bin/incver.sh -p src/VERSION
 
@@ -63,7 +64,7 @@ package :
 
 # ========================================
 # Push packages to release repositories
-release:
+pkg-release:
 
 # ========================================
 # Manual install - only for testing
