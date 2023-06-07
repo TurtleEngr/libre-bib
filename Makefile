@@ -40,11 +40,22 @@ dist-clean : clean
 	-rm -rf test-dir dist pkg
 
 # ========================================
-
-# --------------------
 # Cleanup and make dist/ area
 build :
 	cd build; make build-setup check
+
+# ========================================
+git-release :
+	build/bin/incver.sh -m src/VERSION
+	git commit -am "Inc Ver"
+	git push origin develop
+	git checkout main
+	git merge develop
+	git tag -f -F src/VERSION "v$(cat src/VERSION)"
+	git push --tabs origin main
+	git checkout develop
+	build/bin/incver.sh -p src/VERSION
+
 
 # ========================================
 # Make deb package
@@ -52,7 +63,7 @@ package :
 
 # ========================================
 # Push packages to release repositories
-release :
+release:
 
 # ========================================
 # Manual install - only for testing
@@ -72,17 +83,6 @@ install : $(cgDirApp) check mk-doc clean
 # ========================================
 incver :
 	build/bin/incver.sh -m src/VERSION
-
-# --------------------
-release :
-	build/bin/incver.sh -m src/VERSION
-	git commit -am "Inc Ver"
-	git push origin develop
-	git checkout main
-	git merge develop
-	git push origin main
-	git checkout develop
-	build/bin/incver.sh -p src/VERSION
 
 # ========================================
 # So far these are just crude "happy-path" tests.
