@@ -52,7 +52,7 @@ release :
 	git checkout main
 	git pull origin main
 	git merge develop
-	git tag -f -F src/VERSION "v$(cat src/VERSION)"
+	git tag -f -F src/VERSION "v$$(cat src/VERSION)"
 	git push --tags origin main
 	git checkout develop
 	build/bin/incver.sh -p src/VERSION
