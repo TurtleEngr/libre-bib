@@ -392,7 +392,7 @@ function uTxt2LoMap($pTxt = "") {
         }
 
         # Make a lowercase map
-        foreach (array_key($tMap) as $tKey) {
+        foreach (array_keys($tMap) as $tKey) {
             $tLowerMap[strtolower($tKey)] = $tMap[$tKey];
         }
         $pTxt = strtolower($pTxt);
