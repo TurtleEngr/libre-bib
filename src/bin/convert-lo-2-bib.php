@@ -110,7 +110,7 @@ function fValidate() {
     uValidateCommon();
 
     if ( ! uTableExists($cgDbLo))
-        throw new Exception("Error: Missing $cgDbLo Table. [" . __LINE__ . "]");
+        throw new Exception("Error: Missing $cgDbLo Table. [convert-lo-2-bib.php:" . __LINE__ . "]");
 } # fValidate
 
 # -----------------------------
@@ -215,7 +215,7 @@ function fUpdateBibTable() {
             $tRec['ISBN'] = ', ASIN:' . $tRec['Custom3'];
         fUpdateRec($tRec);
     } # while
-    echo "\nProcessed: $tCount [" . __LINE__ . "]\n";
+    echo "\nProcessed: $tCount [convert-lo-2-bib.php:" . __LINE__ . "]\n";
 } # fUpdateBibTable
 
 # ****************************************

@@ -153,7 +153,7 @@ function fValidate() {
     uValidateCommon();
 
     if ("$gpSep" == "")
-        throw new Exception("Error: Missing -s option. [" . __LINE__ . "]");
+        throw new Exception("Error: Missing -s option. [import-tcsv-2-lo-db.php:" . __LINE__ . "]");
     switch ($gpSep) {
     case "c":
         $gSep = ",";
@@ -162,11 +162,11 @@ function fValidate() {
         $gSep = "\t";
         break;
     default:
-        throw new Exception("Error: Bad -s. Should be 'c' or 's'. [" . __LINE__ . "]");
+        throw new Exception("Error: Bad -s. Should be 'c' or 's'. [import-tcsv-2-lo-db.php:" . __LINE__ . "]");
     }
 
     if (($gFiileH = fopen($cgBackupFile, "r")) == FALSE)
-        throw new Exception("Cannot open $cgBackupFile. [" . __LINE__ . "]");
+        throw new Exception("Cannot open $cgBackupFile. [import-tcsv-2-lo-db.php:" . __LINE__ . "]");
 } # fValidate
 
 # -----------------------------
@@ -231,7 +231,7 @@ function fInsertRec() {
             if ($cgDebug) {
                 echo "$tSql \n";
                 # var_dump($tValueStr);
-                throw new Exception("Insert error. [" . __LINE__ . "]");
+                throw new Exception("Insert error. [import-tcsv-2-lo-db.php:" . __LINE__ . "]");
             }
         }
     } # while

@@ -106,7 +106,7 @@ function fValidate() {
     #uValidateCommon();
 
     if ( ! file_exists("$cgDocFile"))
-        throw new Exception("Missing: cgDocFile $cgDocFile [" . __LINE__ . "]");
+        throw new Exception("Missing: cgDocFile $cgDocFile [bib-style-save.php:" . __LINE__ . "]");
 
     return;    # ---------->
 } # fValidate
@@ -148,7 +148,7 @@ function fProcessStyleFile() {
     # This assumes there is only one "bibliography-configuration" tag
     # in the styles.xml file.
 
-    echo "Start processing styles.xml [" . __LINE__ . "]\n";
+    echo "Start processing styles.xml [bib-style-save.php:" . __LINE__ . "]\n";
 
     $gInH = fopen("$cgDirTmp/styles.xml", 'r');
     $gOutH = fopen("$cgDirEtc/bib-style.xml", 'w');
@@ -181,10 +181,10 @@ function fProcessStyleFile() {
         if ($tIn && $tResult == "end3")
             break;
     }
-    echo "\nProcessed $tNumLine lines in styles.xml. [" . __LINE__ . "]\n";
+    echo "\nProcessed $tNumLine lines in styles.xml. [bib-style-save.php:" . __LINE__ . "]\n";
 
     if ( ! $tFound)
-        throw new Exception("Error: A bibliography has not been added to $cgDocFile. [" . __LINE__ . "]");
+        throw new Exception("Error: A bibliography has not been added to $cgDocFile. [bib-style-save.php:" . __LINE__ . "]");
 
     fclose($gInH);
     fclose($gOutH);
@@ -218,7 +218,7 @@ function fProcessContentFile() {
     # This assumes there is only one "bibliography-source" tag in the
     # content.xml file.
 
-    echo "Start processing content.xml [" . __LINE__ . "]\n";
+    echo "Start processing content.xml [bib-style-save.php:" . __LINE__ . "]\n";
 
     $gInH = fopen("$cgDirTmp/content.xml", 'r');
     $gOutH = fopen("$cgDirEtc/bib-template.xml", 'w');
@@ -241,10 +241,10 @@ function fProcessContentFile() {
         if ($tIn && $tResult == "end")
             break;
     }
-    echo "\nProcessed $tNumLine lines in content.xml. [" . __LINE__ . "]\n";
+    echo "\nProcessed $tNumLine lines in content.xml. [bib-style-save.php:" . __LINE__ . "]\n";
 
     if ( ! $tFound)
-        throw new Exception("Error: A bibliography has not been added to $cgDocFile. [" . __LINE__ . "]");
+        throw new Exception("Error: A bibliography has not been added to $cgDocFile. [bib-style-save.php:" . __LINE__ . "]");
 
     fclose($gInH);
     fclose($gOutH);
@@ -259,7 +259,7 @@ try {
     fGetOps();
     fValidate();
 } catch(Exception $e) {
-    echo "Problem with setup: " . $e->getMessage() . " [" . __LINE__ . "]\n";
+    echo "Problem with setup: " . $e->getMessage() . " [bib-style-save.php:" . __LINE__ . "]\n";
     exit(3);    # ---------->
 }
 
@@ -270,11 +270,11 @@ try {
     fProcessStyleFile();
     fProcessContentFile();
 } catch(Exception $e) {
-    echo "Problem: " . $e->getMessage() . " ["
+    echo "Problem: " . $e->getMessage() . " [bib-style-save.php:"
         . __LINE__ . "]\n";
     exit(4);    # ---------->
 }
 
-echo "Done. [" . __LINE__ . "]\n";
+echo "Done. [bib-style-save.php:" . __LINE__ . "]\n";
 exit(0);    # ---------->
 ?>

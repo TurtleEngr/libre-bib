@@ -134,10 +134,10 @@ function fValidate() {
     uValidateCommon();
 
     if ( ! uTableExists($cgDbLo))
-        throw new Exception("Error: Missing $cgDbLo Table. [" . __LINE__ . "]");
+        throw new Exception("Error: Missing $cgDbLo Table. [update-lib-2-lo.php:" . __LINE__ . "]");
 
     if ( ! uTableExists($cgDbLib))
-        throw new Exception("Error: Missing $cgDbLib Table. [" . __LINE__ . "]");
+        throw new Exception("Error: Missing $cgDbLib Table. [update-lib-2-lo.php:" . __LINE__ . "]");
 } # fValidate
 
 # --------------------

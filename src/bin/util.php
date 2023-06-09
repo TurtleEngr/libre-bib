@@ -13,7 +13,7 @@ function uExecSql($pSql) {
     global $cgDebug;
     global $cgNoExec;
 
-    if ($cgDebug) print_r("\n$pSql \n" . __FILE__ . "[" . __LINE__ . "]\n\n");
+    if ($cgDebug) print_r("\n$pSql \n[util.php:" . __LINE__ . "]\n\n");
     if ( ! $cgNoExec)
         return $gDb->query($pSql);
     return true;
@@ -32,7 +32,7 @@ function uRenameTable($pTable) {
         return $tNewName;
 
     if ( ! uTableExists("$tNewName"))
-        throw new Exception("Error: Backup failed: $tSql \n" . __FILE__ . "[" . __LINE__ . "]");
+        throw new Exception("Error: Backup failed: $tSql \n[util.php:" . __LINE__ . "]");
 
     echo "Created: $tNewName \n";
     return $tNewName;
@@ -90,11 +90,11 @@ function uValidateCommon() {
     global $gPassword;
 
     if ( ! file_exists("$cgDbPassCache"))
-        throw new Exception("Missing: cgDbPassCache $cgDbPassCache. To set it, run: bib connect [" . __LINE__ . "]");
+        throw new Exception("Missing: cgDbPassCache $cgDbPassCache. To set it, run: bib connect [util.php:" . __LINE__ . "]");
 
     $gPassword = rtrim(shell_exec("/bin/bash -c 'cat $cgDbPassCache'"));
     if ("$gPassword" == "")
-        echo "Warning: Password is null [" . __LINE__ . "]\n";
+        echo "Warning: Password is null [util.php:" . __LINE__ . "]\n";
 
     # Create database connection
     $tDsn = "mysql:dbname=$cgDbName;charset=UTF8;host=$cgDbHost;port=";
@@ -158,13 +158,13 @@ function uUnpackFile($pDocFile, $pFileList) {
 
     $tList = explode(" ", $pFileList);
 
-    echo "Unpack $pDocFile [" . __LINE__ . "]\n";
+    echo "Unpack $pDocFile [util.php:" . __LINE__ . "]\n";
     foreach ($tList as $tFile)
         shell_exec("/bin/bash -c 'cd $cgDirTmp; unzip -o ../$pDocFile $tFile.xml'");
 
     foreach ($tList as $tFile) {
         if ( ! file_exists("$cgDirTmp/$tFile.xml"))
-            throw new Exception("Error: Could not extract $tFile.xml [" . __LINE__ . "]");
+            throw new Exception("Error: Could not extract $tFile.xml [util.php:" . __LINE__ . "]");
     }
 
     # tidy the xml files
@@ -183,10 +183,10 @@ function uPackFile($pDocFile, $pFileList) {
     $cTidyOpt = "-m -q --tidy-mark no --break-before-br no --indent-attributes no --indent no --input-xml yes --output-xml yes --vertical-space no --wrap 0 -xml";
 
     if ($cgNoExec) {
-        echo "No changes to $pDocFile See $pFileList in $cgDirTmp [" . __LINE__ . "]\n";
+        echo "No changes to $pDocFile See $pFileList in $cgDirTmp [util.php:" . __LINE__ . "]\n";
         return;    # ---------->
     }
-    echo "Repack $pDocFile [" . __LINE__ . "]\n";
+    echo "Repack $pDocFile [util.php:" . __LINE__ . "]\n";
 
     $tList = explode(" ", $pFileList);
     foreach ($tList as $tFile) {

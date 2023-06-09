@@ -166,10 +166,10 @@ function fValidate() {
     uValidateCommon();
 
     if ( ! $cgUseLib)
-        throw new Exception("cgUseLib is not true. [" . __LINE__ . "]");
+        throw new Exception("cgUseLib is not true. [import-tsv-2-lib-db.php:" . __LINE__ . "]");
 
     if (($gHandle = fopen($cgLibFile, "r")) == FALSE)
-        throw new Exception("Cannot open $cgLibFile. [" . __LINE__ . "]");
+        throw new Exception("Cannot open $cgLibFile. [import-tsv-2-lib-db.php:" . __LINE__ . "]");
 }
 
 
@@ -241,7 +241,7 @@ function fInsertRec() {
             if ($cgDebug) {
                 echo "$tSql \n";
                 # var_dump($tValueStr);
-                throw new Exception("Insert error. [" . __LINE__ . "]");
+                throw new Exception("Insert error. [import-tsv-2-lib-db.php:" . __LINE__ . "]");
             }
         }
     } # while

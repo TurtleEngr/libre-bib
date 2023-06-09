@@ -117,10 +117,10 @@ function fValidate() {
     uValidateCommon();
 
     if ( ! uTableExists($cgDbBib))
-        throw new Exception("Error: -t Table $gpFromTable does not exist. [" . __LINE__ . "]");
+        throw new Exception("Error: -t Table $gpFromTable does not exist. [bib-ref-update.php:" . __LINE__ . "]");
 
     if ( ! file_exists("$cgDirEtc/cite-update.xml"))
-        throw new Exception("Error: Missing file: $cgDirEtc/cite-update.xml [" . __LINE__ . "]");
+        throw new Exception("Error: Missing file: $cgDirEtc/cite-update.xml [bib-ref-update.php:" . __LINE__ . "]");
 
     return;    # ---------->
 } # fValidate
@@ -163,7 +163,7 @@ function fBibLookup($pRef) {
         # TBD, make these a "skip" option?
         if ( ! array_key_exists($pRef['id'],
                 array("REF", "example-01", "example-02", "example-youtube-95")))
-            echo "\nWarning: " . $pRefList[$pRef]['id'] . " is not in DB. [" .
+            echo "\nWarning: " . $pRefList[$pRef]['id'] . " is not in DB. [bib-ref-update.php:" .
                 __LINE__ . "]\n";
         return;    # ---------->
     }
@@ -246,7 +246,7 @@ function fProcessLine($pLine) {
     # Parse pLine to get Id. If not found, just continue.
     $tRef = fGetRefId($pLine);
     if ($tRef['id'] == "") {
-        echo "Warning: No Id found for biblio entry. [" . __LINE__ . "]\n";
+        echo "Warning: No Id found for biblio entry. [bib-ref-update.php:" . __LINE__ . "]\n";
         return;    # ---------->
     }
 
@@ -276,7 +276,7 @@ function fProcessLine($pLine) {
     }
     if ($tCacheSize >= $cMaxCache) {
         echo "\nWarning: Problem parsing " . $tRef['id'] .
-            "bibliography-mark end tag was not found. [" . __LINE__ . "]\n";
+            "bibliography-mark end tag was not found. [bib-ref-update.php:" . __LINE__ . "]\n";
         # Output the saved lines. (reversed, is faster and loop is easier)
         $tCacheOut = array_reverse($tCacheIn);
         while ($tLine = array_pop($tCacheOut))
@@ -300,7 +300,7 @@ function fProcessFile() {
     global $cgDebug;
     global $cgDirTmp;
 
-    echo "Start processing [" . __LINE__ . "]\n";
+    echo "Start processing [bib-ref-update.php:" . __LINE__ . "]\n";
 
     $gInH = fopen("$cgDirTmp/content.xml", 'r');
     $gOutH = fopen("$cgDirTmp/content.new.xml", 'w');
@@ -311,8 +311,8 @@ function fProcessFile() {
         ++$tNumLine;
         fProcessLine($tLine);
     }
-    echo "\nProcessed $tNumLine lines. [" . __LINE__ . "]\n";
-    echo "Found $gNumRef references. [" . __LINE__ . "]\n";
+    echo "\nProcessed $tNumLine lines. [bib-ref-update.php:" . __LINE__ . "]\n";
+    echo "Found $gNumRef references. [bib-ref-update.php:" . __LINE__ . "]\n";
 
     fclose($gInH);
     fclose($gOutH);
@@ -342,6 +342,6 @@ try {
     exit(4);    # ---------->
 }
 
-echo "Done. [" . __LINE__ . "]\n";
+echo "Done. [bib-ref-update.php:" . __LINE__ . "]\n";
 exit(0);    # ---------->
 ?>

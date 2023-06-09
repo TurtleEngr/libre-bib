@@ -263,7 +263,7 @@ try {
     fStatus();
     fDbStatus();
 } catch(Exception $e) {
-    echo "Problem with setup: " . $e->getMessage() . " [" . __LINE__ . "]\n";
+    echo "Problem with setup: " . $e->getMessage() . " [bib-status.php:" . __LINE__ . "]\n";
     exit(3);    # ---------->
 }
 
