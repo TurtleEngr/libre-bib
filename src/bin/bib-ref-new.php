@@ -169,7 +169,7 @@ function fBibLookup($pRefList) {
 
         if ( ! $tRow) {
             # TBD, make these a "skip" option
-            if ( ! in_array($pRefList[$tRef]['id'],
+            if ( ! array_key_exists($pRefList[$tRef]['id'],
                     array("example-01", "example-02", "example-youtube-95")))
                 echo "\nWarning: " . $pRefList[$tRef]['id'] .
                     " is not in DB. [" . __LINE__ . "]\n";

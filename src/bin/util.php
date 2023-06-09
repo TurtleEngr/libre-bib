@@ -71,7 +71,7 @@ function uDate($pStyle = "iso") {
     );
 
     $pStyle = strtolower($pStyle);
-    if (in_array($pStyle, $tFmt))
+    if (array_key_exists($pStyle, $tFmt))
         return date($tFmt[$pStyle]);
     return date($tFmt["iso"]);
 } # fDate
@@ -116,7 +116,7 @@ function uBool($pVal) {
 
     $tMap = array("false"=>0, "true"=>1 );
 
-    if (in_array($pVal, $tMap))
+    if (array_key_exists($pVal, $tMap))
         return $tMap[$pVal];
     return 0;
 } # fBool
@@ -386,7 +386,7 @@ function uTxt2LoMap($pTxt = "") {
     );
 
     if ("$pTxt" != "") {
-        if (in_array($pTxt, $tMap)) {
+        if (array_key_exists($pTxt, $tMap)) {
             $tName = $tMap["$pTxt"];
             return $tName;
         }
@@ -396,7 +396,7 @@ function uTxt2LoMap($pTxt = "") {
             $tLowerMap[strtolower($tKey)] = $tMap[$tKey];
         }
         $pTxt = strtolower($pTxt);
-        if (in_array($pTxt, $tLowerMap))
+        if (array_key_exists($pTxt, $tLowerMap))
             return $tLowerMap[$pTxt];
         return "Unknown";
     } else {
@@ -444,7 +444,7 @@ function uLo2TxtMap($pLo = "") {
         "Year"=>"Date"
     );
     if ("$pLo" != "") {
-        if (in_array($pLo, $tMap))
+        if (array_key_exists($pLo, $tMap))
             return $tMap["$pLo"];
         return "Unknown";
     } else {
@@ -498,7 +498,7 @@ function uMedia2RepType($pMedia = "") {
         "{youtube}"=>"youtube"
     );
     if ("$pMedia" != "") {
-        if ( ! in_array($pMedia, $tMap))
+        if ( ! array_key_exists($pMedia, $tMap))
             $pMedia = "unknown";
         return $tMap[strtolower($pMedia)];
     } else {
@@ -542,7 +542,7 @@ function uRepType2Type($pMedia = "") {
     );
     if ("$pMedia" != "") {
         $pMedia = strtolower($pMedia);
-        if (in_array($pMedia, $tMap))
+        if (array_key_exists($pMedia, $tMap))
             return $tMap[$pMedia];
         return 16;
     } else {
@@ -559,7 +559,7 @@ function uType2Txt($pType = "") {
         16=>"site"
     );
     if ("$pType" != "") {
-        if (in_array($pType, $tMap))
+        if (array_key_exists($pType, $tMap))
             return $tMap[$pType];
         return "site";
     } else {
@@ -600,7 +600,7 @@ function uLib2Lo($pCol = "") {
         "Work_id"=>"Custom3"
     );
     if ("$pCol" != "") {
-        if (in_array($pCol, $tMap))
+        if (array_key_exists($pCol, $tMap))
             return $tMap["$pCol"];
         return "Unknown";
     } else {
@@ -648,7 +648,7 @@ function uBib2Xml($pCol = "") {
         "ISBN"=>"isbn"
     );
     if ("$pCol" != "") {
-        if (in_array($pCol, $tMap))
+        if (array_key_exists($pCol, $tMap))
             return $tMap["$pCol"];
         return "custom5";
     } else {
@@ -669,7 +669,7 @@ function uBibType2Xml($pType = "") {
         16=>'www'
     );
     if ("$pType" != "") {
-        if (in_array($pType, $tMap))
+        if (array_key_exists($pType, $tMap))
             return $tMap["$pType"];
         return "www";
     } else {
