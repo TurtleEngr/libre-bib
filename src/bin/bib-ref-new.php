@@ -119,10 +119,10 @@ function fValidate() {
     uValidateCommon();
 
     if ( ! uTableExists($cgDbBib))
-        throw new Exception("Error: -t Table $gpFromTable does not exist. [" . __LINE__ . "]");
+        throw new Exception("Error: -t Table $gpFromTable does not exist. [bib-ref-new.php:" . __LINE__ . "]");
 
     if ( ! file_exists("$cgDirEtc/cite-new.xml"))
-        throw new Exception("Error: Missing file: $cgDirEtc/cite-new.xml [" . __LINE__ . "]");
+        throw new Exception("Error: Missing file: $cgDirEtc/cite-new.xml [bib-ref-new.php:" . __LINE__ . "]");
 
     return;    # ---------->
 } # fValidate
@@ -169,10 +169,10 @@ function fBibLookup($pRefList) {
 
         if ( ! $tRow) {
             # TBD, make these a "skip" option
-            if ( ! in_array($pRefList[$tRef]['id'],
+            if ( ! array_key_exists($pRefList[$tRef]['id'],
                     array("example-01", "example-02", "example-youtube-95")))
                 echo "\nWarning: " . $pRefList[$tRef]['id'] .
-                    " is not in DB. [" . __LINE__ . "]\n";
+                    " is not in DB. [bib-ref-new.php:" . __LINE__ . "]\n";
             unset($pRefList[$tRef]);
             continue;
         }
@@ -292,7 +292,7 @@ function fProcessFile() {
     global $cgDebug;
     global $cgDirTmp;
 
-    echo "Start processing [" . __LINE__ . "]\n";
+    echo "Start processing [bib-ref-new.php:" . __LINE__ . "]\n";
 
     $gInH = fopen("$cgDirTmp/content.xml", 'r');
     $gOutH = fopen("$cgDirTmp/content.new.xml", 'w');
@@ -303,8 +303,8 @@ function fProcessFile() {
         ++$tNumLine;
         fProcessLine($tLine);
     }
-    echo "\nProcessed $tNumLine lines. [" . __LINE__ . "]\n";
-    echo "Found $gNumRef references. [" . __LINE__ . "]\n";
+    echo "\nProcessed $tNumLine lines. [bib-ref-new.php:" . __LINE__ . "]\n";
+    echo "Found $gNumRef references. [bib-ref-new.php:" . __LINE__ . "]\n";
 
     fclose($gInH);
     fclose($gOutH);
@@ -319,7 +319,7 @@ try {
     fGetOps();
     fValidate();
 } catch(Exception $e) {
-    echo "Problem with setup: " . $e->getMessage() . " [" . __LINE__ . "]\n";
+    echo "Problem with setup: " . $e->getMessage() . " [bib-ref-new.php:" . __LINE__ . "]\n";
     exit(3);    # ---------->
 }
 
@@ -330,11 +330,11 @@ try {
     fProcessFile();
     uPackFile($cgDocFile, "content");
 } catch(Exception $e) {
-    echo "Problem creating table: " . $e->getMessage() . " ["
+    echo "Problem creating table: " . $e->getMessage() . " [bib-ref-new.php:"
         . __LINE__ . "]\n";
     exit(4);    # ---------->
 }
 
-echo "Done. [" . __LINE__ . "]\n";
+echo "Done. [bib-ref-new.php:" . __LINE__ . "]\n";
 exit(0);    # ---------->
 ?>

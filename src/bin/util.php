@@ -13,7 +13,7 @@ function uExecSql($pSql) {
     global $cgDebug;
     global $cgNoExec;
 
-    if ($cgDebug) print_r("\n$pSql \n" . __FILE__ . "[" . __LINE__ . "]\n\n");
+    if ($cgDebug) print_r("\n$pSql \n[util.php:" . __LINE__ . "]\n\n");
     if ( ! $cgNoExec)
         return $gDb->query($pSql);
     return true;
@@ -32,7 +32,7 @@ function uRenameTable($pTable) {
         return $tNewName;
 
     if ( ! uTableExists("$tNewName"))
-        throw new Exception("Error: Backup failed: $tSql \n" . __FILE__ . "[" . __LINE__ . "]");
+        throw new Exception("Error: Backup failed: $tSql \n[util.php:" . __LINE__ . "]");
 
     echo "Created: $tNewName \n";
     return $tNewName;
@@ -71,7 +71,7 @@ function uDate($pStyle = "iso") {
     );
 
     $pStyle = strtolower($pStyle);
-    if (in_array($pStyle, $tFmt))
+    if (array_key_exists($pStyle, $tFmt))
         return date($tFmt[$pStyle]);
     return date($tFmt["iso"]);
 } # fDate
@@ -90,11 +90,11 @@ function uValidateCommon() {
     global $gPassword;
 
     if ( ! file_exists("$cgDbPassCache"))
-        throw new Exception("Missing: cgDbPassCache $cgDbPassCache. To set it, run: bib connect [" . __LINE__ . "]");
+        throw new Exception("Missing: cgDbPassCache $cgDbPassCache. To set it, run: bib connect [util.php:" . __LINE__ . "]");
 
     $gPassword = rtrim(shell_exec("/bin/bash -c 'cat $cgDbPassCache'"));
     if ("$gPassword" == "")
-        echo "Warning: Password is null [" . __LINE__ . "]\n";
+        echo "Warning: Password is null [util.php:" . __LINE__ . "]\n";
 
     # Create database connection
     $tDsn = "mysql:dbname=$cgDbName;charset=UTF8;host=$cgDbHost;port=";
@@ -116,7 +116,7 @@ function uBool($pVal) {
 
     $tMap = array("false"=>0, "true"=>1 );
 
-    if (in_array($pVal, $tMap))
+    if (array_key_exists($pVal, $tMap))
         return $tMap[$pVal];
     return 0;
 } # fBool
@@ -158,13 +158,13 @@ function uUnpackFile($pDocFile, $pFileList) {
 
     $tList = explode(" ", $pFileList);
 
-    echo "Unpack $pDocFile [" . __LINE__ . "]\n";
+    echo "Unpack $pDocFile [util.php:" . __LINE__ . "]\n";
     foreach ($tList as $tFile)
         shell_exec("/bin/bash -c 'cd $cgDirTmp; unzip -o ../$pDocFile $tFile.xml'");
 
     foreach ($tList as $tFile) {
         if ( ! file_exists("$cgDirTmp/$tFile.xml"))
-            throw new Exception("Error: Could not extract $tFile.xml [" . __LINE__ . "]");
+            throw new Exception("Error: Could not extract $tFile.xml [util.php:" . __LINE__ . "]");
     }
 
     # tidy the xml files
@@ -183,10 +183,10 @@ function uPackFile($pDocFile, $pFileList) {
     $cTidyOpt = "-m -q --tidy-mark no --break-before-br no --indent-attributes no --indent no --input-xml yes --output-xml yes --vertical-space no --wrap 0 -xml";
 
     if ($cgNoExec) {
-        echo "No changes to $pDocFile See $pFileList in $cgDirTmp [" . __LINE__ . "]\n";
+        echo "No changes to $pDocFile See $pFileList in $cgDirTmp [util.php:" . __LINE__ . "]\n";
         return;    # ---------->
     }
-    echo "Repack $pDocFile [" . __LINE__ . "]\n";
+    echo "Repack $pDocFile [util.php:" . __LINE__ . "]\n";
 
     $tList = explode(" ", $pFileList);
     foreach ($tList as $tFile) {
@@ -386,7 +386,7 @@ function uTxt2LoMap($pTxt = "") {
     );
 
     if ("$pTxt" != "") {
-        if (in_array($pTxt, $tMap)) {
+        if (array_key_exists($pTxt, $tMap)) {
             $tName = $tMap["$pTxt"];
             return $tName;
         }
@@ -396,7 +396,7 @@ function uTxt2LoMap($pTxt = "") {
             $tLowerMap[strtolower($tKey)] = $tMap[$tKey];
         }
         $pTxt = strtolower($pTxt);
-        if (in_array($pTxt, $tLowerMap))
+        if (array_key_exists($pTxt, $tLowerMap))
             return $tLowerMap[$pTxt];
         return "Unknown";
     } else {
@@ -444,7 +444,7 @@ function uLo2TxtMap($pLo = "") {
         "Year"=>"Date"
     );
     if ("$pLo" != "") {
-        if (in_array($pLo, $tMap))
+        if (array_key_exists($pLo, $tMap))
             return $tMap["$pLo"];
         return "Unknown";
     } else {
@@ -498,7 +498,7 @@ function uMedia2RepType($pMedia = "") {
         "{youtube}"=>"youtube"
     );
     if ("$pMedia" != "") {
-        if ( ! in_array($pMedia, $tMap))
+        if ( ! array_key_exists($pMedia, $tMap))
             $pMedia = "unknown";
         return $tMap[strtolower($pMedia)];
     } else {
@@ -542,7 +542,7 @@ function uRepType2Type($pMedia = "") {
     );
     if ("$pMedia" != "") {
         $pMedia = strtolower($pMedia);
-        if (in_array($pMedia, $tMap))
+        if (array_key_exists($pMedia, $tMap))
             return $tMap[$pMedia];
         return 16;
     } else {
@@ -559,7 +559,7 @@ function uType2Txt($pType = "") {
         16=>"site"
     );
     if ("$pType" != "") {
-        if (in_array($pType, $tMap))
+        if (array_key_exists($pType, $tMap))
             return $tMap[$pType];
         return "site";
     } else {
@@ -600,7 +600,7 @@ function uLib2Lo($pCol = "") {
         "Work_id"=>"Custom3"
     );
     if ("$pCol" != "") {
-        if (in_array($pCol, $tMap))
+        if (array_key_exists($pCol, $tMap))
             return $tMap["$pCol"];
         return "Unknown";
     } else {
@@ -648,7 +648,7 @@ function uBib2Xml($pCol = "") {
         "ISBN"=>"isbn"
     );
     if ("$pCol" != "") {
-        if (in_array($pCol, $tMap))
+        if (array_key_exists($pCol, $tMap))
             return $tMap["$pCol"];
         return "custom5";
     } else {
@@ -669,7 +669,7 @@ function uBibType2Xml($pType = "") {
         16=>'www'
     );
     if ("$pType" != "") {
-        if (in_array($pType, $tMap))
+        if (array_key_exists($pType, $tMap))
             return $tMap["$pType"];
         return "www";
     } else {

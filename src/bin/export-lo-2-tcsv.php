@@ -124,7 +124,7 @@ function fValidate() {
     uValidateCommon();
 
     if ("$gpSep" == "")
-        throw new Exception("Error: Missing -s option. [" . __LINE__ . "]");
+        throw new Exception("Error: Missing -s option. [export-lo-2-tcsv.php:" . __LINE__ . "]");
     switch ($gpSep) {
     case "c":
         $gSep = ",";
@@ -133,11 +133,11 @@ function fValidate() {
         $gSep = "\t";
         break;
     default:
-        throw new Exception("Error: Bad -s. Should be 'c' or 's'. [" . __LINE__ . "]");
+        throw new Exception("Error: Bad -s. Should be 'c' or 's'. [export-lo-2-tcsv.php:" . __LINE__ . "]");
     }
 
     if ( ! uTableExists($cgDbLo))
-        throw new Exception("Error: -t Table $cgDbLo does not exist. [" . __LINE__ . "]");
+        throw new Exception("Error: -t Table $cgDbLo does not exist. [export-lo-2-tcsv.php:" . __LINE__ . "]");
 } # fValidate
 
 # -----------------------------
@@ -153,7 +153,7 @@ function fExportTable() {
     shell_exec("/bin/bash -c 'head -n 1 $cgDirApp/etc/lo-schema.csv >$cgBackupFile'");
 
     if (($tFileH = fopen($cgBackupFile, "a")) == FALSE)
-        throw new Exception("Cannot write to $cgBackupFile. [" . __LINE__ . "]");
+        throw new Exception("Cannot write to $cgBackupFile. [export-lo-2-tcsv.php:" . __LINE__ . "]");
 
     # Get all columns
     $tSql = "select * from bib";
@@ -166,7 +166,7 @@ function fExportTable() {
         echo ".";
         ++$tCount;
         if ( ! fputcsv($tFileH, array_values($tRec), $gSep))
-            throw new Exception("Error writing: record $tCount. [" . __LINE__ . "]");
+            throw new Exception("Error writing: record $tCount. [export-lo-2-tcsv.php:" . __LINE__ . "]");
     } # while
     echo "\nProcessed: $tCount \n";
     fclose($tFileH);

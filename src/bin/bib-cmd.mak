@@ -174,7 +174,7 @@ status-bib :
 # Rules supporting cmds
 
 conf.env : $(cgDirApp)/doc/example/conf.env
-	@if [[ ! -f conf.env  ]]; then \
+	-if [[ ! -f $@  ]]; then \
 	    cp -v $? $@; \
 	    chmod a+rx $@; \
 	else \
@@ -182,7 +182,7 @@ conf.env : $(cgDirApp)/doc/example/conf.env
 	    cp -v $? $(cgDirTmp); \
 	    chmod a+rx $(cgDirTmp)/$@; \
 	    touch $@; \
-	    diff -ZBbw $? $@; \
+	    diff -ZBbw $@ $?; \
 	fi
 
 $(cgDirBackup) $(cgDirConf) $(cgDirEtc) $(cgDirStatus) $(cgDirTmp) ~/.ssh :
