@@ -68,9 +68,7 @@ Set these in conf.env
 
 =for comment =head1 AUTHOR
 
-=head1 HISTORY
-
-$Revision: 1.6 $ $Date: 2023/05/29 03:46:17 $ GMT
+=for comment =head1 HISTORY
 
 =cut
 

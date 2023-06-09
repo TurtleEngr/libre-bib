@@ -58,9 +58,7 @@ This help.
 
 =for comment =head1 AUTHOR
 
-=head1 HISTORY
-
- $Revision: 1.5 $ $Date: 2023/05/29 02:54:22 $ GMT
+=for comment =head1 HISTORY
 
 =cut
 
