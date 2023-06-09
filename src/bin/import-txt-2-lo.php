@@ -140,17 +140,24 @@ function fCreateTable() {
 
 # -----------------------------
 function fInsertRec($pRec) {
+    global $gDb;
     global $cgDbLo;
+    global $cgDebug;
     global $gNumLine;
     global $gNumRec;
 
     $tSql = "INSERT INTO $cgDbLo (`" .
-        implode("`, `", array_keys($pRec)) .
+        implode("`,`", array_keys($pRec)) .
         "`) VALUES (\"" .
         implode('","', array_values($pRec)) .
         '")';
-    if (uExecSql("$tSql") == false)
-        throw new Exception("Error: FileLine: $gNumLine, Rec: $gNumRec Failed: $tSql [import-txt-2-lo.php:" . __LINE__ . "]");
+    if (uExecSql("$tSql") == false) {
+        $tErrInfo = $gDb->errorInfo();
+        $tInfo = $tErrInfo[2];
+        if ($cgDebug)
+            $tInfo .= "\n\tSQL: $tSql";
+        throw new Exception("Error: FileLine: $gNumLine, Rec: $gNumRec\n\t$tInfo\n\tat [import-txt-2-lo.php:" . __LINE__ . "]");
+    }
 } # fInsertRec
 
 # -----------------------------
@@ -282,7 +289,7 @@ try {
     fGetOps();
     fValidate();
 } catch(Exception $e) {
-    echo "Problem with setup: " . $e->getMessage() . "\n";
+    echo "\nProblem with setup: " . $e->getMessage() . "\n";
     exit(1);
 }
 
@@ -291,7 +298,7 @@ try {
     fCreateTable();
     fImportTxt();
 } catch(Exception $e) {
-    echo "Problem creating table: " . $e->getMessage() . "\n";
+    echo "\nProblem creating table: " . $e->getMessage() . "\n";
     echo "Concider restoring $cgDbLo from $gBackupName\n";
     exit(2);     # ---------->
 }
