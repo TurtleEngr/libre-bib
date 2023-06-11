@@ -654,7 +654,7 @@ touched.
 *** Cmd: add, edit
 *** Cmd: help
 * Appendix
-** Backups
+** A. Backups
 
 + DB Tables: If a table exists and cgBackup is "true", then the table will be
   copied to the table name with a datestamp (_YYYY-MM-DD_HH-MM-SS)
@@ -671,13 +671,17 @@ touched.
 
     drop table `bib`;
     RENAME TABLE `bib_2023-04-02_14-18-37` TO bib;
-** Customizing the defaults
+** B. Customizing the defaults
 
 - If you are managing multiple bibliographies, you might have some
   common settings. For example, most of the things related to a remote
-  DB will be the same. You can change the application's etc/conf.env
-  default file. You can even add your own variables. Here are the
-  steps.
+  DB will be the same.
+
+- The user config file is the best place for defining the common
+  settings: $cgDirConf/conf.env
+
+- If you change the /opt/libre-bib/etc/conf.env file, you will need to
+  rebuild some things. Here are the steps:
 
 #+BEGIN_EXPORT html
 <pre class="in">
@@ -689,12 +693,16 @@ bib rebuild        # update user default file, and conf.php
 </pre>
 #+END_EXPORT
 
-  Source /opt/libre-bib/etc/conf.env and conf.env in a bash script
+- Source /opt/libre-bib/etc/conf.env and conf.env in a bash script
   call your own Makefile, other bash scripts, or php scripts to run
   things. Your php scripts could include /opt/libre-bib/etc/conf.php
   to define the ENV vars as globals, or just use $_ENV['cgVarName'].
 
-** A Full Example
+** C. Emacs Org Mode - Outine
+
+- doc/example/example-outline.org
+
+** D. Full Example
 - This assumes you have everything installed and working. This will use
   the example files.
 
@@ -962,13 +970,13 @@ Done. [396]
  - Now you can add the Bibliography to the end of your document, and
    setup the styles for the different Type of entries.
 
-** Build
+** E. Build
 
 - Use: "make build"
 
   But first define cgBuild=true, so the sanity-check will be skipped.
 
-** Maps
+** F. Maps
 
 The best source for the maps can be found in bin/util.php.
 

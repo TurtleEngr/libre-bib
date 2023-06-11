@@ -687,8 +687,8 @@ Appendix
 
 ------------------------------------------------------------------------
 
-Backups
--------
+A. Backups
+----------
 
 -   DB Tables: If a table exists and cgBackup is \"true\", then the
     table will be copied to the table name with a datestamp
@@ -709,13 +709,18 @@ Backups
 
 ------------------------------------------------------------------------
 
-Customizing the defaults
-------------------------
+B. Customizing the defaults
+---------------------------
 
 If you are managing multiple bibliographies, you might have some common
 settings. For example, most of the things related to a remote DB will be
-the same. You can change the application\'s etc/conf.env default file.
-You can even add your own variables. Here are the steps.
+the same.
+
+The user config file is the best place for defining the common settings:
+\$cgDirConf/conf.env
+
+If you change the /opt/libre-bib/etc/conf.env file, you will need to
+rebuild some things. Here are the steps:
 
 ``` {.in}
 cd /opt/libre-bib/etc
@@ -732,8 +737,15 @@ ENV vars as globals, or just use \$~ENV~\[\'cgVarName\'\].
 
 ------------------------------------------------------------------------
 
-A Full Example
---------------
+C. Emacs Org Mode - Outine
+--------------------------
+
+doc/example/example-outline.org
+
+------------------------------------------------------------------------
+
+D. Full Example
+---------------
 
 This assumes you have everything installed and working. This will use
 the example files.
@@ -1051,8 +1063,8 @@ the styles for the different Type of entries.
 
 ------------------------------------------------------------------------
 
-Build
------
+E. Build
+--------
 
 Use: \"make build\"
 
@@ -1060,8 +1072,8 @@ But first define cgBuild=true, so the sanity-check will be skipped.
 
 ------------------------------------------------------------------------
 
-Maps
-----
+F. Maps
+-------
 
 The best source for the maps can be found in bin/util.php.
 

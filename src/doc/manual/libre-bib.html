@@ -625,7 +625,7 @@ bib style-save     # Run this if you change bibliography &gt; Entries
   <hr />
   <h1 id="appendix">Appendix</h1>
   <hr />
-  <h2 id="backups">Backups</h2>
+  <h2 id="a.-backups">A. Backups</h2>
   <ul>
     <li>
       <p>DB Tables: If a table exists and cgBackup is "true", then the table
@@ -649,11 +649,14 @@ bib style-save     # Run this if you change bibliography &gt; Entries
     </li>
   </ul>
   <hr />
-  <h2 id="customizing-the-defaults">Customizing the defaults</h2>
+  <h2 id="b.-customizing-the-defaults">B. Customizing the defaults</h2>
   <p>If you are managing multiple bibliographies, you might have some common
   settings. For example, most of the things related to a remote DB will be
-  the same. You can change the application's etc/conf.env default file. You
-  can even add your own variables. Here are the steps.</p>
+  the same.</p>
+  <p>The user config file is the best place for defining the common settings:
+  $cgDirConf/conf.env</p>
+  <p>If you change the /opt/libre-bib/etc/conf.env file, you will need to
+  rebuild some things. Here are the steps:</p>
   <pre class="in">
 cd /opt/libre-bib/etc
 edit conf.env
@@ -666,7 +669,10 @@ bib rebuild        # update user default file, and conf.php
   php scripts could include /opt/libre-bib/etc/conf.php to define the ENV
   vars as globals, or just use $<sub>ENV</sub>['cgVarName'].</p>
   <hr />
-  <h2 id="a-full-example">A Full Example</h2>
+  <h2 id="c.-emacs-org-mode---outine">C. Emacs Org Mode - Outine</h2>
+  <p>doc/example/example-outline.org</p>
+  <hr />
+  <h2 id="d.-full-example">D. Full Example</h2>
   <p>This assumes you have everything installed and working. This will use
   the example files.</p>
   <pre class="in">$ cd $HOME
@@ -901,11 +907,11 @@ Done. [396]
   <p>Now you can add the Bibliography to the end of your document, and setup
   the styles for the different Type of entries.</p>
   <hr />
-  <h2 id="build">Build</h2>
+  <h2 id="e.-build">E. Build</h2>
   <p>Use: "make build"</p>
   <p>But first define cgBuild=true, so the sanity-check will be skipped.</p>
   <hr />
-  <h2 id="maps">Maps</h2>
+  <h2 id="f.-maps">F. Maps</h2>
   <p>The best source for the maps can be found in bin/util.php.</p>
   <h3 id="bib-to-libreoffice-names">bib to libreoffice names</h3>
   <p>This has some minor differences when looking at the field in the
