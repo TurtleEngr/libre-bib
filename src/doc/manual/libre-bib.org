@@ -278,16 +278,23 @@ continuing.
 <pre class="in">
 mkdir -p project/biblio
 cd project/biblio
-bib setup bib      # This creates your default conf.env file
+bib setup-bib      # This creates your default conf.env file
 edit conf.env      # Uncomment and set these values
-    set cgDbName="YOUR-DB-NAME"
-    set cgDbUser="YOUR-DB-USER"
-    set cgDbPassHint="YOUR-HINT"
-bib setup bib      # Your project are will be setup
+    cgDbName="YOUR-DB-NAME"
+    cgDbUser="YOUR-DB-USER"
+    cgDbPassHint="YOUR-HINT"
+bib setup-bib      # Your project are will be setup
+bib                # List the bib commands
 bib connect        # Connect to DB to cache the  password
 bib import-lo      # Import the biblio.txt file
-bib ref-new        # A DB values for any new REFs
-bib ref-update    # Update REFs with any DB changes
+bib ref-new        # Use DB values for any new REFs
+bib ref-update     # Update REFs with any DB changes
+libreoffice example.odt
+    # Load styles from another odt file (optional)
+    # Add bibliography to end of document
+    # Set the bibliography Type > Brackets to "none"
+bib style-update   # Define the bibliography > Entries for the different Types
+bib style-save     # Run this if you change bibliography > Entries
 </pre>
 #+END_EXPORT
 
@@ -382,10 +389,10 @@ The conf.env files are the core configuration files for the libre-bib
 app.  They are executed in this order, so the last definition wins.
 
 #+BEGIN_EXPORT html
-<pre class="in">$ cd $HOME
-/opt/libre-bib/etc/conf.env
-~/.config/libre-bib/conf.env ($cgDirConf)
-$PWD/conf.env
+<pre class="in">
+1. . /opt/libre-bib/etc/conf.env
+2. . ~/.config/libre-bib/conf.env   # $cgDirConf Optional
+3. . ./conf.env
 </pre>
 #+END_EXPORT
 
