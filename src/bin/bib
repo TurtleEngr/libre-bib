@@ -43,7 +43,7 @@ if [[ "${cgBuild:-false}" != "true" && "$pParm" != "setup-bib" ]]; then
     fi
 fi
 
-# Default conf
+# App conf
 . $cgDirApp/etc/conf.env
 
 if [[ "${cgBuild:-false}" != "true" ]]; then
@@ -57,11 +57,13 @@ if [[ "${cgBuild:-false}" != "true" ]]; then
 
     # User conf
     if [[ -x $cgDirConf/conf.env ]]; then
-        . ./$cgDirConf/conf.env
+        $cgBin/valid-conf.sh <$cgDirConf/conf.env
+        . /tmp/conf.env
     fi
 
-    # User doc conf
-    . ./conf.env
+    # Doc conf
+    $cgBin/valid-conf.sh <./conf.env
+    . /tmp/conf.env
 fi
 
 tSilent="-s"
