@@ -38,7 +38,7 @@ clean :
 
 help :
 	@echo "See file: $(cgDirApp)/doc/manual/libre-bib.html"
-	sensible-browser file://$(cgDirApp)/doc/manual/libre-bib.html
+	sensible-browser file://$(cgDirApp)/doc/manual/libre-bib.html &>/dev/null &
 
 connect : $(cgDbPassCache)
 	@echo
