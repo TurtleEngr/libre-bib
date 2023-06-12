@@ -133,7 +133,7 @@ Test the connection on the server system
 Most likely you\'ll use your sudo password, or the password you setup
 for the mysql DB root user.
 
-### Create Database, Users, and Grants
+### Create DB, Users, and Grants
 
 While signed in as root user to the DB type these commands. Replace the
 \$cgNAME variables with the values of those variables in your
