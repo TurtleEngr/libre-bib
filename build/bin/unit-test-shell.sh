@@ -195,13 +195,12 @@ if [ -z "$PWD" ]; then
 fi
 export cgCurDir=$PWD
 
-export cgTmp=$cgCurDir/tmp
 export cgBin=$cgCurDir/src/bin
 export cgBuildBin=$cgCurDir/build/bin
 export cgRefDir=$cgCurDir/test-ref
 export cgTestDir=$cgCurDir/test-dir
 
-for i in $cgTmp $cgBin $cgBuildBin $cgRefDir; do
+for i in $cgBin $cgBuildBin $cgRefDir; do
     if [[ ! -d $i ]]; then
         echo "Error: You are not in the top directory. Missing $i"
         exit 1
