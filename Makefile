@@ -188,3 +188,4 @@ rebuild :
 
 check :
 	build/bin/check.sh
+	build/bin/unit-test-shell.sh

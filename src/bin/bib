@@ -39,11 +39,12 @@ fi
 
 if [[ "${cgBuild:-false}" != "true" && "$pParm" != "setup-bib" ]]; then
     if ! $cgBin/sanity-check.sh; then
+        echo "Fix the above error, then try again."
         exit $?
     fi
 fi
 
-# App conf
+# App conf (assume this is only name=value)
 . $cgDirApp/etc/conf.env
 
 if [[ "${cgBuild:-false}" != "true" ]]; then
@@ -57,12 +58,14 @@ if [[ "${cgBuild:-false}" != "true" ]]; then
 
     # User conf
     if [[ -x $cgDirConf/conf.env ]]; then
+        # Not checking for errors because sanity-check.sh was run
         $cgBin/valid-conf.sh <$cgDirConf/conf.env
         . /tmp/conf.env
     fi
 
     # Doc conf
     $cgBin/valid-conf.sh <./conf.env
+    # Not checking for errors because sanity-check.sh was run
     . /tmp/conf.env
 fi
 
