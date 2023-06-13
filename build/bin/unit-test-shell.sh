@@ -174,6 +174,11 @@ EOF
     return 0
 } # testValidConfError
 
+#src/bin/bib
+#src/bin/gen-conf-php.sh
+#src/bin/sanity-check.sh
+#src/bin/sort-para.sh
+
 # -------------------
 # This should be the last defined function
 fRunTests()

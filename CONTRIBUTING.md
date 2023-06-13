@@ -108,10 +108,10 @@
 - **pre-commit checks:**
   - File names can only use letters, numbers, hypen, dash, and periods.
   - File names cannot begin with hyphens or end with periods.
-  - File names cannot be all periods.
   - These file names are not allowed: CON|PRN|AUX|NUL|COM[1-9]|LPT[1-9]
   - No trailing spaces in files.
   - No TABs in most files. (Makefile and bib-cmd.mak are exceptions)
+    See: "git config --get gitproj.hook.tab-exclude-list"
   - "Large" binary files are not allowed.
 
 - Run **make check** before commiting code.
