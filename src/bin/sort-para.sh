@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 
 # Usage:
 #     sort-para.sh <FILE.in >FILE.out

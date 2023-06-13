@@ -1,4 +1,5 @@
-#!/bin/bash
+#!/usr/bin/env bash
+
 # Usage:
 #    valid-conf.sh <conf.env
 # Output:
