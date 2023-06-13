@@ -133,7 +133,7 @@ Test the connection on the server system
 Most likely you\'ll use your sudo password, or the password you setup
 for the mysql DB root user.
 
-### Create Database, Users, and Grants
+### Create DB, Users, and Grants
 
 While signed in as root user to the DB type these commands. Replace the
 \$cgNAME variables with the values of those variables in your
@@ -278,16 +278,23 @@ For a detailed example see Appendix \"A Full Example.\"
 ``` {.in}
 mkdir -p project/biblio
 cd project/biblio
-bib setup bib      # This creates your default conf.env file
+bib setup-bib      # This creates your default conf.env file
 edit conf.env      # Uncomment and set these values
-    set cgDbName="YOUR-DB-NAME"
-    set cgDbUser="YOUR-DB-USER"
-    set cgDbPassHint="YOUR-HINT"
-bib setup bib      # Your project are will be setup
+    cgDbName="YOUR-DB-NAME"
+    cgDbUser="YOUR-DB-USER"
+    cgDbPassHint="YOUR-HINT"
+bib setup-bib      # Your project are will be setup
+bib                # List the bib commands
 bib connect        # Connect to DB to cache the  password
 bib import-lo      # Import the biblio.txt file
-bib ref-new        # A DB values for any new REFs
-bib ref-update    # Update REFs with any DB changes
+bib ref-new        # Use DB values for any new REFs
+bib ref-update     # Update REFs with any DB changes
+libreoffice example.odt
+    # Load styles from another odt file (optional)
+    # Add bibliography to end of document
+    # Set the bibliography Type > Brackets to "none"
+bib style-update   # Define the bibliography > Entries for the different Types
+bib style-save     # Run this if you change bibliography > Entries
 ```
 
 ------------------------------------------------------------------------
@@ -384,10 +391,9 @@ The conf.env files are the core configuration files for the libre-bib
 app. They are executed in this order, so the last definition wins.
 
 ``` {.in}
-$ cd $HOME
-/opt/libre-bib/etc/conf.env
-~/.config/libre-bib/conf.env ($cgDirConf)
-$PWD/conf.env
+1. . /opt/libre-bib/etc/conf.env
+2. . ~/.config/libre-bib/conf.env   # $cgDirConf Optional
+3. . ./conf.env
 ```
 
 -   Var: ****cgDebug=false****
@@ -681,8 +687,8 @@ Appendix
 
 ------------------------------------------------------------------------
 
-Backups
--------
+A. Backups
+----------
 
 -   DB Tables: If a table exists and cgBackup is \"true\", then the
     table will be copied to the table name with a datestamp
@@ -703,13 +709,18 @@ Backups
 
 ------------------------------------------------------------------------
 
-Customizing the defaults
-------------------------
+B. Customizing the defaults
+---------------------------
 
 If you are managing multiple bibliographies, you might have some common
 settings. For example, most of the things related to a remote DB will be
-the same. You can change the application\'s etc/conf.env default file.
-You can even add your own variables. Here are the steps.
+the same.
+
+The user config file is the best place for defining the common settings:
+\$cgDirConf/conf.env
+
+If you change the /opt/libre-bib/etc/conf.env file, you will need to
+rebuild some things. Here are the steps:
 
 ``` {.in}
 cd /opt/libre-bib/etc
@@ -726,8 +737,15 @@ ENV vars as globals, or just use \$~ENV~\[\'cgVarName\'\].
 
 ------------------------------------------------------------------------
 
-A Full Example
---------------
+C. Emacs Org Mode - Outine
+--------------------------
+
+doc/example/example-outline.org
+
+------------------------------------------------------------------------
+
+D. Full Example
+---------------
 
 This assumes you have everything installed and working. This will use
 the example files.
@@ -1045,8 +1063,8 @@ the styles for the different Type of entries.
 
 ------------------------------------------------------------------------
 
-Build
------
+E. Build
+--------
 
 Use: \"make build\"
 
@@ -1054,8 +1072,8 @@ But first define cgBuild=true, so the sanity-check will be skipped.
 
 ------------------------------------------------------------------------
 
-Maps
-----
+F. Maps
+-------
 
 The best source for the maps can be found in bin/util.php.
 
