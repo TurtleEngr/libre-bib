@@ -34,7 +34,7 @@ add edit :
 
 clean :
 	-$(cgBin)/rm-old-files.sh all $(cgBackupNum)
-	-$(cgBin)/rm-old-tabless.sh all $(cgBackupNum)
+	-$(cgBin)/rm-old-tables.sh all $(cgBackupNum)
 	-rm *~ $(cgDirTmp)/* $(cgDirTmp)/.pass.tmp &>/dev/null
 
 help :
