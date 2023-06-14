@@ -6,8 +6,13 @@
 # $cgDbBib
 # $cgDbLib
 
-. /opt/libre-bib/etc/conf.env
-. ./conf.env
+if [[ -z "$cgDirBackup" ]]; then
+    . /opt/libre-bib/etc/conf.env
+    if [[ -x $cgDirConf/conf.env ]]; then
+        . $cgDirConf/conf.env
+    fi
+    . ./conf.env
+fi
 
 pBase=$1
 if [[ -z "$pBase" ]]; then
@@ -15,7 +20,7 @@ if [[ -z "$pBase" ]]; then
     exit 1
 fi
 
-pNum=${2:-$cgBackNum}
+pNum=${2:-$cgBackupNum}
 if [[ $pNum -lt 2 ]]; then
     pNum=2
 fi
@@ -73,5 +78,4 @@ for tBase in $tBaseList; do
         cat tmp/drop.out
     fi
 done
-
 exit 0

@@ -33,8 +33,8 @@ add edit :
 	@echo "When done run: make import-lo"
 
 clean :
-	-$(cgBin)/rm-old-files.sh all $cgBackNum
-	-$(cgBin)/rm-old-tabless.sh all $cgBackNum
+	-$(cgBin)/rm-old-files.sh all $(cgBackupNum)
+	-$(cgBin)/rm-old-tabless.sh all $(cgBackupNum)
 	-rm *~ $(cgDirTmp)/* $(cgDirTmp)/.pass.tmp &>/dev/null
 
 help :
