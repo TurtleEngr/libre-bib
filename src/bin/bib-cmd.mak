@@ -33,8 +33,9 @@ add edit :
 	@echo "When done run: make import-lo"
 
 clean :
-	-find . -name '*~' -exec rm {} \; &>/dev/null
-	-rm $(cgDirTmp)/* $(cgDirTmp)/.pass.tmp &>/dev/null
+	-$(cgBin)/rm-old-files.sh all $(cgBackupNum)
+	-$(cgBin)/rm-old-tables.sh all $(cgBackupNum)
+	-rm *~ $(cgDirTmp)/* $(cgDirTmp)/.pass.tmp &>/dev/null
 
 help :
 	@echo "See file: $(cgDirApp)/doc/manual/libre-bib.html"
