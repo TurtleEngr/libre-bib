@@ -33,8 +33,8 @@ clean :
 
 dist-clean : clean
 	. $(cgDirApp)/etc/conf.env; \
-	. test-dir/conf.env; \
-	echo "drop database $$cgDbName;" >cmd.tmp
+	    . test-dir/conf.env; \
+	    echo "drop database $$cgDbName;" >cmd.tmp
 	-sudo mysql -u root <cmd.tmp
 	-rm cmd.tmp
 	-rm -rf test-dir dist pkg
@@ -144,8 +144,8 @@ test-dir/conf.env :
 	exit 1
 
 test-dir/status-pkg.txt :
-	##sudo apt-get update
-	##-sudo apt-get -y install $(mPackgeList)
+	sudo apt-get update
+	-sudo apt-get -y install $(mPackgeList)
 	date >$@
 
 test-dir/status-db.txt :
