@@ -43,7 +43,7 @@ fi
 
 for tBase in $tBaseList; do
     # Get the names of the files to be removed (excluding the pNum newest ones)
-    tFileList=$(ls -t ${tBase}* | tail -n +$pNum)
+    tFileList=$(ls -t ${tBase}* 2>/dev/null | tail -n +$pNum)
 
     if [[ -n "$tFileList" ]]; then
         rm $tFileList

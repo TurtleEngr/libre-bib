@@ -42,7 +42,7 @@ else
 fi
 
 for tBase in $tBaseList; do
-    echo 'select TABLE_NAME from information_schema.tables where TABLE_NAME like' "\"${pBase}_%\";" >tmp/get.cmd
+    echo 'select TABLE_NAME from information_schema.tables where TABLE_NAME like' "\"${tBase}_%\";" >tmp/get.cmd
     if [[ "$cgDebug" = "true" ]]; then
         cat tmp/get.cmd
     fi
