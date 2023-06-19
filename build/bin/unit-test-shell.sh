@@ -174,10 +174,29 @@ EOF
     return 0
 } # testValidConfError
 
-#src/bin/bib
-#src/bin/gen-conf-php.sh
-#src/bin/sanity-check.sh
-#src/bin/sort-para.sh
+# -------------------
+testSanityCheck() {
+    #src/bin/sanity-check.sh
+    return 0
+} # testSanityCheck
+
+# -------------------
+testGenConfPhp() {
+    #src/bin/gen-conf-php.sh
+    return 0
+} # testGenConfPhp
+
+# -------------------
+testSortPara() {
+    #src/bin/sort-para.sh
+    return 0
+} # testSortPara
+
+# -------------------
+testPass() {
+    #src/bin/bib
+    return 0
+} # testPass
 
 # -------------------
 # This should be the last defined function

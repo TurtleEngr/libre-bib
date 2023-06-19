@@ -43,14 +43,14 @@ help :
 
 connect : $(cgDbPassCache)
 	@echo
-	@echo "Test: show databases; use DBNAME; show tables; quit"
 	if [[ "$(cgUseRemote)" == "true" ]]; then \
 	    tPort=$(cgDbPortRemote); \
-	    echo First define tunnel: ssh HOST.example.com; \
-	    echo See: ~/ssh/config; \
+	    echo "First define tunnel: ssh $(cgDbHostRemote)"; \
+	    echo "See: ~/.ssh/config and ~/.ssh/libre-bib.ssh"; \
 	else \
 	    tPort=$(cgDbPortLocal); \
 	fi; \
+	echo "Test: show databases; use $(cgDbName); show tables; quit"; \
 	mysql -P $$tPort -u $(cgDbUser) --password=$$(cat $(cgDbPassCache)) -h $(cgDbHost) $(cgDbName)
 
 $(cgDbPassCache) :

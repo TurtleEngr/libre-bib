@@ -108,7 +108,6 @@ function fGetOps() {
     $tConf = $_ENV['cgDirApp'] . "/etc/conf.php";
     require_once "$tConf";
     require_once "$cgBin/util.php";
-    $cgVerbose = "true";
     uFixBool();
 
     return;    # ---------->
