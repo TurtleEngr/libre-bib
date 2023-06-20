@@ -348,7 +348,9 @@ File-Dir.
   would be better to edit ~/.config/libre-bib/conf.env.  That way the
   app can be updated without overriding your changes.
 
-+ File: **~/.config/libre-bib/conf.env** - User config
++ File: **$cgDirConf/conf.env** - User config
+
+  Default: $cgDirConf=~/.config/libre-bib
 
   This is optional, but it is useful for defining all of the common
   settings across all of your bib directories. Copy $PWD/conf.env to
@@ -442,14 +444,15 @@ app.  They are executed in this order, so the last definition wins.
 + Var: **cgDirLibreofficeConf="$HOME/.config/libreoffice/4/user/database/biblio"**
 
   This is the location of Libreoffice's bibliography DB connection
-  information.
+  information. The path might need to be changed for different
+  Libreoffice varsions.
 
 + Var: **cgDirStatus="status"**
 
   When a command updates a file, a date-stamped status file is created
-  in the cgDirStatus directory. If dependent file has a newer time
-  than it's corresponding status file, then the update command will
-  be run.
+  in the cgDirStatus directory. If a dependent file has a newer time
+  than it's corresponding status file, then the update command will be
+  run.
 
   Deleting all the files in the cgDirStatus dir will force all of the
   commands to run. That is, they will not check to see if things are
