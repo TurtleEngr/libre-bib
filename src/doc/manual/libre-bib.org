@@ -373,7 +373,7 @@ File-Dir.
 *** DB Tables
 
 #+BEGIN_EXPORT html
-<pre class="in">$ cd $HOME
+<pre class="in">
 | Variable  | Default        | Used by               |
 |-----------+----------------+-----------------------|
 | $cgDbName | biblio_example | Data Base Name        |

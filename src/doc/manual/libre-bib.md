@@ -376,7 +376,6 @@ $ cd $HOME
 ### DB Tables
 
 ``` {.in}
-$ cd $HOME
 | Variable  | Default        | Used by               |
 |-----------+----------------+-----------------------|
 | $cgDbName | biblio_example | Data Base Name        |
