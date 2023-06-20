@@ -40,6 +40,7 @@ clean :
 help :
 	@echo "See file: $(cgDirApp)/doc/manual/libre-bib.html"
 	sensible-browser file://$(cgDirApp)/doc/manual/libre-bib.html &>/dev/null &
+	exit 1
 
 connect : $(cgDbPassCache)
 	@echo
@@ -58,6 +59,7 @@ $(cgDbPassCache) :
 	echo $$REPLY >$@
 
 setup-bib : $(cgDirEtc) $(cgDirStatus) $(cgDirTmp) $(cgDirBackup) $(cgDirConf) $(cgLoFile) $(cgLibFile) $(cgDocFile) ~/.ssh/libre-bib.ssh
+	-mkdir -p $(cgDirStatus) &>/dev/null
 
 # ----------
 # Import: $(cgLoFile)
@@ -186,7 +188,7 @@ conf.env : $(cgDirApp)/doc/example/conf.env
 	    diff -ZBbw $@ $?; \
 	fi
 
-$(cgDirBackup) $(cgDirConf) $(cgDirEtc) $(cgDirStatus) $(cgDirTmp) ~/.ssh :
+$(cgDirBackup) $(cgDirConf) $(cgDirEtc) $(cgDirTmp) ~/.ssh :
 	mkdir -p $@
 
 $(cgLoFile) :

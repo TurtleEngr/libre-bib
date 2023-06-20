@@ -375,11 +375,13 @@ $ cd $HOME
 
 ``` {.in}
 $ cd $HOME
-| biblio_example | Var: $cgDbName                            |
-| lo             | Var: $cgDbLo;  Cmd: import-lo,  export-lo |
-| lib            | Var: $cgDbLib; Cmd: import-lib, update-lo |
-| bib            | Var: $cgDbBib; Cmd: import-lo             |
-| join_lib_lo    | Cmd: update-lo                            |
+| Variable  | Default        | Used by               |
+|-----------+----------------+-----------------------|
+| $cgDbName | biblio_example | Data Base Name        |
+| $cgDbLo   | lo             | import-lo,  export-lo |
+| $cgDbLib  | lib            | import-lib, update-lo |
+| $cgDbBib  | bib            | import-lo             |
+|           | join_lib_lo    | update-lo             |
 ```
 
 ### Annotated conf.env

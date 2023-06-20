@@ -37,6 +37,12 @@ if [[ ! -d $cgBin ]]; then
     exit 1
 fi
 
+if [[ "$1" = "help" ]]; then
+    echo "See file: $cgDirApp/doc/manual/libre-bib.html"
+    sensible-browser file://$cgDirApp/doc/manual/libre-bib.html &>/dev/null &
+    exit 1
+fi
+
 if [[ "${cgBuild:-false}" != "true" && "$pParm" != "setup-bib" ]]; then
     if ! $cgBin/sanity-check.sh; then
         echo "Fix the above error, then try again."
@@ -50,7 +56,7 @@ fi
 if [[ "${cgBuild:-false}" != "true" ]]; then
     if [ ! -f conf.env ]; then
         echo 'Error: Missing conf.env, copying it now'
-        make -f $cgBin/bib-cmd.mak conf.env
+        make -s -f $cgBin/bib-cmd.mak conf.env
         echo 'Edit conf.env with your details. Uncomment the ones you'
         echo 'are changing, then run: bib setup-bib'
         fUsage

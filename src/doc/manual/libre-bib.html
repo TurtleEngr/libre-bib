@@ -357,11 +357,13 @@ bib style-save     # Run this if you change bibliography &gt; Entries
   </ul>
   <h3 id="db-tables">DB Tables</h3>
   <pre class="in">$ cd $HOME
-| biblio_example | Var: $cgDbName                            |
-| lo             | Var: $cgDbLo;  Cmd: import-lo,  export-lo |
-| lib            | Var: $cgDbLib; Cmd: import-lib, update-lo |
-| bib            | Var: $cgDbBib; Cmd: import-lo             |
-| join_lib_lo    | Cmd: update-lo                            |
+| Variable  | Default        | Used by               |
+|-----------+----------------+-----------------------|
+| $cgDbName | biblio_example | Data Base Name        |
+| $cgDbLo   | lo             | import-lo,  export-lo |
+| $cgDbLib  | lib            | import-lib, update-lo |
+| $cgDbBib  | bib            | import-lo             |
+|           | join_lib_lo    | update-lo             |
 </pre>
   <h3 id="annotated-conf.env">Annotated conf.env</h3>
   <p>Understanding the variables in the conf.env file will probably give you
