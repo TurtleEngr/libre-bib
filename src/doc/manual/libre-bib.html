@@ -335,8 +335,9 @@ bib style-save     # Run this if you change bibliography &gt; Entries
       updated without overriding your changes.</p>
     </li>
     <li>
-      <p>File: <strong><strong>~/.config/libre-bib/conf.env</strong></strong>
-      - User config</p>
+      <p>File: <strong><strong>$cgDirConf/conf.env</strong></strong> - User
+      config</p>
+      <p>Default: $cgDirConf=~/.config/libre-bib</p>
       <p>This is optional, but it is useful for defining all of the common
       settings across all of your bib directories. Copy $PWD/conf.env to this
       location and uncomment and change the values.</p>
@@ -420,12 +421,13 @@ bib style-save     # Run this if you change bibliography &gt; Entries
       <p>Var:
       <strong><strong>cgDirLibreofficeConf="$HOME/.config/libreoffice/4/user/database/biblio"</strong></strong></p>
       <p>This is the location of Libreoffice's bibliography DB connection
-      information.</p>
+      information. The path might need to be changed for different
+      Libreoffice varsions.</p>
     </li>
     <li>
       <p>Var: <strong><strong>cgDirStatus="status"</strong></strong></p>
       <p>When a command updates a file, a date-stamped status file is created
-      in the cgDirStatus directory. If dependent file has a newer time than
+      in the cgDirStatus directory. If a dependent file has a newer time than
       it's corresponding status file, then the update command will be
       run.</p>
       <p>Deleting all the files in the cgDirStatus dir will force all of the
