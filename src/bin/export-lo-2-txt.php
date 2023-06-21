@@ -116,13 +116,13 @@ function fValidate() {
 
     $gFileOut = "$cgDirTmp" . '/' . "$cgLoFile";
     if ("$gFileOut" == "")
-        throw new Exception("Error: Missing cgDirTmp/cgLoFile def. [export-lo-2-txt.php:" . __LINE__ . "]");
+        throw new Exception("\nError: Missing cgDirTmp/cgLoFile def. [export-lo-2-txt.php:" . __LINE__ . "]");
 
     if (($gFileH = fopen($gFileOut, "w")) == FALSE)
         throw new Exception("Cannot open file: $gFileOut. [export-lo-2-txt.php:" . __LINE__ . "]");
 
     if ( ! uTableExists($cgDbLo))
-        throw new Exception("Error: Missing table $cgDbLo [export-lo-2-txt.php:" . __LINE__ . "]");
+        throw new Exception("\nError: Missing table $cgDbLo [export-lo-2-txt.php:" . __LINE__ . "]");
 } # fValidate
 
 # -----------------------------

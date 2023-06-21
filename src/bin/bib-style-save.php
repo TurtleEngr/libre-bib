@@ -182,7 +182,7 @@ function fProcessStyleFile() {
     echo "\nProcessed $tNumLine lines in styles.xml. [bib-style-save.php:" . __LINE__ . "]\n";
 
     if ( ! $tFound)
-        throw new Exception("Error: A bibliography has not been added to $cgDocFile. [bib-style-save.php:" . __LINE__ . "]");
+        throw new Exception("\nError: A bibliography has not been added to $cgDocFile. [bib-style-save.php:" . __LINE__ . "]");
 
     fclose($gInH);
     fclose($gOutH);
@@ -242,7 +242,7 @@ function fProcessContentFile() {
     echo "\nProcessed $tNumLine lines in content.xml. [bib-style-save.php:" . __LINE__ . "]\n";
 
     if ( ! $tFound)
-        throw new Exception("Error: A bibliography has not been added to $cgDocFile. [bib-style-save.php:" . __LINE__ . "]");
+        throw new Exception("\nError: A bibliography has not been added to $cgDocFile. [bib-style-save.php:" . __LINE__ . "]");
 
     fclose($gInH);
     fclose($gOutH);

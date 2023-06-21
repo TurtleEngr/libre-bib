@@ -108,7 +108,7 @@ function fValidate() {
     uValidateCommon();
 
     if ( ! uTableExists($cgDbLo))
-        throw new Exception("Error: Missing $cgDbLo Table. [convert-lo-2-bib.php:" . __LINE__ . "]");
+        throw new Exception("\nError: Missing $cgDbLo Table. [convert-lo-2-bib.php:" . __LINE__ . "]");
 } # fValidate
 
 # -----------------------------

@@ -32,7 +32,7 @@ function uRenameTable($pTable) {
         return $tNewName;
 
     if ( ! uTableExists("$tNewName"))
-        throw new Exception("Error: Backup failed: $tSql \n[util.php:" . __LINE__ . "]");
+        throw new Exception("\nError: Backup failed: $tSql \n[util.php:" . __LINE__ . "]");
 
     echo "Created: $tNewName \n";
     return $tNewName;
@@ -94,7 +94,7 @@ function uValidateCommon() {
 
     $gPassword = rtrim(shell_exec("/bin/bash -c 'cat $cgDbPassCache'"));
     if ("$gPassword" == "")
-        echo "Warning: Password is null [util.php:" . __LINE__ . "]\n";
+        echo "\nWarning: Password is null [util.php:" . __LINE__ . "]\n";
 
     # Create database connection
     $tDsn = "mysql:dbname=$cgDbName;charset=UTF8;host=$cgDbHost;port=";
@@ -164,7 +164,7 @@ function uUnpackFile($pDocFile, $pFileList) {
 
     foreach ($tList as $tFile) {
         if ( ! file_exists("$cgDirTmp/$tFile.xml"))
-            throw new Exception("Error: Could not extract $tFile.xml [util.php:" . __LINE__ . "]");
+            throw new Exception("\nError: Could not extract $tFile.xml [util.php:" . __LINE__ . "]");
     }
 
     # tidy the xml files
