@@ -65,6 +65,7 @@ setup-bib : $(cgDirEtc) $(cgDirStatus) $(cgDirTmp) $(cgDirBackup) $(cgDirConf) $
 # Import: $(cgLoFile)
 
 import-lo : $(cgDirStatus)/import-lo.date
+	@echo "Done. $(cgDbLo) table is up-to-date with $(cgLoFile)"
 
 $(cgDirStatus)/import-lo.date : conf.env $(cgLoFile)
 	$(cgBin)/import-txt-2-lo.php -c
@@ -107,6 +108,7 @@ update-lo :
 # Update lib-db
 
 import-lib : $(cgDirStatus)/import-lib.date
+	@echo "Done. $(cgDbLib) table is up-to-date with $(cgLibFile)"
 
 $(cgDirStatus)/import-lib.date : $(cgLibFile)
 	@echo "librarything schema and import"
@@ -119,6 +121,7 @@ $(cgDirStatus)/import-lib.date : $(cgLibFile)
 
 # --------------------
 ref-new : $(cgDirStatus)/ref-new.date
+	@echo "Done, adding new refs to $(cgDocFile)"
 
 $(cgDirStatus)/ref-new.date : $(cgDocFile) $(cgDirEtc)/cite-new.xml
 	cp --backup=t $(cgDocFile) $(cgDirBackup)
@@ -131,6 +134,7 @@ $(cgDirEtc)/cite-new.xml : $(cgDirApp)/etc/cite-new.xml
 
 # --------------------
 ref-update : $(cgDirStatus)/ref-update.date
+	@echo "Done, updating refs in $(cgDocFile)"
 
 $(cgDirStatus)/ref-update.date : $(cgDocFile) $(cgDirEtc)/cite-update.xml
 	cp --backup=t $(cgDocFile) $(cgDirBackup)
@@ -143,6 +147,7 @@ $(cgDirEtc)/cite-update.xml : $(cgDirApp)/etc/cite-update.xml
 
 # --------------------
 style-save : $(cgDirStatus)/style-save.date
+	@echo "Done, saving bib style from $(cgDocFile)"
 
 $(cgDirStatus)/style-save.date : $(cgDocFile)
 	-cp --backup=t $(cgDirEtc)/bib-style.xml $(cgDirBackup)
@@ -152,6 +157,7 @@ $(cgDirStatus)/style-save.date : $(cgDocFile)
 
 # --------------------
 style-update : $(cgDirStatus)/style-update.date
+	@echo "Done, updating bib style in $(cgDocFile)"
 
 $(cgDirStatus)/style-update.date : $(cgDocFile) $(cgDirEtc)/bib-style.xml $(cgDirEtc)/bib-template.xml
 	cp --backup=t $(cgDocFile) $(cgDirBackup)
