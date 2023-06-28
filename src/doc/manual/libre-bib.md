@@ -53,31 +53,30 @@ Install Package
 
 ### Required Packages
 
+-   bash (5.1 version probably not too important)
 -   libreoffice (7.0)
 -   libreoffice-sdbc-mysql (7.0) - needed for libreoffice DB connection
+-   make - for script and file management
 -   mariadb-client (10.5) - mysql
 -   mariadb-server (10.5) - mariadbd (only needed on remote host)
--   php (7.4)
--   php-mysqlnd - php-PDO
+-   pandoc - required to convert org to odt
 -   perl (5.32) for: pod2html, pod2man, pod2text, pod2usage
--   bash (5.1 version probably not too important)
+-   php (7.4 or greater)
+-   php-mysqlnd - php-PDO
 -   sed (4.7 version probably not important)
 -   tidy (5.6 version probably not important)
--   make - for script and file management
 
 ### Optional Packages
 
--   pandoc - required to convert org to odt
-
--   libpod-markdown-perl - pod2markdown
-
+-   beekeeper - <https://github.com/beekeeper-studio/beekeeper-studio>
 -   pod2pdf
 
--   shfmt - get from: ???? or include in pkg (give credit)
+### Required Packages for Building
 
--   phptidy.php - included src/bin (give credit)
-
--   beekeeper - <https://github.com/beekeeper-studio/beekeeper-studio>
+-   libpod-markdown-perl - pod2markdown
+-   phptidy.php
+-   shfmt
+-   shunit2 or shunit2.1
 
 ### Config
 
@@ -946,7 +945,7 @@ date +%F_%T >status/import-lo.date
 This imported the biblio.txt file, creating the \"lo\" table. You can
 run \"bib connect\" and use sql commands to look the table. For example:
 
-``` {.in\"}
+``` {class-\"in\"=""}
 show tables;
 show fields from table lo;
 select Identifier,Booktitle from table lo;
@@ -1069,10 +1068,6 @@ the styles for the different Type of entries.
 
 E. Build
 --------
-
-Use: \"make build\"
-
-But first define cgBuild=true, so the sanity-check will be skipped.
 
 ------------------------------------------------------------------------
 

@@ -221,7 +221,7 @@ export cgCurDir=$PWD
 
 export cgBin=$cgCurDir/src/bin
 export cgBuildBin=$cgCurDir/build/bin
-export cgRefDir=$cgCurDir/test-ref
+export cgRefDir=$cgCurDir/build/etc
 export cgTestDir=$cgCurDir/test-dir
 
 for i in $cgBin $cgBuildBin $cgRefDir; do
