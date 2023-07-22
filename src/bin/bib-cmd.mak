@@ -180,7 +180,7 @@ status-bib :
 	$(cgBin)/bib-status.php -c
 	@echo
 	@echo "Last run commands:"
-	@cat $(cgDirStatus)/*.date | sort
+	@cat $(cgDirStatus)/*.date | sort -r
 
 # ========================================
 # Rules supporting cmds
