@@ -13,7 +13,7 @@ Cmds:
     edit, import-lo, export-lo, backup-lo, restore-lo
     import-lib, update-lo
     ref-new, ref-update, style-save, style-update
-    status-bib, setup-bib, connect, clean, dist-clean, version, help
+    status-bib, setup-bib, connect, clean, clean-all, version, help
 EOF
     exit 1
 } # fUsage

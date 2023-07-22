@@ -37,7 +37,7 @@ clean :
 	-$(cgBin)/rm-old-tables.sh all $(cgBackupNum)
 	-rm *~ $(cgDirTmp)/* &>/dev/null
 
-dist-clean : clean
+clean-all : clean
 	-rm $(cgDirTmp)/.pass.tmp &>/dev/null
 
 help :
