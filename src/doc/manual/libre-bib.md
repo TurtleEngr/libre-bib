@@ -53,18 +53,19 @@ Install Package
 
 ### Required Packages
 
--   bash (5.1 version probably not too important)
--   libreoffice (7.0)
--   libreoffice-sdbc-mysql (7.0) - needed for libreoffice DB connection
--   make - for script and file management
--   mariadb-client (10.5) - mysql
--   mariadb-server (10.5) - mariadbd (only needed on remote host)
--   pandoc - required to convert org to odt
--   perl (5.32) for: pod2html, pod2man, pod2text, pod2usage
--   php (7.4 or greater)
--   php-mysqlnd - php-PDO
--   sed (4.7 version probably not important)
--   tidy (5.6 version probably not important)
+-   bash (5.1, the version is probably not important)
+-   libreoffice (7.0+)
+-   libreoffice-sdbc-mysql (7.0+) - needed for libreoffice DB connection
+-   make (gnu make 4.3+) - for script and file management
+-   mariadb-client (10.5+) - mysql
+-   mariadb-server (10.5+) - mariadbd (only needed on remote host)
+-   pandoc (2.9.2+) - required to convert org to html, and odt
+-   perl (5.32+) for: pod2html, pod2man, pod2text, pod2usage
+-   php (7.4+)
+-   php7.4-mysql - php-PDO
+-   php7.4-xml
+-   sed (4.7, the version is probably not important)
+-   tidy (5.6, the version is probably not important)
 
 ### Optional Packages
 
@@ -303,13 +304,13 @@ libre-bib Tour
 
 ### Files and Dirs
 
-This will be a quick summary of the directories and files setup in your
+This is a quick summary of the directories and files setup in your
 project directory. The details will be describe in later sections as
 they are used.
 
-The bib commands will notice changes and rebuild any dependent files
-they need. So you might see more things running than what you\'ve seen
-before. The \"Env-Var\" column show the variable for the File-Dir. The
+The bib commands will notice changes and rebuild any dependent files as
+needed. So you might see more things running than what you\'ve seen
+before. The \"Env-Var\" column shows the variable for the File-Dir. The
 Cmd column shows the command or commands that create or use the
 File-Dir.
 
@@ -356,21 +357,21 @@ $ cd $HOME
 
     This is optional, but it is useful for defining all of the common
     settings across all of your bib directories. Copy \$PWD/conf.env to
-    this location and uncomment and change the values.
+    this location and uncomment the values to be changed.
 
     If you use the same cgDbName for all the bibs, then you\'ll want to
-    define different table name. Using different DB names is safer for
-    keeping the different bibs separate, but more DB setup will be
-    needed.
+    define different table names for the different bibs. Using different
+    DB names is safer for keeping the different bibs separate, but more
+    DB setup will be needed.
 
-    Typically these vars will be the same across all your bibs:
-    cgDbName, cgDbHost, cgDbPassCache, cgDbPassHint, cgDbUser,
-    cgUseRemote cgDbHostRemote, cgDbPortRemote, cgSshUser, cgSshKey
+    Usually these vars will be the same across all your bibs: cgDbName,
+    cgDbHost, cgDbPassCache, cgDbPassHint, cgDbUser, cgUseRemote
+    cgDbHostRemote, cgDbPortRemote, cgSshUser, cgSshKey
 
 -   File: ****\$PWD/conf.env**** - Document config
 
-    This is required, but everything can be commented out. Uncomment the
-    ones that are specific to the current bib document.
+    This file is required, but everything can be commented out.
+    Uncomment the ones that are specific to the current bib document.
 
 ### DB Tables
 
@@ -609,9 +610,16 @@ time import-lo was run. To force it to run: \"rm status/import.lo.date\"
 
 ### Cmd: setup-bib
 
+After editing the conf.env file, run this command to define the
+directories and initial files, in the current directory.
+
 ### Cmd: connect
 
+Run this to setup and verify the DB connecton is working.
+
 ### Cmd: check
+
+Run this to do a quick check that everything is correctly defined.
 
 ### Cmd: edit
 
@@ -619,18 +627,26 @@ This will run: \$EDITOR \$cgDocFile &
 
 ### Cmd: import-lo
 
-Import any changes to \$cgLoFile (biblio.txt). The lo table will be
-backed-up in the DB.
+Import any changes to \$cgLoFile (biblio.txt) to the lo table. The lo
+table will be backed-up in the DB.
 
 ### Cmd: export-lo
 
+Export the lo table to \$cgLoFile (biblio.txt). The existing biblo.txt
+file will be backed up to \$cgDirBackup.
+
 ### Cmd: backup-lo
+
+Backup the lo table to a cvs file in \$cgDirBackup.
 
 ### Cmd: import-lib
 
 Import the librarything.tsv file to the lib table.
 
 ### Cmd: update-lo
+
+After the lib table is created or updated, run update-lo to copy any
+missing fields in lo from the lib table.
 
 ### Cmd: ref-new
 
@@ -669,17 +685,36 @@ touched.
 
 ### Cmd: save-style
 
+After setting the bibliograpy entry styles, run this command so the
+style is saved. That way it can be restored, if the odt file is
+recreated.
+
 ### Cmd: update-style
+
+Replace the bibliograpy entry styles from the styles saved with
+save-style.
 
 ### Cmd: status
 
+Report on the size of tables and files. Also list what needs to be
+updated.
+
 ### Cmd: clean
+
+Remove temporary files. This will also remove the DB password cache
+file.
 
 ### Cmd: version
 
+Report the current bib version. Include this in any bug reports.
+
 ### Cmd: add, edit
 
+Run: \$EDITOR biblio.txt &
+
 ### Cmd: help
+
+Show the libre-bib manual in a browser window.
 
 ------------------------------------------------------------------------
 
