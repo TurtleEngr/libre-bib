@@ -24,7 +24,9 @@ convert-lo-2-bib.php - copy lo table to create partially formatted bib fields.
 =head1 DESCRIPTION
 
 Generate the cgDbBib table from the $cgDbLo table. Make a backup of
-the cgDbBib table.
+the cgDbBib table. This preprocessing makes it easier to use these fields
+in the LibreOffice bibliography, because it only includes prefix and suffix
+punctuation if a field is not empty.
 
 =head1 OPTIONS
 
@@ -196,7 +198,9 @@ function fUpdateBibTable() {
             case "URL":
                 $tRec[$tCol] = ', URL:' . $tRec[$tCol];
                 if ($tRec['Custom1'] != '')
-                    $tRec[$tCol] .= '; Alt:' . $tRec['Custom1'];
+                    # Use only the first entry (space separator)
+                    $tAltList = explode(' ', trim($tRec['Custom1']));
+                    $tRec[$tCol] .= '; Alt:' . $tAltList[0];
                 break;
             case "Author":
                 if ($tRec['Custom2'] != '')

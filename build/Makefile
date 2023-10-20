@@ -12,9 +12,9 @@ mkCore :
 	'rsync' -a $mCoreDir/* $(mRoot)/
 	'rsync' -a ../LICENSE $(mRoot)/doc
 	'rsync' -a ../README.md $(mRoot)/doc
-        find dist -type d -exec chmod a+rx {} \;
-        find dist -type f -exec chmod a+r {} \;
-        find dist -type f -executable -exec chmod a+rx {} \;
+	find dist -type d -exec chmod a+rx {} \;
+	find dist -type f -exec chmod a+r {} \;
+	find dist -type f -executable -exec chmod a+rx {} \;
 
 # ln -s /opt/libre-bib/bin/bib /usr/local/bin/bib
 

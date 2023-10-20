@@ -5,7 +5,7 @@
 
 # Set this to latest version of mkver.pl (earlier DEF files should
 # still work with newer versions of mkver.pl)
-export MkVer="3.1"
+export MkVer="2.2"
 
 export ProdName="libre-bib"
 # One word [-a-z0-9]
@@ -15,7 +15,7 @@ export ProdName="libre-bib"
 export ProdAlias="libre-bib"
 # One word [-a-z0-9]
 
-export ProdVer="$(cat ../src/VERSION)"
+export ProdVer="0.17.7"
 # [0-9]*.[0-9]*{.[0-9]*}
 # Requires 2 numbers, 3'rd number is optional
 # %version ProdVer

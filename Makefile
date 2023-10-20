@@ -168,7 +168,10 @@ mk-doc : \
 	-$(mAppMake) rebuild
 
 # ----------------------------------------
-build/ver.mak build/ver.env build/ver.epm : build/ver.sh src/VERSION
+build/ver.sh :  src/VERSION
+	sed -i "s/ProdVer=.*/ProdVer=\"$$(cat src/VERSION)\"/" $@
+
+build/ver.mak build/ver.env build/ver.epm : build/ver.sh
 	cd build; mkver.pl -e 'epm env mak'
 
 # ----------------------------------------
