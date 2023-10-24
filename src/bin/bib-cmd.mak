@@ -197,7 +197,7 @@ conf.env : $(cgDirApp)/doc/example/conf.env
 	    diff -ZBbw $@ $?; \
 	fi
 
-$(cgDirBackup) $(cgDirConf) $(cgDirEtc) $(cgDirTmp) ~/.ssh :
+$(cgDirStatus) $(cgDirBackup) $(cgDirConf) $(cgDirEtc) $(cgDirTmp) ~/.ssh :
 	mkdir -p $@
 
 $(cgLoFile) :

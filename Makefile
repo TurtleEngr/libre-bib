@@ -55,7 +55,7 @@ pkg-release:
 install : $(cgDirApp) check mk-doc clean
 	-find src -name '*~' -exec rm {} \; &>/dev/null
 	-mkdir $(cgDirApp)/etc/old &>/dev/null
-	cp --backup=t $$(find $(cgDirApp)/etc/* -prune -type f) $(cgDirApp)/etc/old/
+	-cp --backup=t $$(find $(cgDirApp)/etc/* -prune -type f) $(cgDirApp)/etc/old/
 	rsync -aC src/* $(cgDirApp)/
 	find $(cgDirApp) -type d -exec chmod a+rx {} \;
 	find $(cgDirApp) -type f -exec chmod a+r {} \;

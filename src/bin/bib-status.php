@@ -105,7 +105,7 @@ function fGetOps() {
     if ($gpHelp or $argc < 2)
         fUsage();
 
-    $tConf = $_ENV['cgDirApp'] . "/etc/conf.php";
+    $tConf = $_ENV["cgDirApp"] . "/etc/conf.php";
     require_once "$tConf";
     require_once "$cgBin/util.php";
     uFixBool();
