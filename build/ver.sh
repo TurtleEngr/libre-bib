@@ -15,7 +15,7 @@ export ProdName="libre-bib"
 export ProdAlias="libre-bib"
 # One word [-a-z0-9]
 
-export ProdVer="0.17.10"
+export ProdVer="0.18.0"
 # [0-9]*.[0-9]*{.[0-9]*}
 # Requires 2 numbers, 3'rd number is optional
 # %version ProdVer

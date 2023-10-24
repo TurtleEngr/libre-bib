@@ -528,7 +528,6 @@ function uRepType2Type($pMedia = "") {
         "mp3"=>10,
         "mp4"=>10,
         "org"=>16,
-        "paper book"=>1,
         "paperback"=>1,
         "podcast"=>10,
         "product"=>16,

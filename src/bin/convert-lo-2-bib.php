@@ -167,6 +167,8 @@ function fUpdateBibTable() {
     global $cgDbBib;
     global $cgDebug;
 
+    $tAltList =  array();
+
     # Get col to be updated
     $tSql = "select * from $cgDbBib";
     $tRecH = $gDb->prepare($tSql);
@@ -197,10 +199,11 @@ function fUpdateBibTable() {
                 break;
             case "URL":
                 $tRec[$tCol] = ', URL:' . $tRec[$tCol];
-                if ($tRec['Custom1'] != '')
+                if ($tRec['Custom1'] != '') {
                     # Use only the first entry (space separator)
                     $tAltList = explode(' ', trim($tRec['Custom1']));
                     $tRec[$tCol] .= '; Alt:' . $tAltList[0];
+                }
                 break;
             case "Author":
                 if ($tRec['Custom2'] != '')
