@@ -3,6 +3,7 @@
 mRoot = dist/opt/libre-bib
 mDirList = $(mRoot) dist/usr/local/bin
 mCoreDir = ../src
+mPhpUnit = phpunit-9.6.13.phar
 
 # ----------------------------------------
 all : mkCore
@@ -29,3 +30,11 @@ $(mRoot)/bin : bin/sort-para.sh
 
 check :
 	build/bin/check.sh
+
+install-phpunit :
+	if [[ "$$USER" != "root" ]]; then exit 1; fi
+	wget https://phar.phpunit.de/$(PhpUnit)
+	cp $(PhpUnit) /usr/local/bin
+	rm $(PhpUnit)
+	chmod a+rx /usr/local/bin/$(PhpUnit)
+	cd /usr/local/bin; ln -s $(PhpUnit) phpunit.phar
