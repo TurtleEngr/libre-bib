@@ -176,7 +176,7 @@ package/ver.sh :  src/VERSION
 	sed -i "s/ProdVer=.*/ProdVer=\"$$(cat src/VERSION)\"/" $@
 
 package/ver.mak package/ver.env package/ver.epm : package/ver.sh
-	cd build; mkver.pl -e 'epm env mak'
+	cd package; mkver.pl -e 'epm env mak'
 
 # ----------------------------------------
 mEpmMx=mx19/epm-5.0.2-1-mx19-x86_64.deb
