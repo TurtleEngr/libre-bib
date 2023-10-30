@@ -123,9 +123,9 @@ fi
 export cgCurDir=$PWD
 
 export cgBin=$cgCurDir/src/bin
-export cgBuildBin=$cgCurDir/build/bin
-export cgRefDir=$cgCurDir/test-ref
-export cgTestDir=$cgCurDir/test-dir
+export cgBuildBin=$cgCurDir/bin
+export cgRefDir=$cgCurDir/test/ref
+export cgTestDir=$cgCurDir/tmp-test
 
 for i in $cgBin $cgBuildBin $cgRefDir; do
     if [[ ! -d $i ]]; then

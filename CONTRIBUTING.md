@@ -83,7 +83,7 @@
 
   ```
   cd libre-bib
-  tBin=$PWD/build/bin
+  tBin=$PWD/bin
   cd src/bin
   $tBin/phptidy.php replace *.php
   ```
@@ -94,7 +94,7 @@
 
   ```
   cd libre-bib
-  tBin=$PWD/build/bin
+  tBin=$PWD/bin
   cd src/bin
   for i in $(shfmt -l -i 4 -ci .); do
       if ! bash -n $i; then exit 1; fi

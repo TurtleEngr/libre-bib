@@ -1,12 +1,16 @@
 # Product Makefile
 
 # ========================================
-export SHELL = /bin/bash
-export cgDirApp = /opt/libre-bib
-export cgBin = $(cgDirApp)/bin
-#?? export cgBuild=true
+SHELL = /bin/bash
+cgDirApp = /opt/libre-bib
+cgBin = $(cgDirApp)/bin
+mRoot = dist/opt/libre-bib
+mDirList = $(mRoot) dist/usr/local/bin
+mCoreDir = ../src
+mPhpUnit = phpunit-9.6.13.phar
+#?? cgBuild=true
 
-include build/ver.mak
+include package/ver.mak
 
 mAppMake = . src/etc/conf.env; cgDirApp=$(PWD)/src; cgBin=$(PWD)/src/bin; make -f src/bin/bib-cmd.mak
 
@@ -19,19 +23,19 @@ clean :
 
 dist-clean : clean
 	. $(cgDirApp)/etc/conf.env; \
-	    . test-dir/conf.env; \
+	    . tmp-test/conf.env; \
 	    echo "drop database $$cgDbName;" >cmd.tmp
 	-sudo mysql -u root <cmd.tmp
 	-rm cmd.tmp
-	-rm -rf test-dir dist pkg tmp
+	-rm -rf tmp-test dist pkg tmp
 
 # ========================================
 # Cleanup and make dist/ area
-build : build-setup build/ver.mak
+build : build-setup package/ver.mak
 
 # ========================================
 release :
-	build/bin/incver.sh -m src/VERSION
+	bin/incver.sh -m src/VERSION
 	git commit -am "Inc Ver"
 	git push origin develop
 	git checkout main
@@ -40,11 +44,11 @@ release :
 	git tag -f -F src/VERSION "v$$(cat src/VERSION)"
 	git push --tags origin main
 	git checkout develop
-	build/bin/incver.sh -p src/VERSION
+	bin/incver.sh -p src/VERSION
 
 # ========================================
 # Make deb package
-package : build/ver.epm
+package : package/ver.epm
 
 # ========================================
 # Push packages to release repositories
@@ -60,83 +64,83 @@ install : $(cgDirApp) check mk-doc clean
 	find $(cgDirApp) -type d -exec chmod a+rx {} \;
 	find $(cgDirApp) -type f -exec chmod a+r {} \;
 	find $(cgDirApp) -type f -executable -exec chmod a+rx {} \;
-	build/bin/incver.sh -p src/VERSION
+	bin/incver.sh -p src/VERSION
 	@echo "Installed OK"
 
 #sudo ln -fs /opt/libre-bib/bin/bib /usr/local/bin/bib
 
 # ========================================
 incver :
-	build/bin/incver.sh -m src/VERSION
+	bin/incver.sh -m src/VERSION
 
 # ========================================
 # So far these are just crude "happy-path" tests.
 test : db-setup check # install
 	echo -e "show databases;\n quit" | mysql -u example
 	. $(cgDirApp)/etc/conf.env; \
-	    . test-dir/conf.env; \
-	    echo "" >test-dir/$$cgDbPassCache
+	    . tmp-test/conf.env; \
+	    echo "" >tmp-test/$$cgDbPassCache
 	@echo -e "\n==========\nTest import-lo"
-	cd test-dir; bib import-lo
-	test -f test-dir/status/import-lo.date
+	cd tmp-test; bib import-lo
+	test -f tmp-test/status/import-lo.date
 	echo 'show tables;' | mysql -u example biblio_example | grep lo
 	@echo -e "\n==========\nTest export-lo"
-	cd test-dir; bib export-lo
-	test -f test-dir/tmp/biblio.txt
-	if diff test-dir/biblio.txt test-dir/tmp/biblio.txt | grep 'Id: '; then exit 1; fi
+	cd tmp-test; bib export-lo
+	test -f tmp-test/tmp/biblio.txt
+	if diff tmp-test/biblio.txt tmp-test/tmp/biblio.txt | grep 'Id: '; then exit 1; fi
 	@echo -e "\n==========\nTest backup-lo"
-	cd test-dir; bib backup-lo
-	test -f test-dir/status/backup-lo.date
-	test -f test-dir/backup/backup-lo.csv
+	cd tmp-test; bib backup-lo
+	test -f tmp-test/status/backup-lo.date
+	test -f tmp-test/backup/backup-lo.csv
 	@echo -e "\n==========\nTest import-lib"
-	cd test-dir; bib import-lib
-	test -f test-dir/status/import-lib.date
+	cd tmp-test; bib import-lib
+	test -f tmp-test/status/import-lib.date
 	echo 'show tables;' | mysql -u example biblio_example | grep lib
 	@echo -e "\n==========\nTest ref-new"
-	cd test-dir; bib ref-new
-	test -f test-dir/status/ref-new.date
-	test -f test-dir/backup/example.odt
-	if diff -q test-dir/backup/example.odt test-dir/example.odt; then exit 1; fi
+	cd tmp-test; bib ref-new
+	test -f tmp-test/status/ref-new.date
+	test -f tmp-test/backup/example.odt
+	if diff -q tmp-test/backup/example.odt tmp-test/example.odt; then exit 1; fi
 	@echo "It is not clear why there is always a diff here. Timestamp?"
-	cmp test-dir/example.odt test-ref/example.odt | grep 'byte 16166'
+	cmp tmp-test/example.odt test-ref/example.odt | grep 'byte 16166'
 	@echo -e "\n==========\nTest ref-update"
-	cd test-dir; bib ref-update
-	test -f test-dir/status/ref-update.date
-	test -f test-dir/backup/example.odt
-	cmp test-dir/example.odt test-ref/example.odt | grep 'byte 16166'
+	cd tmp-test; bib ref-update
+	test -f tmp-test/status/ref-update.date
+	test -f tmp-test/backup/example.odt
+	cmp tmp-test/example.odt test-ref/example.odt | grep 'byte 16166'
 	@echo -e "\n==========\nTest status-bib"
-	cd test-dir; bib status-bib
+	cd tmp-test; bib status-bib
 	@echo -e "\n==========\nTest reset example.odt"
 	@echo "Reset, so test can be repeated"
-	mv -f test-dir/example.odt test-dir/tmp
-	cp -f src/doc/example/example.odt test-dir/
+	mv -f tmp-test/example.odt tmp-test/tmp
+	cp -f src/doc/example/example.odt tmp-test/
 	@echo -e "\n==========\nPassed"
 
 # --------------------
-db-setup : test-dir/conf.env test-dir/status-pkg.txt test-dir/status-db.txt
-	-rm test-dir/status/*
+db-setup : tmp-test/conf.env tmp-test/status-pkg.txt tmp-test/status-db.txt
+	-rm tmp-test/status/*
 
-test-dir/conf.env :
-	-rm -rf test-dir
-	mkdir test-dir
-	-cd test-dir; bib setup-bib
-	-cd test-dir; bib setup-bib
+tmp-test/conf.env :
+	-rm -rf tmp-test
+	mkdir tmp-test
+	-cd tmp-test; bib setup-bib
+	-cd tmp-test; bib setup-bib
 	echo 'cgDbUser="example"' >>$@
 	echo 'cgUseRemote=false' >>$@
 	echo 'cgUseLib=true' >>$@
 	echo 'cgVerbose=true' >>$@
 	exit 1
 
-test-dir/status-pkg.txt :
+tmp-test/status-pkg.txt :
 	sudo apt-get update
 	-sudo apt-get -y install $(mPackgeList)
 	date >$@
 
-test-dir/status-db.txt :
+tmp-test/status-db.txt :
 	-echo 'show databases' | mysql -u example | grep biblio_example; \
 	if [ $$? -ne 0 ]; then \
 		. $(cgDirApp)/etc/conf.env; \
-		. test-dir/conf.env; \
+		. tmp-test/conf.env; \
 		echo "create database $$cgDbName;" >cmd.tmp; \
 		echo "create user '$$cgDbUser'@'localhost';" >>cmd.tmp; \
 		echo "grant all privileges on $$cgDbName.* to '$$cgDbUser'@localhost;" >>cmd.tmp; \
@@ -168,10 +172,10 @@ mk-doc : \
 	-$(mAppMake) rebuild
 
 # ----------------------------------------
-build/ver.sh :  src/VERSION
+package/ver.sh :  src/VERSION
 	sed -i "s/ProdVer=.*/ProdVer=\"$$(cat src/VERSION)\"/" $@
 
-build/ver.mak build/ver.env build/ver.epm : build/ver.sh
+package/ver.mak package/ver.env package/ver.epm : package/ver.sh
 	cd build; mkver.pl -e 'epm env mak'
 
 # ----------------------------------------
@@ -211,13 +215,13 @@ build-packages : tmp product-packages \
 	if [[ "$$USER" != "root" ]]; then exit 1; fi
 	apt-get install libpod-markdown-perl pod2pdf
 
-product-packages : build/mx.require build/ubuntu.require
+product-packages : package/mx.require package/ubuntu.require
 	if [[ "$$USER" != "root" ]]; then exit 1; fi
 	if [[ "$(ProdOSDist)" = "mx" ]]; then \
-		apt-get install $$(awk '/%requires/ {print $$2}' build/mx.require); \
+		apt-get install $$(awk '/%requires/ {print $$2}' package/mx.require); \
 	fi
 	if [[ "$(ProdOSDist)" = "ubuntu" ]]; then \
-		apt-get install $$(awk '/%requires/ {print $$2}' build/ubuntu.require); \
+		apt-get install $$(awk '/%requires/ {print $$2}' package/ubuntu.require); \
 	fi
 
 # ----------------------------------------
@@ -237,18 +241,18 @@ mBeekeeper=Beekeeper-Studio-$(mBeekeeperVer).AppImage
 # ----------------------------------------
 build-setup : \
 		src/bin/sort-para.sh \
-		build/bin/incver.sh \
-		build/bin/rm-trailing-sp \
-		build/bin/shunit2.1 \
-		build/bin/shfmt \
-		build/bin/phptidy.php \
+		bin/incver.sh \
+		bin/rm-trailing-sp \
+		bin/shunit2.1 \
+		bin/shfmt \
+		bin/phptidy.php \
 		.git/hooks/pre-commit
 	check
 
 # ----------------------------------------
 check :
-	build/bin/check.sh
-	build/bin/unit-test-shell.sh
+	bin/check.sh
+	bin/unit-test-shell.sh
 
 # ----------------------------------------
 # my-utility-scripts - multiple scripts
@@ -260,26 +264,26 @@ tmp/$(mMyUtil).zip :
 	cd tmp; wget https://github.com/TurtleEngr/my-utility-scripts/archive/refs/tags/$(mMyUtil).zip
 	cd tmp; unzip -o $(mMyUtil).zip
 
-src/bin/sort-para.sh : build/bin/sort-para.sh
+src/bin/sort-para.sh : bin/sort-para.sh
 	cp $? $@
 
-build/bin/sort-para.sh : tmp/my-utility-scripts-$(mMyUtil)
+bin/sort-para.sh : tmp/my-utility-scripts-$(mMyUtil)
 	cp tmp/my-utility-scripts-$(mMyUtil)/bin/$(notdir $@) $@
 
-build/bin/incver.sh : tmp/my-utility-scripts-$(mMyUtil)
+bin/incver.sh : tmp/my-utility-scripts-$(mMyUtil)
 	cp tmp/my-utility-scripts-$(mMyUtil)/bin/$(notdir $@) $@
 
-build/bin/rm-trailing-sp : tmp/my-utility-scripts-$(mMyUtil)
+bin/rm-trailing-sp : tmp/my-utility-scripts-$(mMyUtil)
 	cp tmp/my-utility-scripts-$(mMyUtil)/bin/$(notdir $@) $@
 
-build/bin/shunit2.1 : tmp/my-utility-scripts-$(mMyUtil)
+bin/shunit2.1 : tmp/my-utility-scripts-$(mMyUtil)
 	cp tmp/my-utility-scripts-$(mMyUtil)/bin/$(notdir $@) $@
 
 # ----------------------------------------
 # shfmt
 mShFmt=v3.1.2
 
-build/bin/shfmt : tmp/shfmt_$(mShFmt)_linux_amd64
+bin/shfmt : tmp/shfmt_$(mShFmt)_linux_amd64
 	cp $? $@
 	chmod a+rx $@
 
@@ -290,7 +294,7 @@ tmp/shfmt_$(mShFmt)_linux_amd64 :
 # phptidy.php
 mPhpTidy=3.3
 
-build/bin/phptidy.php : tmp/phptidy
+bin/phptidy.php : tmp/phptidy
 	cp $?/phptidy.php $@
 	chmod a+rx $@
 
@@ -304,7 +308,7 @@ tmp/phptidy-$(mPhpTidy).tar.gz :
 # pre-commit
 mGitProj=tag-0-7-6-1
 
-build/bin/pre-commit : tmp/gitproj-$(mGitProj)/doc/hooks/pre-commit
+bin/pre-commit : tmp/gitproj-$(mGitProj)/doc/hooks/pre-commit
 	cp $? $@
 
 tmp/gitproj-$(mGitProj)/doc/hooks/pre-commit : tmp/$(mGitProj).zip
@@ -320,7 +324,7 @@ tmp/$(mGitProj).zip :
 #     Only text files are looked at.
 # gitproj.hook.tab-exclude-list is a "grep -E" pattern
 
-.git/hooks/pre-commit : build/bin/pre-commit
+.git/hooks/pre-commit : bin/pre-commit
 	cp $? $@
 	git config --bool gitproj.hook.pre-commit-enabled true
 	git config --bool gitproj.hook.check-file-names true
@@ -351,3 +355,34 @@ tmp/$(mGitProj).zip :
 # ----------------------------------------
 tmp :
 	-mkdir tmp
+
+mkCore :
+	mkdir -p $(mDirList)
+	'rsync' -a $mCoreDir/* $(mRoot)/
+	'rsync' -a ../LICENSE $(mRoot)/doc
+	'rsync' -a ../README.md $(mRoot)/doc
+	find dist -type d -exec chmod a+rx {} \;
+	find dist -type f -exec chmod a+r {} \;
+	find dist -type f -executable -exec chmod a+rx {} \;
+
+# ln -s /opt/libre-bib/bin/bib /usr/local/bin/bib
+
+# ========================================
+build-setup : git/hooks/pre-commit bin/incver.sh bin/phptidy.php bin/rm-trailing-sp bin/shfmt bin/sort-para.sh
+
+$(mRoot)/bin/phptidy.php : bin/phptidy.php
+	'rsync' -a $? $@
+
+$(mRoot)/bin : bin/sort-para.sh
+	'rsync' -a $? $@
+
+check :
+	bin/check.sh
+
+install-phpunit :
+	if [[ "$$USER" != "root" ]]; then exit 1; fi
+	wget https://phar.phpunit.de/$(PhpUnit)
+	cp $(PhpUnit) /usr/local/bin
+	rm $(PhpUnit)
+	chmod a+rx /usr/local/bin/$(PhpUnit)
+	cd /usr/local/bin; ln -s $(PhpUnit) phpunit.phar
