@@ -1,18 +1,18 @@
 # Product Makefile
 
 # ========================================
-SHELL = /bin/bash
-cgDirApp = /opt/libre-bib
-cgBin = $(cgDirApp)/bin
-mRoot = dist/opt/libre-bib
-mDirList = $(mRoot) dist/usr/local/bin
-mCoreDir = ../src
-mPhpUnit = phpunit-9.6.13.phar
+export SHELL = /bin/bash
+export cgDirApp = /opt/libre-bib
+export cgBin = $(cgDirApp)/bin
+export mRoot = dist/opt/libre-bib
+export mDirList = $(mRoot) dist/usr/local/bin
+export mCoreDir = ../src
+export mPhpUnit = phpunit-9.6.13.phar
 #?? cgBuild=true
 
 include package/ver.mak
 
-mAppMake = . src/etc/conf.env; cgDirApp=$(PWD)/src; cgBin=$(PWD)/src/bin; make -f src/bin/bib-cmd.mak
+export mAppMake = . src/etc/conf.env; cgDirApp=$(PWD)/src; cgBin=$(PWD)/src/bin; make -f src/bin/bib-cmd.mak
 
 # ========================================
 clean :
@@ -129,7 +129,7 @@ tmp-test/conf.env :
 	echo 'cgUseRemote=false' >>$@
 	echo 'cgUseLib=true' >>$@
 	echo 'cgVerbose=true' >>$@
-	exit 1
+#	exit 1
 
 tmp-test/status-pkg.txt :
 	sudo apt-get update
@@ -375,9 +375,6 @@ $(mRoot)/bin/phptidy.php : bin/phptidy.php
 
 $(mRoot)/bin : bin/sort-para.sh
 	'rsync' -a $? $@
-
-check :
-	bin/check.sh
 
 install-phpunit :
 	if [[ "$$USER" != "root" ]]; then exit 1; fi

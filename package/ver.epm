@@ -1,12 +1,12 @@
 
-%include mx.require
+%include ubuntu.require
 %product Bibliography tool for LibreOffice
 %version 0.18.0
 %packager TurtleEngr
 %vendor TurtleEngr / turtle.engr.com
 %copyright Copyright 2023. All rights reserved.
 %description Bibliography tool for LibreOffice
-%release test.2023.10.24.5.38
+%release test.2023.10.31.5.29
 %license ../LICENSE
 %readme ../src/doc/manual/libre-bib.html
 %include epm.list
