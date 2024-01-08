@@ -197,8 +197,15 @@ function fUpdateBibTable() {
             case "Custom3":
                 # These are not changed
                 break;
+            case "Booktitle":
+                $tRec[$tCol] = $tRec[$tCol];
+                if ($tRec['Title'] != '')
+                    $tRec[$tCol] .= ': ' . $tRec['Title'];
+                $tRec[$tCol] .=  '.'
+                break;
+            case "Year":
             case "URL":
-                $tRec[$tCol] = ', URL:' . $tRec[$tCol];
+                $tRec[$tCol] = ' URL:' . $tRec[$tCol];
                 if ($tRec['Custom1'] != '') {
                     # Use only the first entry (space separator)
                     $tAltList = explode(' ', trim($tRec['Custom1']));
@@ -207,13 +214,14 @@ function fUpdateBibTable() {
                 break;
             case "Author":
                 if ($tRec['Custom2'] != '')
-                    $tRec[$tCol] .= '; ' . $tRec['Custom2'];
+                    $tRec[$tCol] .= ', ' . $tRec['Custom2'];
+                $tRec[$tCol] .=  '.'
                 break;
             case "Custom4":
-                $tRec[$tCol] = ', DateSeen:' . $tRec[$tCol];
+                $tRec[$tCol] = ' DateSeen: ' . $tRec[$tCol];
                 break;
             default:
-                $tRec[$tCol] = ', ' . $tRec[$tCol];
+                $tRec[$tCol] = ' ' . $tRec[$tCol];
             }
         }
         if ($tRec['ISBN'] == '' and $tRec['Custom3'] != '')

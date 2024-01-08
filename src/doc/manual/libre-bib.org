@@ -635,7 +635,7 @@ If the file is changed, the original file will be found in the
 backup/ dir. So your odt file can be restored if there are problems.
 
 If the lo table has been updated with different values, then run
-the bib-update command.
+the ref-update command.
 
 Internal: see /opt/libre-bib/etc/cite-new.xml for the template
 that will be used.
