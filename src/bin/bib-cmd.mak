@@ -33,23 +33,28 @@ add edit :
 	@echo "When done run: make import-lo"
 
 clean :
-	-find . -name '*~' -exec rm {} \; &>/dev/null
-	-rm $(cgDirTmp)/* $(cgDirTmp)/.pass.tmp &>/dev/null
+	-$(cgBin)/rm-old-files.sh all $(cgBackupNum)
+	-$(cgBin)/rm-old-tables.sh all $(cgBackupNum)
+	-rm *~ $(cgDirTmp)/* &>/dev/null
+
+clean-all : clean
+	-rm $(cgDirTmp)/.pass.tmp &>/dev/null
 
 help :
 	@echo "See file: $(cgDirApp)/doc/manual/libre-bib.html"
-	sensible-browser file://$(cgDirApp)/doc/manual/libre-bib.html
+	sensible-browser file://$(cgDirApp)/doc/manual/libre-bib.html &>/dev/null &
+	exit 1
 
 connect : $(cgDbPassCache)
 	@echo
-	@echo "Test: show databases; use DBNAME; show tables; quit"
 	if [[ "$(cgUseRemote)" == "true" ]]; then \
 	    tPort=$(cgDbPortRemote); \
-	    echo First define tunnel: ssh HOST.example.com; \
-	    echo See: ~/ssh/config; \
+	    echo "First define tunnel: ssh $(cgDbHostRemote)"; \
+	    echo "See: ~/.ssh/config and ~/.ssh/libre-bib.ssh"; \
 	else \
 	    tPort=$(cgDbPortLocal); \
 	fi; \
+	echo "Test: show databases; use $(cgDbName); show tables; quit"; \
 	mysql -P $$tPort -u $(cgDbUser) --password=$$(cat $(cgDbPassCache)) -h $(cgDbHost) $(cgDbName)
 
 $(cgDbPassCache) :
@@ -57,11 +62,13 @@ $(cgDbPassCache) :
 	echo $$REPLY >$@
 
 setup-bib : $(cgDirEtc) $(cgDirStatus) $(cgDirTmp) $(cgDirBackup) $(cgDirConf) $(cgLoFile) $(cgLibFile) $(cgDocFile) ~/.ssh/libre-bib.ssh
+	-mkdir -p $(cgDirStatus) &>/dev/null
 
 # ----------
 # Import: $(cgLoFile)
 
 import-lo : $(cgDirStatus)/import-lo.date
+	@echo "Done. $(cgDbLo) table is up-to-date with $(cgLoFile)"
 
 $(cgDirStatus)/import-lo.date : conf.env $(cgLoFile)
 	$(cgBin)/import-txt-2-lo.php -c
@@ -104,6 +111,7 @@ update-lo :
 # Update lib-db
 
 import-lib : $(cgDirStatus)/import-lib.date
+	@echo "Done. $(cgDbLib) table is up-to-date with $(cgLibFile)"
 
 $(cgDirStatus)/import-lib.date : $(cgLibFile)
 	@echo "librarything schema and import"
@@ -116,6 +124,7 @@ $(cgDirStatus)/import-lib.date : $(cgLibFile)
 
 # --------------------
 ref-new : $(cgDirStatus)/ref-new.date
+	@echo "Done, adding new refs to $(cgDocFile)"
 
 $(cgDirStatus)/ref-new.date : $(cgDocFile) $(cgDirEtc)/cite-new.xml
 	cp --backup=t $(cgDocFile) $(cgDirBackup)
@@ -128,6 +137,7 @@ $(cgDirEtc)/cite-new.xml : $(cgDirApp)/etc/cite-new.xml
 
 # --------------------
 ref-update : $(cgDirStatus)/ref-update.date
+	@echo "Done, updating refs in $(cgDocFile)"
 
 $(cgDirStatus)/ref-update.date : $(cgDocFile) $(cgDirEtc)/cite-update.xml
 	cp --backup=t $(cgDocFile) $(cgDirBackup)
@@ -140,6 +150,7 @@ $(cgDirEtc)/cite-update.xml : $(cgDirApp)/etc/cite-update.xml
 
 # --------------------
 style-save : $(cgDirStatus)/style-save.date
+	@echo "Done, saving bib style from $(cgDocFile)"
 
 $(cgDirStatus)/style-save.date : $(cgDocFile)
 	-cp --backup=t $(cgDirEtc)/bib-style.xml $(cgDirBackup)
@@ -149,6 +160,7 @@ $(cgDirStatus)/style-save.date : $(cgDocFile)
 
 # --------------------
 style-update : $(cgDirStatus)/style-update.date
+	@echo "Done, updating bib style in $(cgDocFile)"
 
 $(cgDirStatus)/style-update.date : $(cgDocFile) $(cgDirEtc)/bib-style.xml $(cgDirEtc)/bib-template.xml
 	cp --backup=t $(cgDocFile) $(cgDirBackup)
@@ -168,7 +180,7 @@ status-bib :
 	$(cgBin)/bib-status.php -c
 	@echo
 	@echo "Last run commands:"
-	@cat $(cgDirStatus)/*.date | sort
+	@cat $(cgDirStatus)/*.date | sort -r
 
 # ========================================
 # Rules supporting cmds
@@ -185,7 +197,7 @@ conf.env : $(cgDirApp)/doc/example/conf.env
 	    diff -ZBbw $@ $?; \
 	fi
 
-$(cgDirBackup) $(cgDirConf) $(cgDirEtc) $(cgDirStatus) $(cgDirTmp) ~/.ssh :
+$(cgDirStatus) $(cgDirBackup) $(cgDirConf) $(cgDirEtc) $(cgDirTmp) ~/.ssh :
 	mkdir -p $@
 
 $(cgLoFile) :

@@ -2,6 +2,7 @@
 # Convert bash env. var. to be php global vars
 
 echo "<?php"
+echo "# Generated with gen-conf-php.sh"
 while read -r tLine; do
     tRegEx="^export[[:space:]]+([[:alnum:]_]+)"
     if [[ "$tLine" =~ $tRegEx ]]; then

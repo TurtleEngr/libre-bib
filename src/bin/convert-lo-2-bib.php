@@ -24,7 +24,9 @@ convert-lo-2-bib.php - copy lo table to create partially formatted bib fields.
 =head1 DESCRIPTION
 
 Generate the cgDbBib table from the $cgDbLo table. Make a backup of
-the cgDbBib table.
+the cgDbBib table. This preprocessing makes it easier to use these fields
+in the LibreOffice bibliography, because it only includes prefix and suffix
+punctuation if a field is not empty.
 
 =head1 OPTIONS
 
@@ -67,9 +69,7 @@ Set these in conf.env
 
 =for comment =head1 AUTHOR
 
-=head1 HISTORY
-
-$Revision: 1.4 $ $Date: 2023/05/29 02:54:22 $ GMT
+=for comment =head1 HISTORY
 
 =cut
 
@@ -110,7 +110,7 @@ function fValidate() {
     uValidateCommon();
 
     if ( ! uTableExists($cgDbLo))
-        throw new Exception("Error: Missing $cgDbLo Table. [convert-lo-2-bib.php:" . __LINE__ . "]");
+        throw new Exception("\nError: Missing $cgDbLo Table. [convert-lo-2-bib.php:" . __LINE__ . "]");
 } # fValidate
 
 # -----------------------------
@@ -167,6 +167,8 @@ function fUpdateBibTable() {
     global $cgDbBib;
     global $cgDebug;
 
+    $tAltList =  array();
+
     # Get col to be updated
     $tSql = "select * from $cgDbBib";
     $tRecH = $gDb->prepare($tSql);
@@ -195,20 +197,31 @@ function fUpdateBibTable() {
             case "Custom3":
                 # These are not changed
                 break;
+            case "Booktitle":
+                $tRec[$tCol] = $tRec[$tCol];
+                if ($tRec['Title'] != '')
+                    $tRec[$tCol] .= ': ' . $tRec['Title'];
+                $tRec[$tCol] .=  '.';
+                break;
+            case "Year":
             case "URL":
-                $tRec[$tCol] = ', URL:' . $tRec[$tCol];
-                if ($tRec['Custom1'] != '')
-                    $tRec[$tCol] .= '; Alt:' . $tRec['Custom1'];
+                $tRec[$tCol] = ' URL:' . $tRec[$tCol];
+                if ($tRec['Custom1'] != '') {
+                    # Use only the first entry (space separator)
+                    $tAltList = explode(' ', trim($tRec['Custom1']));
+                    $tRec[$tCol] .= '; Alt:' . $tAltList[0];
+                }
                 break;
             case "Author":
                 if ($tRec['Custom2'] != '')
-                    $tRec[$tCol] .= '; ' . $tRec['Custom2'];
+                    $tRec[$tCol] .= ', ' . $tRec['Custom2'];
+                $tRec[$tCol] .=  '.';
                 break;
             case "Custom4":
-                $tRec[$tCol] = ', DateSeen:' . $tRec[$tCol];
+                $tRec[$tCol] = ' DateSeen: ' . $tRec[$tCol];
                 break;
             default:
-                $tRec[$tCol] = ', ' . $tRec[$tCol];
+                $tRec[$tCol] = ' ' . $tRec[$tCol];
             }
         }
         if ($tRec['ISBN'] == '' and $tRec['Custom3'] != '')

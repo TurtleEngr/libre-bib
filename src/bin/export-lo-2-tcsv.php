@@ -70,9 +70,7 @@ This help.
 
 =for comment =head1 AUTHOR
 
-=head1 HISTORY
-
-$Revision: 1.2 $ $Date: 2023/05/29 02:54:22 $ GMT
+=for comment =head1 HISTORY
 
 =cut
 
@@ -124,7 +122,7 @@ function fValidate() {
     uValidateCommon();
 
     if ("$gpSep" == "")
-        throw new Exception("Error: Missing -s option. [export-lo-2-tcsv.php:" . __LINE__ . "]");
+        throw new Exception("\nError: Missing -s option. [export-lo-2-tcsv.php:" . __LINE__ . "]");
     switch ($gpSep) {
     case "c":
         $gSep = ",";
@@ -133,11 +131,11 @@ function fValidate() {
         $gSep = "\t";
         break;
     default:
-        throw new Exception("Error: Bad -s. Should be 'c' or 's'. [export-lo-2-tcsv.php:" . __LINE__ . "]");
+        throw new Exception("\nError: Bad -s. Should be 'c' or 's'. [export-lo-2-tcsv.php:" . __LINE__ . "]");
     }
 
     if ( ! uTableExists($cgDbLo))
-        throw new Exception("Error: -t Table $cgDbLo does not exist. [export-lo-2-tcsv.php:" . __LINE__ . "]");
+        throw new Exception("\nError: -t Table $cgDbLo does not exist. [export-lo-2-tcsv.php:" . __LINE__ . "]");
 } # fValidate
 
 # -----------------------------

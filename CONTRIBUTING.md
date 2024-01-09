@@ -9,10 +9,10 @@
   teams (>12), with multiple feature streams, that have muliple steps
   in the development, QA, and deployment process.
 
-  When it is just me, I commit directly to the develop branch. When
+  When it is just me, I commit directly to the "develop" branch. When
   the code is "stable," I merge "develop" to "main", then increment
-  the version on "develop". If I make branches, I still use the
-  git-flow tool.
+  the version on "develop" (see make release). If I make branches, I
+  still use the git-flow tool.
 
 - If others want to contribute, I'll try to follow the"Github-flow"
   style. It'll work fine for a small group. You: fork the repository,
@@ -38,8 +38,8 @@
 * You have setup your build env **make build-setup**
 
 * You have run **make install**. For now that installs to
-  /opt/libre-bib/ and "make check" is done against that. In the future
-  this will install to test/.
+  /opt/libre-bib/ and "make check" is done against that. Also run
+  "make test" (In the future "make install" will install to test/.)
 
 * You have followed the Coding Convention.
 
@@ -57,8 +57,8 @@
   ```
   gpVar - global parameter (could be external to the script)
   cgVar - a global config constant (could be external to the script)
-  gVar  - global variable (within current file)
-  cVar  - a local config constant (within current file)
+  gVar  - global variable
+  cVar  - a local config constant
   pVar  - a function parameter (local)
   tVar  - temporary variable (usually local to a function)
   fFun  - function in the current file
@@ -83,7 +83,7 @@
 
   ```
   cd libre-bib
-  tBin=$PWD/build/bin
+  tBin=$PWD/bin
   cd src/bin
   $tBin/phptidy.php replace *.php
   ```
@@ -94,7 +94,7 @@
 
   ```
   cd libre-bib
-  tBin=$PWD/build/bin
+  tBin=$PWD/bin
   cd src/bin
   for i in $(shfmt -l -i 4 -ci .); do
       if ! bash -n $i; then exit 1; fi
@@ -108,10 +108,10 @@
 - **pre-commit checks:**
   - File names can only use letters, numbers, hypen, dash, and periods.
   - File names cannot begin with hyphens or end with periods.
-  - File names cannot be all periods.
   - These file names are not allowed: CON|PRN|AUX|NUL|COM[1-9]|LPT[1-9]
   - No trailing spaces in files.
   - No TABs in most files. (Makefile and bib-cmd.mak are exceptions)
+    See: "git config --get gitproj.hook.tab-exclude-list"
   - "Large" binary files are not allowed.
 
 - Run **make check** before commiting code.
@@ -139,10 +139,10 @@
   the need for a lot of script command line option processing.
 
 - The **sanity-check.sh script** verifies values of the conf.env
-  variables.  And is verifies the expected App and user files. This
+  variables.  And it verifies the expected App and user files. This
   helps identify problem across the whole product, not just what is
   currently running.  This also eliminates most of the verification
-  code that would have to be put in each script.
+  code that would have been put in each script.
 
 - If there is a risk of data loss, **back up the user's data.** Either by
   cloning tables or copying files to the backup/ dir.

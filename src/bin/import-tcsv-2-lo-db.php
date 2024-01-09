@@ -101,9 +101,7 @@ Set these in conf.env
 
 =for comment =head1 AUTHOR
 
-=head1 HISTORY
-
-$Revision: 1.3 $ $Date: 2023/05/29 02:54:23 $ GMT
+=for comment =head1 HISTORY
 
 =cut
 
@@ -153,7 +151,7 @@ function fValidate() {
     uValidateCommon();
 
     if ("$gpSep" == "")
-        throw new Exception("Error: Missing -s option. [import-tcsv-2-lo-db.php:" . __LINE__ . "]");
+        throw new Exception("\nError: Missing -s option. [import-tcsv-2-lo-db.php:" . __LINE__ . "]");
     switch ($gpSep) {
     case "c":
         $gSep = ",";
@@ -162,7 +160,7 @@ function fValidate() {
         $gSep = "\t";
         break;
     default:
-        throw new Exception("Error: Bad -s. Should be 'c' or 's'. [import-tcsv-2-lo-db.php:" . __LINE__ . "]");
+        throw new Exception("\nError: Bad -s. Should be 'c' or 's'. [import-tcsv-2-lo-db.php:" . __LINE__ . "]");
     }
 
     if (($gFiileH = fopen($cgBackupFile, "r")) == FALSE)

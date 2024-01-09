@@ -90,9 +90,7 @@ Set these in conf.env
 
 =for comment =head1 AUTHOR
 
-=head1 HISTORY
-
-$Revision: 1.4 $ $Date: 2023/05/29 02:54:23 $ GMT
+=for comment =head1 HISTORY
 
 =cut
 
@@ -134,10 +132,10 @@ function fValidate() {
     uValidateCommon();
 
     if ( ! uTableExists($cgDbLo))
-        throw new Exception("Error: Missing $cgDbLo Table. [update-lib-2-lo.php:" . __LINE__ . "]");
+        throw new Exception("\nError: Missing $cgDbLo Table. [update-lib-2-lo.php:" . __LINE__ . "]");
 
     if ( ! uTableExists($cgDbLib))
-        throw new Exception("Error: Missing $cgDbLib Table. [update-lib-2-lo.php:" . __LINE__ . "]");
+        throw new Exception("\nError: Missing $cgDbLib Table. [update-lib-2-lo.php:" . __LINE__ . "]");
 } # fValidate
 
 # --------------------

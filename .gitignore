@@ -1,8 +1,11 @@
 *~
 .phptidy-cache
 CVS/
-int-doc/
-test/
-test-dir/
-test-dir
+build/ver.env
+build/ver.epm
 cmd.tmp
+int-doc/
+test-dir
+test-dir/
+tmp
+tmp/

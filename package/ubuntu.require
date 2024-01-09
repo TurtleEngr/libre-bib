@@ -1,0 +1,15 @@
+%requires bash
+%requires libpod-markdown-perl
+          # includes: pod2markdown
+%requires libreoffice
+%requires libreoffice-sdbc-hsqldb
+%requires make
+%requires mariadb-client
+%requires mariadb-server
+%requires pandoc
+%requires perl
+%requires php
+%requires php-mysqlnd
+          # php7.2-mysql
+%requires sed
+%requires tidy

@@ -58,9 +58,7 @@ This help.
 
 =for comment =head1 AUTHOR
 
-=head1 HISTORY
-
- $Revision: 1.5 $ $Date: 2023/05/29 02:54:22 $ GMT
+=for comment =head1 HISTORY
 
 =cut
 
@@ -184,7 +182,7 @@ function fProcessStyleFile() {
     echo "\nProcessed $tNumLine lines in styles.xml. [bib-style-save.php:" . __LINE__ . "]\n";
 
     if ( ! $tFound)
-        throw new Exception("Error: A bibliography has not been added to $cgDocFile. [bib-style-save.php:" . __LINE__ . "]");
+        throw new Exception("\nError: A bibliography has not been added to $cgDocFile. [bib-style-save.php:" . __LINE__ . "]");
 
     fclose($gInH);
     fclose($gOutH);
@@ -244,7 +242,7 @@ function fProcessContentFile() {
     echo "\nProcessed $tNumLine lines in content.xml. [bib-style-save.php:" . __LINE__ . "]\n";
 
     if ( ! $tFound)
-        throw new Exception("Error: A bibliography has not been added to $cgDocFile. [bib-style-save.php:" . __LINE__ . "]");
+        throw new Exception("\nError: A bibliography has not been added to $cgDocFile. [bib-style-save.php:" . __LINE__ . "]");
 
     fclose($gInH);
     fclose($gOutH);

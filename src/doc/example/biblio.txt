@@ -113,7 +113,7 @@ Author: Doctorow, Cory
 Date: 2022-12-19
 Tags: l, culture, article, biblio, important, article
 Link: https://doctorow.medium.com/the-antitrust-twilight-zone-f710822ca77f
-AltLink: https://archive.vn/47yt5
+AltLink: https://tinyurl.com/4sexn6sr https://archive.vn/47yt5 https://web.archive.org/web/20231016214436/https://doctorow.medium.com/the-antitrust-twilight-zone-f710822ca77f
 
 Id: doctorow-13
 Type: book

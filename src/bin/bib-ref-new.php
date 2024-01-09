@@ -71,9 +71,7 @@ Set these in conf.env
 
 =for comment =head1 AUTHOR
 
-=head1 HISTORY
-
- $Revision: 1.3 $ $Date: 2023/05/29 02:54:22 $ GMT
+=for comment =head1 HISTORY
 
 =cut
 
@@ -119,10 +117,10 @@ function fValidate() {
     uValidateCommon();
 
     if ( ! uTableExists($cgDbBib))
-        throw new Exception("Error: -t Table $gpFromTable does not exist. [bib-ref-new.php:" . __LINE__ . "]");
+        throw new Exception("\nError: -t Table $gpFromTable does not exist. [bib-ref-new.php:" . __LINE__ . "]");
 
     if ( ! file_exists("$cgDirEtc/cite-new.xml"))
-        throw new Exception("Error: Missing file: $cgDirEtc/cite-new.xml [bib-ref-new.php:" . __LINE__ . "]");
+        throw new Exception("\nError: Missing file: $cgDirEtc/cite-new.xml [bib-ref-new.php:" . __LINE__ . "]");
 
     return;    # ---------->
 } # fValidate

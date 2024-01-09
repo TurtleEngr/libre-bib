@@ -53,31 +53,31 @@ Install Package
 
 ### Required Packages
 
--   libreoffice (7.0)
--   libreoffice-sdbc-mysql (7.0) - needed for libreoffice DB connection
--   mariadb-client (10.5) - mysql
--   mariadb-server (10.5) - mariadbd (only needed on remote host)
--   php (7.4)
--   php-mysqlnd - php-PDO
--   perl (5.32) for: pod2html, pod2man, pod2text, pod2usage
--   bash (5.1 version probably not too important)
--   sed (4.7 version probably not important)
--   tidy (5.6 version probably not important)
--   make - for script and file management
+-   bash (5.1, the version is probably not important)
+-   libreoffice (7.0+)
+-   libreoffice-sdbc-mysql (7.0+) - needed for libreoffice DB connection
+-   make (gnu make 4.3+) - for script and file management
+-   mariadb-client (10.5+) - mysql
+-   mariadb-server (10.5+) - mariadbd (only needed on remote host)
+-   pandoc (2.9.2+) - required to convert org to html, and odt
+-   perl (5.32+) for: pod2html, pod2man, pod2text, pod2usage
+-   php (7.4+)
+-   php7.4-mysql - php-PDO
+-   php7.4-xml
+-   sed (4.7, the version is probably not important)
+-   tidy (5.6, the version is probably not important)
 
 ### Optional Packages
 
--   pandoc - required to convert org to odt
-
--   libpod-markdown-perl - pod2markdown
-
+-   beekeeper - <https://github.com/beekeeper-studio/beekeeper-studio>
 -   pod2pdf
 
--   shfmt - get from: ???? or include in pkg (give credit)
+### Required Packages for Building
 
--   phptidy.php - included src/bin (give credit)
-
--   beekeeper - <https://github.com/beekeeper-studio/beekeeper-studio>
+-   libpod-markdown-perl - pod2markdown
+-   phptidy.php
+-   shfmt
+-   shunit2 or shunit2.1
 
 ### Config
 
@@ -133,7 +133,7 @@ Test the connection on the server system
 Most likely you\'ll use your sudo password, or the password you setup
 for the mysql DB root user.
 
-### Create Database, Users, and Grants
+### Create DB, Users, and Grants
 
 While signed in as root user to the DB type these commands. Replace the
 \$cgNAME variables with the values of those variables in your
@@ -278,16 +278,23 @@ For a detailed example see Appendix \"A Full Example.\"
 ``` {.in}
 mkdir -p project/biblio
 cd project/biblio
-bib setup bib      # This creates your default conf.env file
+bib setup-bib      # This creates your default conf.env file
 edit conf.env      # Uncomment and set these values
-    set cgDbName="YOUR-DB-NAME"
-    set cgDbUser="YOUR-DB-USER"
-    set cgDbPassHint="YOUR-HINT"
-bib setup bib      # Your project are will be setup
+    cgDbName="YOUR-DB-NAME"
+    cgDbUser="YOUR-DB-USER"
+    cgDbPassHint="YOUR-HINT"
+bib setup-bib      # Your project are will be setup
+bib                # List the bib commands
 bib connect        # Connect to DB to cache the  password
 bib import-lo      # Import the biblio.txt file
-bib ref-new        # A DB values for any new REFs
-bib ref-update    # Update REFs with any DB changes
+bib ref-new        # Use DB values for any new REFs
+bib ref-update     # Update REFs with any DB changes
+libreoffice example.odt
+    # Load styles from another odt file (optional)
+    # Add bibliography to end of document
+    # Set the bibliography Type > Brackets to "none"
+bib style-update   # Define the bibliography > Entries for the different Types
+bib style-save     # Run this if you change bibliography > Entries
 ```
 
 ------------------------------------------------------------------------
@@ -297,13 +304,13 @@ libre-bib Tour
 
 ### Files and Dirs
 
-This will be a quick summary of the directories and files setup in your
+This is a quick summary of the directories and files setup in your
 project directory. The details will be describe in later sections as
 they are used.
 
-The bib commands will notice changes and rebuild any dependent files
-they need. So you might see more things running than what you\'ve seen
-before. The \"Env-Var\" column show the variable for the File-Dir. The
+The bib commands will notice changes and rebuild any dependent files as
+needed. So you might see more things running than what you\'ve seen
+before. The \"Env-Var\" column shows the variable for the File-Dir. The
 Cmd column shows the command or commands that create or use the
 File-Dir.
 
@@ -344,35 +351,38 @@ $ cd $HOME
     would be better to edit \~/.config/libre-bib/conf.env. That way the
     app can be updated without overriding your changes.
 
--   File: ****\~/.config/libre-bib/conf.env**** - User config
+-   File: ****\$cgDirConf/conf.env**** - User config
+
+    Default: \$cgDirConf=\~/.config/libre-bib
 
     This is optional, but it is useful for defining all of the common
     settings across all of your bib directories. Copy \$PWD/conf.env to
-    this location and uncomment and change the values.
+    this location and uncomment the values to be changed.
 
     If you use the same cgDbName for all the bibs, then you\'ll want to
-    define different table name. Using different DB names is safer for
-    keeping the different bibs separate, but more DB setup will be
-    needed.
+    define different table names for the different bibs. Using different
+    DB names is safer for keeping the different bibs separate, but more
+    DB setup will be needed.
 
-    Typically these vars will be the same across all your bibs:
-    cgDbName, cgDbHost, cgDbPassCache, cgDbPassHint, cgDbUser,
-    cgUseRemote cgDbHostRemote, cgDbPortRemote, cgSshUser, cgSshKey
+    Usually these vars will be the same across all your bibs: cgDbName,
+    cgDbHost, cgDbPassCache, cgDbPassHint, cgDbUser, cgUseRemote
+    cgDbHostRemote, cgDbPortRemote, cgSshUser, cgSshKey
 
 -   File: ****\$PWD/conf.env**** - Document config
 
-    This is required, but everything can be commented out. Uncomment the
-    ones that are specific to the current bib document.
+    This file is required, but everything can be commented out.
+    Uncomment the ones that are specific to the current bib document.
 
 ### DB Tables
 
 ``` {.in}
-$ cd $HOME
-| biblio_example | Var: $cgDbName                            |
-| lo             | Var: $cgDbLo;  Cmd: import-lo,  export-lo |
-| lib            | Var: $cgDbLib; Cmd: import-lib, update-lo |
-| bib            | Var: $cgDbBib; Cmd: import-lo             |
-| join_lib_lo    | Cmd: update-lo                            |
+| Variable  | Default        | Used by               |
+|-----------+----------------+-----------------------|
+| $cgDbName | biblio_example | Data Base Name        |
+| $cgDbLo   | lo             | import-lo,  export-lo |
+| $cgDbLib  | lib            | import-lib, update-lo |
+| $cgDbBib  | bib            | import-lo             |
+|           | join_lib_lo    | update-lo             |
 ```
 
 ### Annotated conf.env
@@ -384,10 +394,9 @@ The conf.env files are the core configuration files for the libre-bib
 app. They are executed in this order, so the last definition wins.
 
 ``` {.in}
-$ cd $HOME
-/opt/libre-bib/etc/conf.env
-~/.config/libre-bib/conf.env ($cgDirConf)
-$PWD/conf.env
+1. . /opt/libre-bib/etc/conf.env
+2. . ~/.config/libre-bib/conf.env   # $cgDirConf Optional
+3. . ./conf.env
 ```
 
 -   Var: ****cgDebug=false****
@@ -435,12 +444,13 @@ $PWD/conf.env
     ****cgDirLibreofficeConf=\"\$HOME/.config/libreoffice/4/user/database/biblio\"****
 
     This is the location of Libreoffice\'s bibliography DB connection
-    information.
+    information. The path might need to be changed for different
+    Libreoffice varsions.
 
 -   Var: ****cgDirStatus=\"status\"****
 
     When a command updates a file, a date-stamped status file is created
-    in the cgDirStatus directory. If dependent file has a newer time
+    in the cgDirStatus directory. If a dependent file has a newer time
     than it\'s corresponding status file, then the update command will
     be run.
 
@@ -600,9 +610,16 @@ time import-lo was run. To force it to run: \"rm status/import.lo.date\"
 
 ### Cmd: setup-bib
 
+After editing the conf.env file, run this command to define the
+directories and initial files, in the current directory.
+
 ### Cmd: connect
 
+Run this to setup and verify the DB connecton is working.
+
 ### Cmd: check
+
+Run this to do a quick check that everything is correctly defined.
 
 ### Cmd: edit
 
@@ -610,18 +627,26 @@ This will run: \$EDITOR \$cgDocFile &
 
 ### Cmd: import-lo
 
-Import any changes to \$cgLoFile (biblio.txt). The lo table will be
-backed-up in the DB.
+Import any changes to \$cgLoFile (biblio.txt) to the lo table. The lo
+table will be backed-up in the DB.
 
 ### Cmd: export-lo
 
+Export the lo table to \$cgLoFile (biblio.txt). The existing biblo.txt
+file will be backed up to \$cgDirBackup.
+
 ### Cmd: backup-lo
+
+Backup the lo table to a cvs file in \$cgDirBackup.
 
 ### Cmd: import-lib
 
 Import the librarything.tsv file to the lib table.
 
 ### Cmd: update-lo
+
+After the lib table is created or updated, run update-lo to copy any
+missing fields in lo from the lib table.
 
 ### Cmd: ref-new
 
@@ -633,7 +658,7 @@ If the file is changed, the original file will be found in the backup/
 dir. So your odt file can be restored if there are problems.
 
 If the lo table has been updated with different values, then run the
-bib-update command.
+ref-update command.
 
 Internal: see /opt/libre-bib/etc/cite-new.xml for the template that will
 be used.
@@ -660,17 +685,36 @@ touched.
 
 ### Cmd: save-style
 
+After setting the bibliograpy entry styles, run this command so the
+style is saved. That way it can be restored, if the odt file is
+recreated.
+
 ### Cmd: update-style
+
+Replace the bibliograpy entry styles from the styles saved with
+save-style.
 
 ### Cmd: status
 
+Report on the size of tables and files. Also list what needs to be
+updated.
+
 ### Cmd: clean
+
+Remove temporary files. This will also remove the DB password cache
+file.
 
 ### Cmd: version
 
+Report the current bib version. Include this in any bug reports.
+
 ### Cmd: add, edit
 
+Run: \$EDITOR biblio.txt &
+
 ### Cmd: help
+
+Show the libre-bib manual in a browser window.
 
 ------------------------------------------------------------------------
 
@@ -681,8 +725,8 @@ Appendix
 
 ------------------------------------------------------------------------
 
-Backups
--------
+A. Backups
+----------
 
 -   DB Tables: If a table exists and cgBackup is \"true\", then the
     table will be copied to the table name with a datestamp
@@ -703,13 +747,18 @@ Backups
 
 ------------------------------------------------------------------------
 
-Customizing the defaults
-------------------------
+B. Customizing the defaults
+---------------------------
 
 If you are managing multiple bibliographies, you might have some common
 settings. For example, most of the things related to a remote DB will be
-the same. You can change the application\'s etc/conf.env default file.
-You can even add your own variables. Here are the steps.
+the same.
+
+The user config file is the best place for defining the common settings:
+\$cgDirConf/conf.env
+
+If you change the /opt/libre-bib/etc/conf.env file, you will need to
+rebuild some things. Here are the steps:
 
 ``` {.in}
 cd /opt/libre-bib/etc
@@ -726,8 +775,15 @@ ENV vars as globals, or just use \$~ENV~\[\'cgVarName\'\].
 
 ------------------------------------------------------------------------
 
-A Full Example
---------------
+C. Emacs Org Mode - Outine
+--------------------------
+
+doc/example/example-outline.org
+
+------------------------------------------------------------------------
+
+D. Full Example
+---------------
 
 This assumes you have everything installed and working. This will use
 the example files.
@@ -924,7 +980,7 @@ date +%F_%T >status/import-lo.date
 This imported the biblio.txt file, creating the \"lo\" table. You can
 run \"bib connect\" and use sql commands to look the table. For example:
 
-``` {.in\"}
+``` {class-\"in\"=""}
 show tables;
 show fields from table lo;
 select Identifier,Booktitle from table lo;
@@ -1045,17 +1101,13 @@ the styles for the different Type of entries.
 
 ------------------------------------------------------------------------
 
-Build
------
-
-Use: \"make build\"
-
-But first define cgBuild=true, so the sanity-check will be skipped.
+E. Build
+--------
 
 ------------------------------------------------------------------------
 
-Maps
-----
+F. Maps
+-------
 
 The best source for the maps can be found in bin/util.php.
 

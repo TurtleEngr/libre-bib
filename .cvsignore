@@ -1,6 +1,16 @@
 .git
 .github
+.gitignore
 .phptidy-cache
-src/bin/.phptidy-cache
+CODE_OF_CONDUCT.md
+CONTRIBUTING.md
+LICENSE
+Makefile
+README.md
+SECURITY.md
+TODO.md
+build
 cmd.tmp
+src
 test-dir
+tmp

@@ -80,9 +80,7 @@ Most of variables in the conf.env are used by this script.
 
 =for comment =head1 AUTHOR
 
-=head1 HISTORY
-
- $Revision: 1.2 $ $Date: 2023/05/29 02:54:22 $ GMT
+=for comment =head1 HISTORY
 
 =cut
 
@@ -107,10 +105,9 @@ function fGetOps() {
     if ($gpHelp or $argc < 2)
         fUsage();
 
-    $tConf = $_ENV['cgDirApp'] . "/etc/conf.php";
+    $tConf = $_ENV["cgDirApp"] . "/etc/conf.php";
     require_once "$tConf";
     require_once "$cgBin/util.php";
-    $cgVerbose = "true";
     uFixBool();
 
     return;    # ---------->

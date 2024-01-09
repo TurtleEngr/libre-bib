@@ -68,9 +68,7 @@ Set these in conf.env
 
 =for comment =head1 AUTHOR
 
-=head1 HISTORY
-
-$Revision: 1.6 $ $Date: 2023/05/29 03:46:17 $ GMT
+=for comment =head1 HISTORY
 
 =cut
 
@@ -111,7 +109,7 @@ function fValidate() {
     uValidateCommon();
 
     if ( ! file_exists("$cgLoFile"))
-        throw new Exception("Error: Missing file: $cgLoFile. [import-txt-2-lo.php:" . __LINE__ . "]");
+        throw new Exception("\nError: Missing file: $cgLoFile. [import-txt-2-lo.php:" . __LINE__ . "]");
     if (($gFileH = fopen($cgLoFile, "r")) == FALSE)
         throw new Exception("Cannot open $cgLoFile. [import-txt-2-lo.php:" . __LINE__ . "]");
 } # fValidate
@@ -156,7 +154,7 @@ function fInsertRec($pRec) {
         $tInfo = $tErrInfo[2];
         if ($cgDebug)
             $tInfo .= "\n\tSQL: $tSql";
-        throw new Exception("Error: FileLine: $gNumLine, Rec: $gNumRec\n\t$tInfo\n\tat [import-txt-2-lo.php:" . __LINE__ . "]");
+        throw new Exception("\nError: FileLine: $gNumLine, Rec: $gNumRec\n\t$tInfo\n\tat [import-txt-2-lo.php:" . __LINE__ . "]");
     }
 } # fInsertRec
 
@@ -199,7 +197,7 @@ function fAddRec($pRec) {
         if (is_numeric($pRec["Type"])) {
             $pRec["RepType"] = uType2Txt($pRec["Type"]);
         } else {
-            echo "Warning: Missing Media and Type in " .
+            echo "\nWarning: Missing Media and Type in " .
                 $pRec["Identifier"] . " [import-txt-2-lo.php:" . __LINE__ . "]\n";
             $pRec["RepType"] = "unknown";
         }
@@ -244,7 +242,7 @@ function fImportTxt() {
         $tData = fParseLine($tLine);
 
         if ($tData["key"] == "") {
-            echo "Warning: no key found at: FileLine: $gNumLine, Rec: $gNumRec [import-txt-2-lo.php:" . __LINE__ . "]\n";
+            echo "\nWarning: no key found at: FileLine: $gNumLine, Rec: $gNumRec [import-txt-2-lo.php:" . __LINE__ . "]\n";
             continue;
         }
 
@@ -254,7 +252,7 @@ function fImportTxt() {
             foreach (array_keys($tRec) as $tCol)
                 $tRec["$tCol"] = "";
             if ($tData["val"] == "")
-                throw new Exception("Error: No name after Id: at FileLine: $gNumLine, Rec: $gNumRec [import-txt-2-lo.php:" . __LINE__ . "]");
+                throw new Exception("\nError: No name after Id: at FileLine: $gNumLine, Rec: $gNumRec [import-txt-2-lo.php:" . __LINE__ . "]");
         }
 
         # Do nothing, already empty
@@ -264,7 +262,7 @@ function fImportTxt() {
         $tKey = $tData["key"];
         $tLoCol = uTxt2LoMap($tKey);
         if ($tLoCol == "Unknown") {
-            echo "Warning: $tKey not found in KeyMap at: FileLine: $gNumLine, Rec: $gNumRec [import-txt-2-lo.php:" . __LINE__ . "]\n";
+            echo "\nWarning: $tKey not found in KeyMap at: FileLine: $gNumLine, Rec: $gNumRec [import-txt-2-lo.php:" . __LINE__ . "]\n";
             continue;
         }
 

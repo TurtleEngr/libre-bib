@@ -70,9 +70,7 @@ Set these in conf.env
 
 =for comment =head1 AUTHOR
 
-=head1 HISTORY
-
- $Revision: 1.3 $ $Date: 2023/05/29 02:54:22 $ GMT
+=for comment =head1 HISTORY
 
 =cut
 
@@ -100,7 +98,6 @@ function fGetOps() {
     $tConf = $_ENV['cgDirApp'] . "/etc/conf.php";
     require_once "$tConf";
     require_once "$cgBin/util.php";
-    $cgVerbose = "true";
     uFixBool();
 
     return; # ---------->
@@ -117,10 +114,10 @@ function fValidate() {
     uValidateCommon();
 
     if ( ! uTableExists($cgDbBib))
-        throw new Exception("Error: -t Table $gpFromTable does not exist. [bib-ref-update.php:" . __LINE__ . "]");
+        throw new Exception("\nError: -t Table $gpFromTable does not exist. [bib-ref-update.php:" . __LINE__ . "]");
 
     if ( ! file_exists("$cgDirEtc/cite-update.xml"))
-        throw new Exception("Error: Missing file: $cgDirEtc/cite-update.xml [bib-ref-update.php:" . __LINE__ . "]");
+        throw new Exception("\nError: Missing file: $cgDirEtc/cite-update.xml [bib-ref-update.php:" . __LINE__ . "]");
 
     return;    # ---------->
 } # fValidate

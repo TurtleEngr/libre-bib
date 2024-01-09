@@ -32,7 +32,7 @@ function uRenameTable($pTable) {
         return $tNewName;
 
     if ( ! uTableExists("$tNewName"))
-        throw new Exception("Error: Backup failed: $tSql \n[util.php:" . __LINE__ . "]");
+        throw new Exception("\nError: Backup failed: $tSql \n[util.php:" . __LINE__ . "]");
 
     echo "Created: $tNewName \n";
     return $tNewName;
@@ -94,7 +94,7 @@ function uValidateCommon() {
 
     $gPassword = rtrim(shell_exec("/bin/bash -c 'cat $cgDbPassCache'"));
     if ("$gPassword" == "")
-        echo "Warning: Password is null [util.php:" . __LINE__ . "]\n";
+        echo "\nWarning: Password is null [util.php:" . __LINE__ . "]\n";
 
     # Create database connection
     $tDsn = "mysql:dbname=$cgDbName;charset=UTF8;host=$cgDbHost;port=";
@@ -164,7 +164,7 @@ function uUnpackFile($pDocFile, $pFileList) {
 
     foreach ($tList as $tFile) {
         if ( ! file_exists("$cgDirTmp/$tFile.xml"))
-            throw new Exception("Error: Could not extract $tFile.xml [util.php:" . __LINE__ . "]");
+            throw new Exception("\nError: Could not extract $tFile.xml [util.php:" . __LINE__ . "]");
     }
 
     # tidy the xml files
@@ -296,7 +296,7 @@ function uLoCol() {
         "Custom3",
         "Custom4",
         "Custom5",
-        "ISBN"
+        "ISBN",
     );
     return $tCol;
 } # fLoCol
@@ -315,8 +315,6 @@ function uTxt2LoMap($pTxt = "") {
     # (some are aliases)
     # What if no match?
 
-    # SubTitle should be appended to Booktitle, then cleared
-
     $tLowerMap = array();
 
     $tMap = array(
@@ -324,10 +322,12 @@ function uTxt2LoMap($pTxt = "") {
         "Address"=>"Address",
         "Alt"=>"Custom1",
         "AltLink"=>"Custom1",
+        "Annotate"=>"Annote",
         "Annote"=>"Annote",
         "Author"=>"Author",
         "Authors"=>"Custom2",
         "Booktitle"=>"Booktitle",
+        "BookTitle"=>"Booktitle",
         "Channel"=>"Publisher",
         "Chapter"=>"Chapter",
         "Custom1"=>"Custom1",
@@ -347,6 +347,7 @@ function uTxt2LoMap($pTxt = "") {
         "Institutn"=>"Institutn",
         "Journal"=>"Journal",
         "Link"=>"URL",
+        "Location"=>"Address",
         "LongDesc"=>"Annote",
         "Media"=>"RepType",
         "Month"=>"Month",
@@ -355,6 +356,7 @@ function uTxt2LoMap($pTxt = "") {
         "Organizat"=>"Organizat",
         "Organization"=>"Organizat",
         "Pages"=>"Pages",
+        "Place"=>"Address",
         "Producer"=>"Publisher",
         "Publication"=>"Publisher",
         "Publisher"=>"Publisher",
@@ -362,6 +364,7 @@ function uTxt2LoMap($pTxt = "") {
         "School"=>"School",
         "Series"=>"Series",
         "SubTitle"=>"Title",
+        "Subtitle"=>"Title",
         "Tags"=>"Note",
         "Title"=>"Booktitle",
         "Type"=>"Type",
@@ -411,7 +414,7 @@ function uLo2TxtMap($pLo = "") {
     # What if no match?
 
     $tMap = array(
-        "Address"=>"Address",
+        "Address"=>"Place",
         "Annote"=>"Annote",
         "Author"=>"Author",
         "Booktitle"=>"Title",
@@ -437,7 +440,7 @@ function uLo2TxtMap($pLo = "") {
         "RepType"=>"Media",
         "School"=>"School",
         "Series"=>"Series",
-        "Title"=>"Err-SubTitle",
+        "Title"=>"Subtitle",
         "Type"=>"Type",
         "URL"=>"Link",
         "Volume"=>"Volume",
@@ -528,7 +531,6 @@ function uRepType2Type($pMedia = "") {
         "mp3"=>10,
         "mp4"=>10,
         "org"=>16,
-        "paper book"=>1,
         "paperback"=>1,
         "podcast"=>10,
         "product"=>16,

@@ -1,4 +1,5 @@
 <?php
+# Generated with gen-conf-php.sh
 
 global $cgDebug;
 $cgDebug=$_ENV["cgDebug"];

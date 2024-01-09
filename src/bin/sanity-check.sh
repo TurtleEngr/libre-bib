@@ -396,9 +396,8 @@ if ! bash -n $cgDirApp/etc/conf.env &>/dev/null; then
     exit 1
 fi
 
-if [[ -z "$cgDirConf" ]]; then
-    . $cgDirApp/etc/conf.env
-fi
+# Trust this is valid
+. $cgDirApp/etc/conf.env
 
 fCheckDep
 fCheckApp
@@ -408,23 +407,33 @@ if [[ ! -f conf.env ]]; then
     exit $gErr # ---------->
 fi
 
+if [[ -f $cgDirConf/conf.env ]]; then
+    if [[ ! -x $cgDirConf/conf.env ]]; then
+        echo "Error: $cgDirConf/conf.env is not executable"
+        exit 1
+    fi
+    if ! bash -n $cgDirConf/conf.env; then
+        echo "Error: ./conf.env has syntax errors"
+        exit 1
+    fi
+    if ! $cgBin/valid-conf.sh <$cgDirConf/conf.env; then
+        exit 1
+    fi
+    . /tmp/conf.env
+fi
+
 if [[ ! -x ./conf.env ]]; then
     echo "Error: ./conf.env is not executable"
     exit 1
 fi
-if ! bash -n ./conf.env &>/dev/null; then
+if ! bash -n ./conf.env; then
     echo "Error: ./conf.env has syntax errors"
     exit 1
 fi
-
-# This overrides the app's defaults, so not a good check for the
-# defaults, but it does verify the values are probably good.
-
-if [[ -x $cgDirConf/conf.env ]]; then
-    . ./$cgDirConf/conf.env
+if ! $cgBin/valid-conf.sh <./conf.env; then
+    exit 1
 fi
-
-. ./conf.env
+. /tmp/conf.env
 
 fCheckUser
 fNotOk # ?---------->

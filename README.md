@@ -60,7 +60,8 @@ ISBN bar codes. No need to type, author, publisher, date, etc.
 ### Emacs Org-Mode helper
 
 * Optionally the Libreoffice Write file can be created from an emacs
-  org-mode file.
+  org-mode file. See
+  [example-outline.org](src/doc/example/example-outline.org)
 
 ### Requirements and Installation
 

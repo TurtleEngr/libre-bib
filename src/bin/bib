@@ -13,7 +13,7 @@ Cmds:
     edit, import-lo, export-lo, backup-lo, restore-lo
     import-lib, update-lo
     ref-new, ref-update, style-save, style-update
-    status-bib, setup-bib, connect, clean, version, help
+    status-bib, setup-bib, connect, clean, clean-all, version, help
 EOF
     exit 1
 } # fUsage
@@ -37,19 +37,26 @@ if [[ ! -d $cgBin ]]; then
     exit 1
 fi
 
+if [[ "$1" = "help" ]]; then
+    echo "See file: $cgDirApp/doc/manual/libre-bib.html"
+    sensible-browser file://$cgDirApp/doc/manual/libre-bib.html &>/dev/null &
+    exit 1
+fi
+
 if [[ "${cgBuild:-false}" != "true" && "$pParm" != "setup-bib" ]]; then
     if ! $cgBin/sanity-check.sh; then
+        echo "Fix the above error, then try again."
         exit $?
     fi
 fi
 
-# Default conf
+# App conf (assume this is only name=value)
 . $cgDirApp/etc/conf.env
 
 if [[ "${cgBuild:-false}" != "true" ]]; then
     if [ ! -f conf.env ]; then
         echo 'Error: Missing conf.env, copying it now'
-        make -f $cgBin/bib-cmd.mak conf.env
+        make -s -f $cgBin/bib-cmd.mak conf.env
         echo 'Edit conf.env with your details. Uncomment the ones you'
         echo 'are changing, then run: bib setup-bib'
         fUsage
@@ -57,11 +64,15 @@ if [[ "${cgBuild:-false}" != "true" ]]; then
 
     # User conf
     if [[ -x $cgDirConf/conf.env ]]; then
-        . ./$cgDirConf/conf.env
+        # Not checking for errors because sanity-check.sh was run
+        $cgBin/valid-conf.sh <$cgDirConf/conf.env
+        . /tmp/conf.env
     fi
 
-    # User doc conf
-    . ./conf.env
+    # Doc conf
+    $cgBin/valid-conf.sh <./conf.env
+    # Not checking for errors because sanity-check.sh was run
+    . /tmp/conf.env
 fi
 
 tSilent="-s"
