@@ -247,7 +247,7 @@ build-setup : \
 		bin/shfmt \
 		bin/phptidy.php \
 		.git/hooks/pre-commit
-	check
+		make check
 
 # ----------------------------------------
 check :
@@ -368,7 +368,7 @@ mkCore :
 # ln -s /opt/libre-bib/bin/bib /usr/local/bin/bib
 
 # ========================================
-build-setup : git/hooks/pre-commit bin/incver.sh bin/phptidy.php bin/rm-trailing-sp bin/shfmt bin/sort-para.sh
+build-setup : .git/hooks/pre-commit bin/incver.sh bin/phptidy.php bin/rm-trailing-sp bin/shfmt bin/sort-para.sh
 
 $(mRoot)/bin/phptidy.php : bin/phptidy.php
 	'rsync' -a $? $@

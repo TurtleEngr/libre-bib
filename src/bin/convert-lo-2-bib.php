@@ -201,7 +201,7 @@ function fUpdateBibTable() {
                 $tRec[$tCol] = $tRec[$tCol];
                 if ($tRec['Title'] != '')
                     $tRec[$tCol] .= ': ' . $tRec['Title'];
-                $tRec[$tCol] .=  '.'
+                $tRec[$tCol] .=  '.';
                 break;
             case "Year":
             case "URL":
@@ -215,7 +215,7 @@ function fUpdateBibTable() {
             case "Author":
                 if ($tRec['Custom2'] != '')
                     $tRec[$tCol] .= ', ' . $tRec['Custom2'];
-                $tRec[$tCol] .=  '.'
+                $tRec[$tCol] .=  '.';
                 break;
             case "Custom4":
                 $tRec[$tCol] = ' DateSeen: ' . $tRec[$tCol];
