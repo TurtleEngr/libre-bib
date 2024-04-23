@@ -160,7 +160,7 @@ function fBibLookup($pRef) {
         # TBD, make these a "skip" option?
         if ( ! array_key_exists($pRef['id'],
                 array("REF", "example-01", "example-02", "example-youtube-95")))
-            echo "\nWarning: " . $pRefList[$pRef]['id'] . " is not in DB. [bib-ref-update.php:" .
+            echo "\nWarning: " . $pRef['id'] . " is not in DB. [bib-ref-update.php:" .
                 __LINE__ . "]\n";
         return;    # ---------->
     }
