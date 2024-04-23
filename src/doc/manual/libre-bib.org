@@ -48,8 +48,8 @@
 
 *** Required Packages
 
-+ bash (5.1, the version is probably not important)
-+ libreoffice (7.0+)
++ bash (5.1+, the version is probably not important)
++ libreoffice (7.0+) (tested with libreoffice 7.4 and 7.6)
 + libreoffice-sdbc-mysql (7.0+) - needed for libreoffice DB connection
 + make (gnu make 4.3+) - for script and file management
 + mariadb-client (10.5+) - mysql
