@@ -46,8 +46,7 @@ $project_files_excludes = array();
 
 // diff command
 // Examples: "diff", "colordiff", "diff -u", "colordiff -u"
-# $diff = "colordiff -u";
-$diff = "diff";
+$diff = "colordiff -u";
 
 // The automatically added author in the phpdoc file docblocks
 // If left empty no new @author doctags will be added.
@@ -62,7 +61,7 @@ $default_package = "default";
 // If you indent with spaces you can use as much spaces as you like.
 // Useful values: "\t" for indenting with tabs,
 //                "  " for indenting with two spaces
-$indent_char = "    ";
+$indent_char = "\t";
 
 // Control structures with the opening curly brace on a new line
 // Examples: false                      always on the same line
@@ -99,15 +98,15 @@ $fix_token_case             = true;
 $fix_builtin_functions_case = true;
 $replace_inline_tabs        = true;
 $replace_phptags            = true;
-$replace_shell_comments     = false;
+$replace_shell_comments     = true;
 $fix_statement_brackets     = true;
 $fix_separation_whitespace  = true;
 $fix_comma_space            = true;
-$add_operator_space         = true;
+$add_operator_space         = false;
 $fix_round_bracket_space    = false;
-$add_file_docblock          = false;
-$add_function_docblocks     = false;
-$add_doctags                = false;
+$add_file_docblock          = true;
+$add_function_docblocks     = true;
+$add_doctags                = true;
 $add_usestags               = false;
 $fix_docblock_format        = true;
 $fix_docblock_space         = true;

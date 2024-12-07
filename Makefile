@@ -1,13 +1,12 @@
 # Product Makefile
 
 # ========================================
-export SHELL = /bin/bash
-export cgDirApp = /opt/libre-bib
-export cgBin = $(cgDirApp)/bin
-export mRoot = dist/opt/libre-bib
-export mDirList = $(mRoot) dist/usr/local/bin
-export mCoreDir = ../src
-export mPhpUnit = phpunit-9.6.13.phar
+SHELL = /bin/bash
+cgDirApp = /opt/libre-bib
+cgBin = $(cgDirApp)/bin
+mRoot = dist/opt/libre-bib
+mDirList = $(mRoot) dist/usr/local/bin
+mCoreDir = ../src
 #?? cgBuild=true
 
 include package/ver.mak
@@ -239,15 +238,16 @@ mBeekeeper=Beekeeper-Studio-$(mBeekeeperVer).AppImage
 	chmod a+rx $@
 
 # ----------------------------------------
-build-setup : \
-		src/bin/sort-para.sh \
-		bin/incver.sh \
-		bin/rm-trailing-sp \
-		bin/shunit2.1 \
-		bin/shfmt \
-		bin/phptidy.php \
-		.git/hooks/pre-commit
-		make check
+build-setup : update-my-util update-shfmt update-pre-commit update-php-util
+	make check
+
+#src/bin/sort-para.sh \
+#bin/incver.sh \
+#bin/rm-trailing-sp \
+#bin/shunit2.1 \
+#bin/shfmt \
+#bin/phptidy.php \
+#.git/hooks/pre-commit
 
 # ----------------------------------------
 check :
@@ -256,16 +256,22 @@ check :
 
 # ----------------------------------------
 # my-utility-scripts - multiple scripts
-mMyUtil=tag-0-3-0
+mMyUtil=tag-1-16-0
+mMyUtilList = \
+	bin/incver.sh \
+	bin/org2html.sh \
+	bin/rm-trailing-sp \
+	bin/shunit2.1 \
+	bin/sort-para.sh \
+	src/bin/sort-para.sh
+
+update-my-util : tmp/my-utility-scripts-$(mMyUtil) $(mMyUtilList)
 
 tmp/my-utility-scripts-$(mMyUtil) : tmp/$(mMyUtil).zip
+	cd tmp; unzip -o $(mMyUtil).zip
 
 tmp/$(mMyUtil).zip :
 	cd tmp; wget https://github.com/TurtleEngr/my-utility-scripts/archive/refs/tags/$(mMyUtil).zip
-	cd tmp; unzip -o $(mMyUtil).zip
-
-src/bin/sort-para.sh : bin/sort-para.sh
-	cp $? $@
 
 bin/sort-para.sh : tmp/my-utility-scripts-$(mMyUtil)
 	cp tmp/my-utility-scripts-$(mMyUtil)/bin/$(notdir $@) $@
@@ -279,9 +285,14 @@ bin/rm-trailing-sp : tmp/my-utility-scripts-$(mMyUtil)
 bin/shunit2.1 : tmp/my-utility-scripts-$(mMyUtil)
 	cp tmp/my-utility-scripts-$(mMyUtil)/bin/$(notdir $@) $@
 
+src/bin/sort-para.sh : bin/sort-para.sh
+	cp $? $@
+
 # ----------------------------------------
 # shfmt
 mShFmt=v3.1.2
+
+update-shfmt : bin/shfmt
 
 bin/shfmt : tmp/shfmt_$(mShFmt)_linux_amd64
 	cp $? $@
@@ -291,8 +302,11 @@ tmp/shfmt_$(mShFmt)_linux_amd64 :
 	cd tmp; wget https://github.com/mvdan/sh/releases/download/$(mShFmt)/shfmt_$(mShFmt)_linux_amd64
 
 # ----------------------------------------
-# phptidy.php
+# phptidy.php phpunit.phar
 mPhpTidy=3.3
+mPhpUnit = phpunit-9.6.13.phar
+
+update-php-util : bin/phptidy.php bin/phpunit.phar
 
 bin/phptidy.php : tmp/phptidy
 	cp $?/phptidy.php $@
@@ -304,25 +318,23 @@ tmp/phptidy-$(mPhpTidy).tar.gz :
 	cd tmp; wget https://github.com/cmrcx/phptidy/releases/download/v$(mPhpTidy)/phptidy-$(mPhpTidy).tar.gz
 	cd tmp; tar -xzf phptidy-$(mPhpTidy).tar.gz
 
-# ----------------------------------------
-# pre-commit
-mGitProj=tag-0-7-6-1
+bin/phpunit.phar : tmp/$(mPhpUnit)
+	cp tmp/$(mPhpUnit) bin
+	chmod a+rx bin/$(mPhpUnit)
+	cd bin; ln -s $(mPhpUnit) phpunit.phar
 
-bin/pre-commit : tmp/gitproj-$(mGitProj)/doc/hooks/pre-commit
-	cp $? $@
-
-tmp/gitproj-$(mGitProj)/doc/hooks/pre-commit : tmp/$(mGitProj).zip
-	cd tmp; unzip -o $(mGitProj).zip gitproj-$(mGitProj)/doc/hooks/pre-commit
-	touch $@
-
-tmp/$(mGitProj).zip :
-	cd tmp; wget https://github.com/TurtleEngr/gitproj/archive/refs/tags/$(mGitProj).zip
+tmp/$(mPhpUnit) :
+	cd tmp; wget https://phar.phpunit.de/$(mPhpUnit)
 
 # ----------------------------------------
 # pre-commit hook
 # The detault gitproj.hook.tab-include-list is '*"
 #     Only text files are looked at.
 # gitproj.hook.tab-exclude-list is a "grep -E" pattern
+
+mGitProj=tag-0-7-6-1
+
+update-pre-commit : .git/hooks/pre-commit
 
 .git/hooks/pre-commit : bin/pre-commit
 	cp $? $@
@@ -336,6 +348,16 @@ tmp/$(mGitProj).zip :
 	git config --bool gitproj.hook.check-for-big-files true
 	git config --int gitproj.hook.binary-file-size 30000
 	git config --bool gitproj.hook.verbose true
+
+bin/pre-commit : tmp/gitproj-$(mGitProj)/doc/hooks/pre-commit
+	cp $? $@
+
+tmp/gitproj-$(mGitProj)/doc/hooks/pre-commit : tmp/$(mGitProj).zip
+	cd tmp; unzip -o $(mGitProj).zip gitproj-$(mGitProj)/doc/hooks/pre-commit
+	touch $@
+
+tmp/$(mGitProj).zip :
+	cd tmp; wget https://github.com/TurtleEngr/gitproj/archive/refs/tags/$(mGitProj).zip
 
 # ----------------------------------------
 # Note: these rules are also in src/bin/bib-cmd.mak
@@ -368,7 +390,6 @@ mkCore :
 # ln -s /opt/libre-bib/bin/bib /usr/local/bin/bib
 
 # ========================================
-build-setup : .git/hooks/pre-commit bin/incver.sh bin/phptidy.php bin/rm-trailing-sp bin/shfmt bin/sort-para.sh
 
 $(mRoot)/bin/phptidy.php : bin/phptidy.php
 	'rsync' -a $? $@
@@ -376,10 +397,3 @@ $(mRoot)/bin/phptidy.php : bin/phptidy.php
 $(mRoot)/bin : bin/sort-para.sh
 	'rsync' -a $? $@
 
-install-phpunit :
-	if [[ "$$USER" != "root" ]]; then exit 1; fi
-	wget https://phar.phpunit.de/$(PhpUnit)
-	cp $(PhpUnit) /usr/local/bin
-	rm $(PhpUnit)
-	chmod a+rx /usr/local/bin/$(PhpUnit)
-	cd /usr/local/bin; ln -s $(PhpUnit) phpunit.phar
