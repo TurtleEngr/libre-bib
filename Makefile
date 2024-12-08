@@ -1,9 +1,11 @@
 # Product Makefile
 
 # ========================================
+export
+
 SHELL = /bin/bash
-cgDirApp = /opt/libre-bib
-cgBin = $(cgDirApp)/bin
+cgDirApp=/opt/libre-bib
+cgBin=$(cgDirApp)/bin
 mRoot = dist/opt/libre-bib
 mDirList = $(mRoot) dist/usr/local/bin
 mCoreDir = ../src
@@ -11,9 +13,8 @@ mCoreDir = ../src
 
 include package/ver.mak
 
-export mAppMake = . src/etc/conf.env; cgDirApp=$(PWD)/src; cgBin=$(PWD)/src/bin; make -f src/bin/bib-cmd.mak
-
 # ========================================
+
 clean :
 	-find . -type f -name '*~' -exec rm {} \; &>/dev/null
 	-find . -type f -name '.phptidy-cache' -exec rm {} \; &>/dev/null
@@ -21,11 +22,13 @@ clean :
 	-find . -type f -name '*.bak' -exec rm {} \; &>/dev/null
 
 dist-clean : clean
-	. $(cgDirApp)/etc/conf.env; \
-	    . tmp-test/conf.env; \
-	    echo "drop database $$cgDbName;" >cmd.tmp
-	-sudo mysql -u root <cmd.tmp
-	-rm cmd.tmp
+	if [[ -d tmp-test ]]; then \
+		. $(cgDirApp)/etc/conf.env; \
+		. tmp-test/conf.env; \
+		echo "drop database $$cgDbName;" >cmd.tmp; \
+		sudo mysql -u root <cmd.tmp; \
+		rm cmd.tmp \
+	fi
 	-rm -rf tmp-test dist pkg tmp
 
 # ========================================
@@ -55,9 +58,8 @@ pkg-release:
 
 # ========================================
 # Manual install - only for testing
-install : $(cgDirApp) check mk-doc clean
-	-find src -name '*~' -exec rm {} \; &>/dev/null
-	-mkdir $(cgDirApp)/etc/old &>/dev/null
+install : clean $(cgDirApp) check mk-doc clean
+	-mkdir -p $(cgDirApp)/etc/old &>/dev/null
 	-cp --backup=t $$(find $(cgDirApp)/etc/* -prune -type f) $(cgDirApp)/etc/old/
 	rsync -aC src/* $(cgDirApp)/
 	find $(cgDirApp) -type d -exec chmod a+rx {} \;
@@ -74,45 +76,69 @@ incver :
 
 # ========================================
 # So far these are just crude "happy-path" tests.
-test : db-setup check # install
+
+test : test1 test2 test3 test4 test5 test6 test7 test8 test9 test10 test-done
+
+test1 : db-setup check # install
+
+test2 :
+	@echo -e "\n==========\nTest2 check db"
 	echo -e "show databases;\n quit" | mysql -u example
 	. $(cgDirApp)/etc/conf.env; \
 	    . tmp-test/conf.env; \
 	    echo "" >tmp-test/$$cgDbPassCache
-	@echo -e "\n==========\nTest import-lo"
+
+test3 :
+	@echo -e "\n==========\nTest3 import-lo"
 	cd tmp-test; bib import-lo
 	test -f tmp-test/status/import-lo.date
 	echo 'show tables;' | mysql -u example biblio_example | grep lo
-	@echo -e "\n==========\nTest export-lo"
+
+test4 :
+	@echo -e "\n==========\nTest4 export-lo"
 	cd tmp-test; bib export-lo
 	test -f tmp-test/tmp/biblio.txt
 	if diff tmp-test/biblio.txt tmp-test/tmp/biblio.txt | grep 'Id: '; then exit 1; fi
-	@echo -e "\n==========\nTest backup-lo"
+
+test5 :
+	@echo -e "\n==========\nTest5 backup-lo"
 	cd tmp-test; bib backup-lo
 	test -f tmp-test/status/backup-lo.date
 	test -f tmp-test/backup/backup-lo.csv
-	@echo -e "\n==========\nTest import-lib"
+
+test6 :
+	@echo -e "\n==========\nTest6 import-lib"
 	cd tmp-test; bib import-lib
 	test -f tmp-test/status/import-lib.date
 	echo 'show tables;' | mysql -u example biblio_example | grep lib
-	@echo -e "\n==========\nTest ref-new"
+
+test7 :
+	@echo -e "\n==========\nTest7 ref-new"
 	cd tmp-test; bib ref-new
 	test -f tmp-test/status/ref-new.date
 	test -f tmp-test/backup/example.odt
 	if diff -q tmp-test/backup/example.odt tmp-test/example.odt; then exit 1; fi
 	@echo "It is not clear why there is always a diff here. Timestamp?"
-	cmp tmp-test/example.odt test-ref/example.odt | grep 'byte 16166'
-	@echo -e "\n==========\nTest ref-update"
+	cmp tmp-test/example.odt test/ref/example.odt | grep 'byte 16166'
+
+test8 :
+	@echo -e "\n==========\nTest8 ref-update"
 	cd tmp-test; bib ref-update
 	test -f tmp-test/status/ref-update.date
 	test -f tmp-test/backup/example.odt
-	cmp tmp-test/example.odt test-ref/example.odt | grep 'byte 16166'
-	@echo -e "\n==========\nTest status-bib"
+	cmp tmp-test/example.odt test/ref/example.odt | grep 'byte 16166'
+
+test9 :
+	@echo -e "\n==========\nTest9 status-bib"
 	cd tmp-test; bib status-bib
-	@echo -e "\n==========\nTest reset example.odt"
+
+test10 :
+	@echo -e "\n==========\nTest10 reset example.odt"
 	@echo "Reset, so test can be repeated"
 	mv -f tmp-test/example.odt tmp-test/tmp
 	cp -f src/doc/example/example.odt tmp-test/
+
+test-done :
 	@echo -e "\n==========\nPassed"
 
 # --------------------
@@ -165,10 +191,13 @@ mk-app-dir $(cgDirApp) :
 
 # Use the rules
 mk-doc : \
-		src/doc/manual/libre-bib.html \
-		src/doc/manual/libre-bib.md \
-		src/doc/example/example-outline.html
-	-$(mAppMake) rebuild
+    src/doc/manual/libre-bib.html \
+    src/doc/manual/libre-bib.md \
+    src/doc/example/example-outline.html
+	. src/etc/conf.env; \
+	cgDirApp=$(PWD)/src; \
+	cgBin=$(PWD)/src/bin; \
+	make -f src/bin/bib-cmd.mak rebuild
 
 # ----------------------------------------
 package/ver.sh :  src/VERSION
@@ -188,39 +217,33 @@ build-packages : tmp product-packages \
 		/usr/local/bin/beekeeper \
 		/usr/bin/pod2pdf \
 		/usr/bin/pod2markdown
-	chown -R $$SUDO_USER:$$SUDO_USER tmp
 
 /usr/local/bin/epm :
-	if [[ "$$USER" != "root" ]]; then exit 1; fi
 	if [[ "$(ProdOSDist)" = "mx" ]]; then \
 		cd tmp; wget $(ProdRelRoot)/released/software/ThirdParty/epm/$(mEpmMx); \
-		apt-get install tmp/$(notdir $(mEpmMx)); \
+		sudo apt-get install -y tmp/$(notdir $(mEpmMx)); \
 	fi
 	if [[ "$(ProdOSDist)" = "ubuntu" ]]; then \
 		cd tmp; wget $(ProdRelRoot)/released/software/ThirdParty/epm/$(mEpmUbuntu); \
-		apt-get install tmp/$(notdir $(mEpmUbuntu)); \
+		sudo apt-get install -y tmp/$(notdir $(mEpmUbuntu)); \
 	fi
 
 /usr/local/bin/mkver.pl :
-	if [[ "$$USER" != "root" ]]; then exit 1; fi
 	cd tmp; wget $(ProdRelRoot)/released/software/ThirdParty/epm/$(mEpmHelper)
-	apt-get install tmp/$(mEpmHelper)
+	sudo apt-get install -y tmp/$(mEpmHelper)
 
 /usr/bin/pod2pdf :
-	if [[ "$$USER" != "root" ]]; then exit 1; fi
-	apt-get install pod2pdf
+	sudo apt-get install -y pod2pdf
 
 /usr/bin/pod2markdown :
-	if [[ "$$USER" != "root" ]]; then exit 1; fi
-	apt-get install libpod-markdown-perl pod2pdf
+	sudo apt-get install -y libpod-markdown-perl pod2pdf
 
 product-packages : package/mx.require package/ubuntu.require
-	if [[ "$$USER" != "root" ]]; then exit 1; fi
 	if [[ "$(ProdOSDist)" = "mx" ]]; then \
-		apt-get install $$(awk '/%requires/ {print $$2}' package/mx.require); \
+		sudo apt-get install -y $$(awk '/%requires/ {print $$2}' package/mx.require); \
 	fi
 	if [[ "$(ProdOSDist)" = "ubuntu" ]]; then \
-		apt-get install $$(awk '/%requires/ {print $$2}' package/ubuntu.require); \
+		sudo apt-get install -y $$(awk '/%requires/ {print $$2}' package/ubuntu.require); \
 	fi
 
 # ----------------------------------------
@@ -228,26 +251,15 @@ mBeekeeperVer=3.9.17
 mBeekeeper=Beekeeper-Studio-$(mBeekeeperVer).AppImage
 
 /usr/local/bin/beekeeper : /usr/local/bin/$(mBeekeeper)
-	if [[ "$$USER" != "root" ]]; then exit 1; fi
-	cd /usr/local/bin; ln -sf $(mBeekeeper) beekeeper
+	cd /usr/local/bin; sudo ln -sf $(mBeekeeper) beekeeper
 
 /usr/local/bin/$(mBeekeeper) :
-	if [[ "$$USER" != "root" ]]; then exit 1; fi
 	cd tmp; wget https://github.com/beekeeper-studio/beekeeper-studio/releases/download/v$(mBeekeeperVer)/$(mBeekeeper)
-	mv -f tmp/$(mBeekeeper) $@
-	chmod a+rx $@
+	sudo mv -f tmp/$(mBeekeeper) $@
+	sudo chmod a+rx $@
 
 # ----------------------------------------
-build-setup : update-my-util update-shfmt update-pre-commit update-php-util
-	make check
-
-#src/bin/sort-para.sh \
-#bin/incver.sh \
-#bin/rm-trailing-sp \
-#bin/shunit2.1 \
-#bin/shfmt \
-#bin/phptidy.php \
-#.git/hooks/pre-commit
+build-setup : update-my-util update-shfmt update-pre-commit update-php-util check
 
 # ----------------------------------------
 check :
@@ -273,16 +285,19 @@ tmp/my-utility-scripts-$(mMyUtil) : tmp/$(mMyUtil).zip
 tmp/$(mMyUtil).zip :
 	cd tmp; wget https://github.com/TurtleEngr/my-utility-scripts/archive/refs/tags/$(mMyUtil).zip
 
-bin/sort-para.sh : tmp/my-utility-scripts-$(mMyUtil)
+bin/incver.sh : tmp/my-utility-scripts-$(mMyUtil)
 	cp tmp/my-utility-scripts-$(mMyUtil)/bin/$(notdir $@) $@
 
-bin/incver.sh : tmp/my-utility-scripts-$(mMyUtil)
+bin/org2html.sh : tmp/my-utility-scripts-$(mMyUtil)
 	cp tmp/my-utility-scripts-$(mMyUtil)/bin/$(notdir $@) $@
 
 bin/rm-trailing-sp : tmp/my-utility-scripts-$(mMyUtil)
 	cp tmp/my-utility-scripts-$(mMyUtil)/bin/$(notdir $@) $@
 
 bin/shunit2.1 : tmp/my-utility-scripts-$(mMyUtil)
+	cp tmp/my-utility-scripts-$(mMyUtil)/bin/$(notdir $@) $@
+
+bin/sort-para.sh : tmp/my-utility-scripts-$(mMyUtil)
 	cp tmp/my-utility-scripts-$(mMyUtil)/bin/$(notdir $@) $@
 
 src/bin/sort-para.sh : bin/sort-para.sh
