@@ -222,11 +222,11 @@ function fUpdateBibTable() {
                 $tRec[$tCol] = ' ISBN:' . $tRec[$tCol] . '.';
                 break;
             case "URL":
-                $tRec[$tCol] = ' URL[' . $tRec[$tCol] . ']';
+                $tRec[$tCol] = ' URL:' . $tRec[$tCol]';
                 if ($tRec['Custom1'] != '') {
                     # Use only the first entry (space separator)
                     $tAltList = explode(' ', trim($tRec['Custom1']));
-                    $tRec[$tCol] .= ' Alt[' . $tAltList[0] . ']';
+                    $tRec[$tCol] .= '  Alt:' . $tAltList[0];
                 }
                 break;
             case "Custom4":
