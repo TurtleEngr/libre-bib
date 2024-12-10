@@ -239,7 +239,7 @@ mBeekeeper=Beekeeper-Studio-$(mBeekeeperVer).AppImage
 	chmod a+rx $@
 
 # ----------------------------------------
-build-setup : \
+build-setup :   tmp-test dist pkg tmp \
 		src/bin/sort-para.sh \
 		bin/incver.sh \
 		bin/rm-trailing-sp \
@@ -353,8 +353,8 @@ tmp/$(mGitProj).zip :
 	-$(mTidyXhtml) $@
 
 # ----------------------------------------
-tmp :
-	-mkdir tmp
+tmp-test dist pkg tmp :
+	-mkdir $@
 
 mkCore :
 	mkdir -p $(mDirList)

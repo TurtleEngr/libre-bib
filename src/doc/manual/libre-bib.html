@@ -37,7 +37,7 @@
 
 <hr/><h2 id="install-package">Install Package</h2>
 <ul>
-<li><p>If you install with a libre-bib.deb package with a package manager such as "apt", all of the required and most of the optional packages will be installed.</p></li>
+<li><p>If you install with a libre-bib.deb package with a package manager such as 'apt', all of the required and most of the optional packages will be installed.</p></li>
 <li><p>If you are installing from tgz file, then you'll need to install these manually.</p></li>
 </ul>
 <h3 id="required-packages">Required Packages</h3>
@@ -58,7 +58,7 @@
 </ul>
 <h3 id="optional-packages">Optional Packages</h3>
 <ul>
-<li>beekeeper - <a href="https://github.com/beekeeper-studio/beekeeper-studio">https://github.com/beekeeper-studio/beekeeper-studio</a></li>
+<li>beekeeper - <a href="https://github.com/beekeeper-studio/beekeeper-studio" class="uri">https://github.com/beekeeper-studio/beekeeper-studio</a></li>
 <li>pod2pdf</li>
 </ul>
 <h3 id="required-packages-for-building">Required Packages for Building</h3>
@@ -71,20 +71,20 @@
 <h3 id="config">Config</h3>
 <ul>
 <li>run libreoffice at least once before doing more with libre-bib</li>
-<li>edit the cli/php.ini file (for example: /etc/php/7.4/cli/php.ini) Change the <code>"variables_order"</code> to this: <blockquote> <code>variables_order = "EGPCS"</code> </blockquote></li>
+<li>edit the cli/php.ini file (for example: /etc/php/7.4/cli/php.ini) Change the ='variables<sub>order</sub>'= to this: <blockquote> =variables<sub>order</sub> = 'EGPCS'= </blockquote></li>
 </ul>
 <hr/><h2 id="setup-libre-bib-project">Setup libre-bib project</h2>
 <p>Run: <blockquote> bib setup-bib </p></blockquote>
 <p>Fix any errors then run it again, until no more errors.</p>
-<p>If you are planing on using a remote DB, then see the "Configure ssh" section.</p>
+<p>If you are planing on using a remote DB, then see the 'Configure ssh' section.</p>
 <hr/><h2 id="configure-the-db">Configure the DB</h2>
 <h3 id="install-and-test">Install and test</h3>
 <p>The DB packages, mariadb-client and mariadb-server, have been installed on the remote server (or local sever if you are doing this all on one server). Most likely the mariadbd process will already be running. Verify this with:</p>
 <blockquote><p> ps -fC mariadbd </p></blockquote>
 <p>If you don't see it running, you'll need to consult the mariadb docs to get it running.</p>
 <ul>
-<li><a href="https://opensource.com/article/20/10/mariadb-mysql-linux">https://opensource.com/article/20/10/mariadb-mysql-linux</a> (alt: <a href="https://archive.ph/yhDHm">https://archive.ph/yhDHm</a> )</li>
-<li><a href="https://mariadb.com/docs/server/ref/cs10.3/">https://mariadb.com/docs/server/ref/cs10.3/</a></li>
+<li><a href="https://opensource.com/article/20/10/mariadb-mysql-linux" class="uri">https://opensource.com/article/20/10/mariadb-mysql-linux</a> (alt: <a href="https://archive.ph/yhDHm" class="uri">https://archive.ph/yhDHm</a> )</li>
+<li><a href="https://mariadb.com/docs/server/ref/cs10.3/" class="uri">https://mariadb.com/docs/server/ref/cs10.3/</a></li>
 </ul>
 <p>The first one is a good source for quickly getting going. Depending on your distribution, you may need to do things a bit differently.</p>
 <p>Test the connection on the server system</p>
@@ -132,7 +132,7 @@ quit;
 <ul>
 <li><p>Test a local connection with $cgDbName</p>
 <blockquote><p> mysql -P 3306 -u $cgDbName -p -h 127.0.0.1 $cgDbName </p></blockquote></li>
-<li><p>If you will be using libre-bib on the same system as the DB, then try connecting with the "bib" command.</p>
+<li><p>If you will be using libre-bib on the same system as the DB, then try connecting with the 'bib' command.</p>
 <blockquote><p> bib connect </p></blockquote></li>
 </ul>
 <p>If that doesn't work look at the cgDsn variable setting in project/conf.env. It should be set to $cgLocalDsn for local access. Try again, If that works, your conf.env setting are good for continuing (skip the ssh section and other areas mentioning remote db access).</p>
@@ -162,17 +162,17 @@ quit;
 <blockquote><p> ssh $cgDbSshUser@$cgDbHostRemote </p></blockquote>
 <p>Leave the terminal window open and start another terminal window. In the new terminal window type:</p>
 <blockquote><p> telnet 127.0.0.1 $cgDbPortRemote </p></blockquote>
-<p>You should see "Connected to 127.0.0.1" and probably password prompt. Exit with ctrl-C or ctrl-] then "quit".</p>
+<p>You should see 'Connected to 127.0.0.1' and probably password prompt. Exit with ctrl-C or ctrl-] then 'quit'.</p>
 <p>Now test the connection to the database:</p>
 <blockquote><p> mysql -P $cgDbPortRemote -u $cgDbUser -p -h 127.0.0.1 $cgDbName </p></blockquote>
 <p>If that doesn't work, look at the error message and see what needs to be fixed. Check: db user name, db name, ports, grants and other settings on the db system.</p>
-<p>If that does work, try connecting with the "bib" command.</p>
+<p>If that does work, try connecting with the 'bib' command.</p>
 <blockquote><p> bib connect </p></blockquote>
 <p>If that doesn't work look at the cgDsn variable setting in project/conf.env. It should be set to $cgRemoteDsn for remote access. Try again, If that works, your conf.env setting are good for continuing.</p>
 <hr/><hr/><h1 id="using-libre-bib">Using libre-bib</h1>
 <hr/><h2 id="quick-start">Quick Start</h2>
 <p>This shows a minimal setup with a local DB. This will use the example files and the minimal default configuration.</p>
-<p>For a detailed example see Appendix "A Full Example."</p>
+<p>For a detailed example see Appendix 'A Full Example.'</p>
 <pre class="in">
 mkdir -p project/biblio
 cd project/biblio
@@ -198,7 +198,7 @@ bib style-save     # Run this if you change bibliography > Entries
 <hr/><h2 id="libre-bib-tour">libre-bib Tour</h2>
 <h3 id="files-and-dirs">Files and Dirs</h3>
 <p>This is a quick summary of the directories and files setup in your project directory. The details will be describe in later sections as they are used.</p>
-<p>The bib commands will notice changes and rebuild any dependent files as needed. So you might see more things running than what you've seen before. The "Env-Var" column shows the variable for the File-Dir. The Cmd column shows the command or commands that create or use the File-Dir.</p>
+<p>The bib commands will notice changes and rebuild any dependent files as needed. So you might see more things running than what you've seen before. The 'Env-Var' column shows the variable for the File-Dir. The Cmd column shows the command or commands that create or use the File-Dir.</p>
 <pre class="in">$ cd $HOME
 | File or Dir                | Var / Cmd                                |
 |----------------------------+------------------------------------------|
@@ -258,78 +258,78 @@ bib style-save     # Run this if you change bibliography > Entries
 
 <ul>
 <li><p>Var: <strong><strong>cgDebug=false</strong></strong></p>
-<p>If "true" then some diagnostic messages will be output.</p></li>
+<p>If 'true' then some diagnostic messages will be output.</p></li>
 <li><p>Var: <strong><strong>cgNoExec=false</strong></strong></p>
-<p>If "true" then things will be checked with non-destructive reads. Execution will stopped before anything would be changed.</p>
-<p>Note: this is not the same as the "-n" option. "-n" will show the commands that will be executed. cgNoExec forces the command to not make any destructive changes. Files might be copied to backup locations, but tables and files will not be changed.</p></li>
+<p>If 'true' then things will be checked with non-destructive reads. Execution will stopped before anything would be changed.</p>
+<p>Note: this is not the same as the '-n' option. '-n' will show the commands that will be executed. cgNoExec forces the command to not make any destructive changes. Files might be copied to backup locations, but tables and files will not be changed.</p></li>
 <li><p>Var: <strong><strong>cgVerbose=true</strong></strong></p>
-<p>If "true" the commands being executed will be shown and there could be more status output as things are run.</p>
-<p>Note: Currently some errors messages are not output if this is set to "false". If you see no output and no changes, the set this to "true" and try again.</p></li>
-<li><p>Var: <strong><strong>cgDirBackup="backup"</strong></strong></p>
-<p>This is the directory name (or path) where backup files are put. "~" numbers will be put after duplicate backups. With no "/" at the beginning, the name will be relative to $PWD.</p></li>
-<li><p>Var: <strong><strong>cgDirConf="$HOME/.config/libre-bib"</strong></strong></p>
+<p>If 'true' the commands being executed will be shown and there could be more status output as things are run.</p>
+<p>Note: Currently some errors messages are not output if this is set to 'false'. If you see no output and no changes, the set this to 'true' and try again.</p></li>
+<li><p>Var: **cgDirBackup='backup'**</p>
+<p>This is the directory name (or path) where backup files are put. '~' numbers will be put after duplicate backups. With no '/' at the beginning, the name will be relative to $PWD.</p></li>
+<li><p>Var: **cgDirConf='$HOME/.config/libre-bib'**</p>
 <p>Config files that are common for your user can be put here. If you have multiple bib directories, then this will be useful. This should be an absolute path.</p></li>
-<li><p>Var: <strong><strong>cgDirEtc="etc"</strong></strong></p>
+<li><p>Var: **cgDirEtc='etc'**</p>
 <p>Templates and other doc related files are put here. Initially they are copied from <em>opt/libre-bib/etc</em>. The files are copied to cgDirBackup if a command would change any of the files.</p></li>
-<li><p>Var: <strong><strong>cgDirLibreofficeConf="$HOME/.config/libreoffice/4/user/database/biblio"</strong></strong></p>
+<li><p>Var: **cgDirLibreofficeConf='$HOME/.config/libreoffice/4/user/database/biblio'**</p>
 <p>This is the location of Libreoffice's bibliography DB connection information. The path might need to be changed for different Libreoffice varsions.</p></li>
-<li><p>Var: <strong><strong>cgDirStatus="status"</strong></strong></p>
+<li><p>Var: **cgDirStatus='status'**</p>
 <p>When a command updates a file, a date-stamped status file is created in the cgDirStatus directory. If a dependent file has a newer time than it's corresponding status file, then the update command will be run.</p>
 <p>Deleting all the files in the cgDirStatus dir will force all of the commands to run. That is, they will not check to see if things are newer.</p></li>
-<li><p>Var: <strong><strong>cgDirTmp="tmp"</strong></strong></p>
-<p>Temporary working files are put in this dir. This is usually relative to $PWD. If set to an absolute location, be sure there is space and that it is unique across all users and bib processes that could be run. For example, do not define it to "/tmp" because when you run "bib clean" that would remove all files and dirs in /tmp !</p></li>
+<li><p>Var: **cgDirTmp='tmp'**</p>
+<p>Temporary working files are put in this dir. This is usually relative to $PWD. If set to an absolute location, be sure there is space and that it is unique across all users and bib processes that could be run. For example, do not define it to '/tmp' because when you run 'bib clean' that would remove all files and dirs in /tmp !</p></li>
 <li><p>Var: <strong><strong>cgBackupNum=10</strong></strong></p>
 <p>This variable defined the number of backup files or tables to be kept. This can be set to 2 to 100.</p></li>
-<li><p>Var: <strong><strong>cgDbHost="127.0.0.1"</strong></strong></p>
+<li><p>Var: **cgDbHost='127.0.0.1'**</p>
 <p>Usually this will always be set to the localhost IP. That works better than using a name or localhost.</p></li>
-<li><p>Var: <strong><strong>cgDbName="biblio<sub>example</sub>"</strong></strong></p>
+<li><p>Var: **cgDbName='biblio<sub>example</sub>'**</p>
 <p>This is the name of the database.</p></li>
-<li><p>Var: <strong><strong>cgDbUser="$USER"</strong></strong></p>
+<li><p>Var: **cgDbUser='$USER'**</p>
 <p>This is the name of your DB user. Typically it is the same as your login user name, but you can used any name.</p></li>
-<li><p>Var: <strong><strong>cgDbPassHint="b4n"</strong></strong></p>
+<li><p>Var: **cgDbPassHint='b4n'**</p>
 <p>This will be shown when you are prompted for the DB User's password.</p></li>
-<li><p>Var: <strong><strong>cgDbPassCache="$cgDirTmp/.pass.tmp"</strong></strong></p>
+<li><p>Var: **cgDbPassCache='$cgDirTmp/.pass.tmp'**</p>
 <p>When you use commands that need to connect to the DB you will be prompted for the user's DB password. It will be saved here. It is not encrypted, so don't use the DB User/Pass for sensitive DBs.</p></li>
-<li><p>Var: <strong><strong>cgDbPortLocal="3306"</strong></strong></p>
+<li><p>Var: **cgDbPortLocal='3306'**</p>
 <p>This is the port for the DB, on the system where the DB is running.</p></li>
 <li><p>Var: <strong><strong>cgUseRemote=false</strong></strong></p>
-<p>If "true" then the remote DB will be accessed over a ssh tunnel. See the ssh setup section for the details on setting up the tunnel.</p></li>
-<li><p>Var: <strong><strong>cgDbHostRemote="NAME.example.com"</strong></strong></p>
+<p>If 'true' then the remote DB will be accessed over a ssh tunnel. See the ssh setup section for the details on setting up the tunnel.</p></li>
+<li><p>Var: **cgDbHostRemote='NAME.example.com'**</p>
 <p>If you are using a DB on another system, then define that system's name here.</p></li>
-<li><p>Var: <strong><strong>cgDbPortRemote="3308"</strong></strong></p>
+<li><p>Var: **cgDbPortRemote='3308'**</p>
 <p>This will be the port for the DB tunnel. It can be most any unused port number.</p></li>
-<li><p>Var: <strong><strong>cgSshUser="$USER"</strong></strong></p>
+<li><p>Var: **cgSshUser='$USER'**</p>
 <p>This is your user name on the remote system.</p></li>
-<li><p>Var: <strong><strong>cgSshKey="$HOME/.ssh/id.KEY-NAME"</strong></strong></p>
+<li><p>Var: **cgSshKey='$HOME/.ssh/id.KEY-NAME'**</p>
 <p>This is the ssh key name for accessing the remote system. This will be used to define the config file for setting up the ssh tunnel.</p></li>
-<li><p>Var: <strong><strong>cgDocFile="example.odt"</strong></strong></p>
+<li><p>Var: **cgDocFile='example.odt'**</p>
 <p>This it the whole reason for this app and hopefully this shows why you went through the work of creating the biblio.txt file.</p>
 <p>This is your Libreoffice document file that contains bibliographic references. {REFs}</p></li>
-<li><p>Var: <strong><strong>cgLoFile="biblio.txt"</strong></strong></p>
+<li><p>Var: **cgLoFile='biblio.txt'**</p>
 <p>This is the text file you will use for adding and updating bibliographic entries. This is much easier to manage and backup than using the DB for everything.</p>
 <p>biblio.txt and biblio-note.txt are the files you will be editing the most. biblio.txt is where you will be putting most of the bibliographic information about a book, article, web page, video, etc.</p>
-<p>If you have setup a LibraryThing DB (see: <a href="https://www.librarything.com/home">https://www.librarything.com/home</a>) you can export a tsv file of your LibraryThing DB to librarything.tsv. Then you can run "bib update-lo" to update empty "lo" table fields from the "lib" DB table. See the "LibraryThing" section for more details.</p>
+<p>If you have setup a LibraryThing DB (see: <a href="https://www.librarything.com/home" class="uri">https://www.librarything.com/home</a>) you can export a tsv file of your LibraryThing DB to librarything.tsv. Then you can run 'bib update-lo' to update empty 'lo' table fields from the 'lib' DB table. See the 'LibraryThing' section for more details.</p>
 <p>The key.txt file just gives some quick tip on the kind of values you can put after the Tags. It isn't used anywhere else, so you can edit or delete the file.</p></li>
-<li><p>Var: <strong><strong>cgDbLo="lo"</strong></strong></p>
+<li><p>Var: **cgDbLo='lo'**</p>
 <p>This is the name of the primary LibreOffice bibliographic DB table.</p></li>
-<li><p>Var: <strong><strong>cgDbBib="bib"</strong></strong></p>
+<li><p>Var: **cgDbBib='bib'**</p>
 <p>When the lo table is updated this table is created to do some simple formatting, so the bibliography will not be cluttered with duplicate commas when there are empty values.</p></li>
-<li><p>Var: <strong><strong>cgBackupFile="$cgDirBackup/backup-lo.csv"</strong></strong></p>
+<li><p>Var: **cgBackupFile='$cgDirBackup/backup-lo.csv'**</p>
 <p>If you run the backup-lo command this is where the backup will be put. If there is already one there, then that will be backed up.</p></li>
 <li><p>Var: <strong><strong>cgUseLib=false</strong></strong></p>
-<p>Set this to "true" if you will be using a Library Thing export.</p></li>
-<li><p>Var: <strong><strong>cgLibFile="librarything.tsv"</strong></strong></p>
+<p>Set this to 'true' if you will be using a Library Thing export.</p></li>
+<li><p>Var: **cgLibFile='librarything.tsv'**</p>
 <p>This is the name of the tsv (Tab Separated Value) file that was exported from Library Thing.</p>
-<p>Using LibraryThing export your DB to librarything.tsv file <a href="https://www.librarything.com/home">https://www.librarything.com/home</a></p></li>
-<li><p>Var: <strong><strong>cgDbLib="lib"</strong></strong></p>
+<p>Using LibraryThing export your DB to librarything.tsv file <a href="https://www.librarything.com/home" class="uri">https://www.librarything.com/home</a></p></li>
+<li><p>Var: **cgDbLib='lib'**</p>
 <p>This is the name of the LibraryThing table that will be created from cgLibFile.</p></li>
 </ul>
 <hr/><h2 id="commands">Commands</h2>
-<p>Commands are entered after "bib". For example: "bib setup-bib"</p>
-<p>Just type "bib" for a quick list of commands.</p>
-<p>To bring up this manual in your default browser, type: "bib help"</p>
-<p>More than one command can be used. They will be run in order. Execution will stop at the first command that fails. ("ignored" errors are OK.) For example, you have modified some entries in biblio.txt and you have modified your libreoffice document with these new references. You could run: "bib import-lo update-lo ref-new ref-update"</p>
-<p>If a command doesn't run, it could be the files are up-to-date. If you want to force a command to run, remove the status/ file associated with the command, or "touch" one of the dependent files. For example: import-lo will only run if the biblio.txt file is newer than the last time import-lo was run. To force it to run: "rm status/import.lo.date"</p>
+<p>Commands are entered after 'bib'. For example: 'bib setup-bib'</p>
+<p>Just type 'bib' for a quick list of commands.</p>
+<p>To bring up this manual in your default browser, type: 'bib help'</p>
+<p>More than one command can be used. They will be run in order. Execution will stop at the first command that fails. ('ignored' errors are OK.) For example, you have modified some entries in biblio.txt and you have modified your libreoffice document with these new references. You could run: 'bib import-lo update-lo ref-new ref-update'</p>
+<p>If a command doesn't run, it could be the files are up-to-date. If you want to force a command to run, remove the status/ file associated with the command, or 'touch' one of the dependent files. For example: import-lo will only run if the biblio.txt file is newer than the last time import-lo was run. To force it to run: 'rm status/import.lo.date'</p>
 <h3 id="cmd-setup-bib">Cmd: setup-bib</h3>
 <p>After editing the conf.env file, run this command to define the directories and initial files, in the current directory.</p>
 <h3 id="cmd-connect">Cmd: connect</h3>
@@ -353,7 +353,7 @@ bib style-save     # Run this if you change bibliography > Entries
 <p>If the file is changed, the original file will be found in the backup/ dir. So your odt file can be restored if there are problems.</p>
 <p>If the lo table has been updated with different values, then run the ref-update command.</p>
 <p>Internal: see /opt/libre-bib/etc/cite-new.xml for the template that will be used.</p>
-<p>This will format the entries with the "Endnote Characters" style, and insert the non-empty bib-field values.</p>
+<p>This will format the entries with the 'Endnote Characters' style, and insert the non-empty bib-field values.</p>
 <h3 id="cmd-ref-update">Cmd: ref-update</h3>
 <p>If the lo table has been updated with different values, then run this command to update the odt file with the new values. This command will not modify any new {REF} tags.</p>
 <p>The original file will be found in the backup/ dir. So your odt file can be restored if there are problems. It could be there are no changes to the file, but this command doesn't check for difference, it just replaces all of the biblio-entries it finds in the odt file.</p>
@@ -376,11 +376,11 @@ bib style-save     # Run this if you change bibliography > Entries
 <hr/><hr/><h1 id="appendix">Appendix</h1>
 <hr/><h2 id="a.-backups">A. Backups</h2>
 <ul>
-<li><p>DB Tables: If a table exists and cgBackup is "true", then the table will be copied to the table name with a datestamp (<sub>YYYY</sub>-MM-DD<sub>HH</sub>-MM-SS) appended. For example, bib -> bib<sub>2023</sub>-04-02<sub>14</sub>-18-37</p></li>
-<li><p>Files: If a file exist and cgBackup is "true", then the file will be copied to FILE.bak. If the .bak file exist then a ".~N~" will be appended after that (larger Ns are more recent).</p></li>
+<li><p>DB Tables: If a table exists and cgBackup is 'true', then the table will be copied to the table name with a datestamp (<sub>YYYY</sub>-MM-DD<sub>HH</sub>-MM-SS) appended. For example, bib -> bib<sub>2023</sub>-04-02<sub>14</sub>-18-37</p></li>
+<li><p>Files: If a file exist and cgBackup is 'true', then the file will be copied to FILE.bak. If the .bak file exist then a '.~N~' will be appended after that (larger Ns are more recent).</p></li>
 <li><p>Backup cleanup: run TBD????, it will prompt to confirm deletes of backup tables or files.</p></li>
 <li><p>To restore a table. In mysql, follow this example:</p>
-<p>drop table `bib`; RENAME TABLE `bib<sub>2023</sub>-04-02<sub>14</sub>-18-37` TO bib;</p></li>
+drop table `bib`; RENAME TABLE `bib<sub>2023</sub>-04-02<sub>14</sub>-18-37` TO bib;</li>
 </ul>
 <hr/><h2 id="b.-customizing-the-defaults">B. Customizing the defaults</h2>
 <p>If you are managing multiple bibliographies, you might have some common settings. For example, most of the things related to a remote DB will be the same.</p>
