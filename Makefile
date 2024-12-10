@@ -1,20 +1,20 @@
 # Product Makefile
 
 # ========================================
-export SHELL = /bin/bash
-export cgDirApp = /opt/libre-bib
-export cgBin = $(cgDirApp)/bin
-export mRoot = dist/opt/libre-bib
-export mDirList = $(mRoot) dist/usr/local/bin
-export mCoreDir = ../src
-export mPhpUnit = phpunit-9.6.13.phar
+export
+
+SHELL = /bin/bash
+cgDirApp=/opt/libre-bib
+cgBin=$(cgDirApp)/bin
+mRoot = dist/opt/libre-bib
+mDirList = $(mRoot) dist/usr/local/bin
+mCoreDir = ../src
 #?? cgBuild=true
 
 include package/ver.mak
 
-export mAppMake = . src/etc/conf.env; cgDirApp=$(PWD)/src; cgBin=$(PWD)/src/bin; make -f src/bin/bib-cmd.mak
-
 # ========================================
+
 clean :
 	-find . -type f -name '*~' -exec rm {} \; &>/dev/null
 	-find . -type f -name '.phptidy-cache' -exec rm {} \; &>/dev/null
@@ -22,11 +22,13 @@ clean :
 	-find . -type f -name '*.bak' -exec rm {} \; &>/dev/null
 
 dist-clean : clean
-	. $(cgDirApp)/etc/conf.env; \
-	    . tmp-test/conf.env; \
-	    echo "drop database $$cgDbName;" >cmd.tmp
-	-sudo mysql -u root <cmd.tmp
-	-rm cmd.tmp
+	if [[ -d tmp-test ]]; then \
+		. $(cgDirApp)/etc/conf.env; \
+		. tmp-test/conf.env; \
+		echo "drop database $$cgDbName;" >cmd.tmp; \
+		sudo mysql -u root <cmd.tmp; \
+		rm cmd.tmp \
+	fi
 	-rm -rf tmp-test dist pkg tmp
 
 # ========================================
@@ -56,9 +58,8 @@ pkg-release:
 
 # ========================================
 # Manual install - only for testing
-install : $(cgDirApp) check mk-doc clean
-	-find src -name '*~' -exec rm {} \; &>/dev/null
-	-mkdir $(cgDirApp)/etc/old &>/dev/null
+install : clean $(cgDirApp) check mk-doc clean
+	-mkdir -p $(cgDirApp)/etc/old &>/dev/null
 	-cp --backup=t $$(find $(cgDirApp)/etc/* -prune -type f) $(cgDirApp)/etc/old/
 	rsync -aC src/* $(cgDirApp)/
 	find $(cgDirApp) -type d -exec chmod a+rx {} \;
@@ -75,45 +76,69 @@ incver :
 
 # ========================================
 # So far these are just crude "happy-path" tests.
-test : db-setup check # install
+
+test : test1 test2 test3 test4 test5 test6 test7 test8 test9 test10 test-done
+
+test1 : db-setup check # install
+
+test2 :
+	@echo -e "\n==========\nTest2 check db"
 	echo -e "show databases;\n quit" | mysql -u example
 	. $(cgDirApp)/etc/conf.env; \
 	    . tmp-test/conf.env; \
 	    echo "" >tmp-test/$$cgDbPassCache
-	@echo -e "\n==========\nTest import-lo"
+
+test3 :
+	@echo -e "\n==========\nTest3 import-lo"
 	cd tmp-test; bib import-lo
 	test -f tmp-test/status/import-lo.date
 	echo 'show tables;' | mysql -u example biblio_example | grep lo
-	@echo -e "\n==========\nTest export-lo"
+
+test4 :
+	@echo -e "\n==========\nTest4 export-lo"
 	cd tmp-test; bib export-lo
 	test -f tmp-test/tmp/biblio.txt
 	if diff tmp-test/biblio.txt tmp-test/tmp/biblio.txt | grep 'Id: '; then exit 1; fi
-	@echo -e "\n==========\nTest backup-lo"
+
+test5 :
+	@echo -e "\n==========\nTest5 backup-lo"
 	cd tmp-test; bib backup-lo
 	test -f tmp-test/status/backup-lo.date
 	test -f tmp-test/backup/backup-lo.csv
-	@echo -e "\n==========\nTest import-lib"
+
+test6 :
+	@echo -e "\n==========\nTest6 import-lib"
 	cd tmp-test; bib import-lib
 	test -f tmp-test/status/import-lib.date
 	echo 'show tables;' | mysql -u example biblio_example | grep lib
-	@echo -e "\n==========\nTest ref-new"
+
+test7 :
+	@echo -e "\n==========\nTest7 ref-new"
 	cd tmp-test; bib ref-new
 	test -f tmp-test/status/ref-new.date
 	test -f tmp-test/backup/example.odt
 	if diff -q tmp-test/backup/example.odt tmp-test/example.odt; then exit 1; fi
 	@echo "It is not clear why there is always a diff here. Timestamp?"
-	cmp tmp-test/example.odt test-ref/example.odt | grep 'byte 16166'
-	@echo -e "\n==========\nTest ref-update"
+	cmp tmp-test/example.odt test/ref/example.odt | grep 'byte 16166'
+
+test8 :
+	@echo -e "\n==========\nTest8 ref-update"
 	cd tmp-test; bib ref-update
 	test -f tmp-test/status/ref-update.date
 	test -f tmp-test/backup/example.odt
-	cmp tmp-test/example.odt test-ref/example.odt | grep 'byte 16166'
-	@echo -e "\n==========\nTest status-bib"
+	cmp tmp-test/example.odt test/ref/example.odt | grep 'byte 16166'
+
+test9 :
+	@echo -e "\n==========\nTest9 status-bib"
 	cd tmp-test; bib status-bib
-	@echo -e "\n==========\nTest reset example.odt"
+
+test10 :
+	@echo -e "\n==========\nTest10 reset example.odt"
 	@echo "Reset, so test can be repeated"
 	mv -f tmp-test/example.odt tmp-test/tmp
 	cp -f src/doc/example/example.odt tmp-test/
+
+test-done :
 	@echo -e "\n==========\nPassed"
 
 # --------------------
@@ -166,10 +191,13 @@ mk-app-dir $(cgDirApp) :
 
 # Use the rules
 mk-doc : \
-		src/doc/manual/libre-bib.html \
-		src/doc/manual/libre-bib.md \
-		src/doc/example/example-outline.html
-	-$(mAppMake) rebuild
+    src/doc/manual/libre-bib.html \
+    src/doc/manual/libre-bib.md \
+    src/doc/example/example-outline.html
+	. src/etc/conf.env; \
+	cgDirApp=$(PWD)/src; \
+	cgBin=$(PWD)/src/bin; \
+	make -f src/bin/bib-cmd.mak rebuild
 
 # ----------------------------------------
 package/ver.sh :  src/VERSION
@@ -189,39 +217,33 @@ build-packages : tmp product-packages \
 		/usr/local/bin/beekeeper \
 		/usr/bin/pod2pdf \
 		/usr/bin/pod2markdown
-	chown -R $$SUDO_USER:$$SUDO_USER tmp
 
 /usr/local/bin/epm :
-	if [[ "$$USER" != "root" ]]; then exit 1; fi
 	if [[ "$(ProdOSDist)" = "mx" ]]; then \
 		cd tmp; wget $(ProdRelRoot)/released/software/ThirdParty/epm/$(mEpmMx); \
-		apt-get install tmp/$(notdir $(mEpmMx)); \
+		sudo apt-get install -y tmp/$(notdir $(mEpmMx)); \
 	fi
 	if [[ "$(ProdOSDist)" = "ubuntu" ]]; then \
 		cd tmp; wget $(ProdRelRoot)/released/software/ThirdParty/epm/$(mEpmUbuntu); \
-		apt-get install tmp/$(notdir $(mEpmUbuntu)); \
+		sudo apt-get install -y tmp/$(notdir $(mEpmUbuntu)); \
 	fi
 
 /usr/local/bin/mkver.pl :
-	if [[ "$$USER" != "root" ]]; then exit 1; fi
 	cd tmp; wget $(ProdRelRoot)/released/software/ThirdParty/epm/$(mEpmHelper)
-	apt-get install tmp/$(mEpmHelper)
+	sudo apt-get install -y tmp/$(mEpmHelper)
 
 /usr/bin/pod2pdf :
-	if [[ "$$USER" != "root" ]]; then exit 1; fi
-	apt-get install pod2pdf
+	sudo apt-get install -y pod2pdf
 
 /usr/bin/pod2markdown :
-	if [[ "$$USER" != "root" ]]; then exit 1; fi
-	apt-get install libpod-markdown-perl pod2pdf
+	sudo apt-get install -y libpod-markdown-perl pod2pdf
 
 product-packages : package/mx.require package/ubuntu.require
-	if [[ "$$USER" != "root" ]]; then exit 1; fi
 	if [[ "$(ProdOSDist)" = "mx" ]]; then \
-		apt-get install $$(awk '/%requires/ {print $$2}' package/mx.require); \
+		sudo apt-get install -y $$(awk '/%requires/ {print $$2}' package/mx.require); \
 	fi
 	if [[ "$(ProdOSDist)" = "ubuntu" ]]; then \
-		apt-get install $$(awk '/%requires/ {print $$2}' package/ubuntu.require); \
+		sudo apt-get install -y $$(awk '/%requires/ {print $$2}' package/ubuntu.require); \
 	fi
 
 # ----------------------------------------
@@ -229,25 +251,15 @@ mBeekeeperVer=3.9.17
 mBeekeeper=Beekeeper-Studio-$(mBeekeeperVer).AppImage
 
 /usr/local/bin/beekeeper : /usr/local/bin/$(mBeekeeper)
-	if [[ "$$USER" != "root" ]]; then exit 1; fi
-	cd /usr/local/bin; ln -sf $(mBeekeeper) beekeeper
+	cd /usr/local/bin; sudo ln -sf $(mBeekeeper) beekeeper
 
 /usr/local/bin/$(mBeekeeper) :
-	if [[ "$$USER" != "root" ]]; then exit 1; fi
 	cd tmp; wget https://github.com/beekeeper-studio/beekeeper-studio/releases/download/v$(mBeekeeperVer)/$(mBeekeeper)
-	mv -f tmp/$(mBeekeeper) $@
-	chmod a+rx $@
+	sudo mv -f tmp/$(mBeekeeper) $@
+	sudo chmod a+rx $@
 
 # ----------------------------------------
-build-setup : \
-		src/bin/sort-para.sh \
-		bin/incver.sh \
-		bin/rm-trailing-sp \
-		bin/shunit2.1 \
-		bin/shfmt \
-		bin/phptidy.php \
-		.git/hooks/pre-commit
-		make check
+build-setup : update-my-util update-shfmt update-pre-commit update-php-util check
 
 # ----------------------------------------
 check :
@@ -256,21 +268,27 @@ check :
 
 # ----------------------------------------
 # my-utility-scripts - multiple scripts
-mMyUtil=tag-0-3-0
+mMyUtil=tag-1-16-0
+mMyUtilList = \
+	bin/incver.sh \
+	bin/org2html.sh \
+	bin/rm-trailing-sp \
+	bin/shunit2.1 \
+	bin/sort-para.sh \
+	src/bin/sort-para.sh
+
+update-my-util : tmp/my-utility-scripts-$(mMyUtil) $(mMyUtilList)
 
 tmp/my-utility-scripts-$(mMyUtil) : tmp/$(mMyUtil).zip
+	cd tmp; unzip -o $(mMyUtil).zip
 
 tmp/$(mMyUtil).zip :
 	cd tmp; wget https://github.com/TurtleEngr/my-utility-scripts/archive/refs/tags/$(mMyUtil).zip
-	cd tmp; unzip -o $(mMyUtil).zip
-
-src/bin/sort-para.sh : bin/sort-para.sh
-	cp $? $@
-
-bin/sort-para.sh : tmp/my-utility-scripts-$(mMyUtil)
-	cp tmp/my-utility-scripts-$(mMyUtil)/bin/$(notdir $@) $@
 
 bin/incver.sh : tmp/my-utility-scripts-$(mMyUtil)
+	cp tmp/my-utility-scripts-$(mMyUtil)/bin/$(notdir $@) $@
+
+bin/org2html.sh : tmp/my-utility-scripts-$(mMyUtil)
 	cp tmp/my-utility-scripts-$(mMyUtil)/bin/$(notdir $@) $@
 
 bin/rm-trailing-sp : tmp/my-utility-scripts-$(mMyUtil)
@@ -279,9 +297,17 @@ bin/rm-trailing-sp : tmp/my-utility-scripts-$(mMyUtil)
 bin/shunit2.1 : tmp/my-utility-scripts-$(mMyUtil)
 	cp tmp/my-utility-scripts-$(mMyUtil)/bin/$(notdir $@) $@
 
+bin/sort-para.sh : tmp/my-utility-scripts-$(mMyUtil)
+	cp tmp/my-utility-scripts-$(mMyUtil)/bin/$(notdir $@) $@
+
+src/bin/sort-para.sh : bin/sort-para.sh
+	cp $? $@
+
 # ----------------------------------------
 # shfmt
 mShFmt=v3.1.2
+
+update-shfmt : bin/shfmt
 
 bin/shfmt : tmp/shfmt_$(mShFmt)_linux_amd64
 	cp $? $@
@@ -291,8 +317,11 @@ tmp/shfmt_$(mShFmt)_linux_amd64 :
 	cd tmp; wget https://github.com/mvdan/sh/releases/download/$(mShFmt)/shfmt_$(mShFmt)_linux_amd64
 
 # ----------------------------------------
-# phptidy.php
+# phptidy.php phpunit.phar
 mPhpTidy=3.3
+mPhpUnit = phpunit-9.6.13.phar
+
+update-php-util : bin/phptidy.php bin/phpunit.phar
 
 bin/phptidy.php : tmp/phptidy
 	cp $?/phptidy.php $@
@@ -304,25 +333,23 @@ tmp/phptidy-$(mPhpTidy).tar.gz :
 	cd tmp; wget https://github.com/cmrcx/phptidy/releases/download/v$(mPhpTidy)/phptidy-$(mPhpTidy).tar.gz
 	cd tmp; tar -xzf phptidy-$(mPhpTidy).tar.gz
 
-# ----------------------------------------
-# pre-commit
-mGitProj=tag-0-7-6-1
+bin/phpunit.phar : tmp/$(mPhpUnit)
+	cp tmp/$(mPhpUnit) bin
+	chmod a+rx bin/$(mPhpUnit)
+	cd bin; ln -s $(mPhpUnit) phpunit.phar
 
-bin/pre-commit : tmp/gitproj-$(mGitProj)/doc/hooks/pre-commit
-	cp $? $@
-
-tmp/gitproj-$(mGitProj)/doc/hooks/pre-commit : tmp/$(mGitProj).zip
-	cd tmp; unzip -o $(mGitProj).zip gitproj-$(mGitProj)/doc/hooks/pre-commit
-	touch $@
-
-tmp/$(mGitProj).zip :
-	cd tmp; wget https://github.com/TurtleEngr/gitproj/archive/refs/tags/$(mGitProj).zip
+tmp/$(mPhpUnit) :
+	cd tmp; wget https://phar.phpunit.de/$(mPhpUnit)
 
 # ----------------------------------------
 # pre-commit hook
 # The detault gitproj.hook.tab-include-list is '*"
 #     Only text files are looked at.
 # gitproj.hook.tab-exclude-list is a "grep -E" pattern
+
+mGitProj=tag-0-7-6-1
+
+update-pre-commit : .git/hooks/pre-commit
 
 .git/hooks/pre-commit : bin/pre-commit
 	cp $? $@
@@ -336,6 +363,16 @@ tmp/$(mGitProj).zip :
 	git config --bool gitproj.hook.check-for-big-files true
 	git config --int gitproj.hook.binary-file-size 30000
 	git config --bool gitproj.hook.verbose true
+
+bin/pre-commit : tmp/gitproj-$(mGitProj)/doc/hooks/pre-commit
+	cp $? $@
+
+tmp/gitproj-$(mGitProj)/doc/hooks/pre-commit : tmp/$(mGitProj).zip
+	cd tmp; unzip -o $(mGitProj).zip gitproj-$(mGitProj)/doc/hooks/pre-commit
+	touch $@
+
+tmp/$(mGitProj).zip :
+	cd tmp; wget https://github.com/TurtleEngr/gitproj/archive/refs/tags/$(mGitProj).zip
 
 # ----------------------------------------
 # Note: these rules are also in src/bin/bib-cmd.mak
@@ -368,7 +405,6 @@ mkCore :
 # ln -s /opt/libre-bib/bin/bib /usr/local/bin/bib
 
 # ========================================
-build-setup : .git/hooks/pre-commit bin/incver.sh bin/phptidy.php bin/rm-trailing-sp bin/shfmt bin/sort-para.sh
 
 $(mRoot)/bin/phptidy.php : bin/phptidy.php
 	'rsync' -a $? $@
@@ -376,10 +412,3 @@ $(mRoot)/bin/phptidy.php : bin/phptidy.php
 $(mRoot)/bin : bin/sort-para.sh
 	'rsync' -a $? $@
 
-install-phpunit :
-	if [[ "$$USER" != "root" ]]; then exit 1; fi
-	wget https://phar.phpunit.de/$(PhpUnit)
-	cp $(PhpUnit) /usr/local/bin
-	rm $(PhpUnit)
-	chmod a+rx /usr/local/bin/$(PhpUnit)
-	cd /usr/local/bin; ln -s $(PhpUnit) phpunit.phar

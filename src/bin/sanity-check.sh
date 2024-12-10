@@ -156,6 +156,11 @@ fCheckPhp() {
             ((++gErr))
         fi
     done
+    if ! grep -q 'variables_order = "EGPCS"' /etc/php/*/cli/php.ini; then
+        echo 'Error: variables_order = "EGPCS" is not set in' /etc/php/*/cli/php.ini
+        ((++gErr))
+        return 1 # ---------->
+    fi
     return 0
 }
 

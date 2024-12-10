@@ -1,18 +1,8 @@
-------------------------------------------------------------------------
-
-------------------------------------------------------------------------
-
 Libre Bib Manual
 ================
 
-------------------------------------------------------------------------
-
-------------------------------------------------------------------------
-
 Install and Setup
 =================
-
-------------------------------------------------------------------------
 
 O.S. Requirments
 ----------------
@@ -39,8 +29,6 @@ O.S. Requirments
 | MacOS ??, brew     | native  | planned     | manual deps |
 ```
 
-------------------------------------------------------------------------
-
 Install Package
 ---------------
 
@@ -53,8 +41,8 @@ Install Package
 
 ### Required Packages
 
--   bash (5.1, the version is probably not important)
--   libreoffice (7.0+)
+-   bash (5.1+, the version is probably not important)
+-   libreoffice (7.0+) (tested with libreoffice 7.4 and 7.6)
 -   libreoffice-sdbc-mysql (7.0+) - needed for libreoffice DB connection
 -   make (gnu make 4.3+) - for script and file management
 -   mariadb-client (10.5+) - mysql
@@ -82,27 +70,19 @@ Install Package
 ### Config
 
 -   run libreoffice at least once before doing more with libre-bib
-
 -   edit the cli/php.ini file (for example: /etc/php/7.4/cli/php.ini)
-    Change the `"variables_order"` to this:
-
-    > `variables_order = "EGPCS"`
-
-------------------------------------------------------------------------
+    Change the `"variables_order"` to this: \<blockquote\>
+    `variables_order = "EGPCS"` \</blockquote\>
 
 Setup libre-bib project
 -----------------------
 
-Run:
-
-> bib setup-bib
+Run: \<blockquote\> bib setup-bib \</blockquote\>
 
 Fix any errors then run it again, until no more errors.
 
 If you are planing on using a remote DB, then see the \"Configure ssh\"
 section.
-
-------------------------------------------------------------------------
 
 Configure the DB
 ----------------
@@ -114,7 +94,7 @@ on the remote server (or local sever if you are doing this all on one
 server). Most likely the mariadbd process will already be running.
 Verify this with:
 
-> ps -fC mariadbd
+\<blockquote\> ps -fC mariadbd \</blockquote\>
 
 If you don\'t see it running, you\'ll need to consult the mariadb docs
 to get it running.
@@ -128,7 +108,7 @@ your distribution, you may need to do things a bit differently.
 
 Test the connection on the server system
 
-> sudo mysql -P 3306 -u root -p
+\<blockquote\> sudo mysql -P 3306 -u root -p \</blockquote\>
 
 Most likely you\'ll use your sudo password, or the password you setup
 for the mysql DB root user.
@@ -178,19 +158,18 @@ quit;
 
 -   Test a local connection with \$cgDbName
 
-    > mysql -P 3306 -u \$cgDbName -p -h 127.0.0.1 \$cgDbName
+    \<blockquote\> mysql -P 3306 -u \$cgDbName -p -h 127.0.0.1
+    \$cgDbName \</blockquote\>
 
 -   If you will be using libre-bib on the same system as the DB, then
     try connecting with the \"bib\" command.
 
-    > bib connect
+    \<blockquote\> bib connect \</blockquote\>
 
 If that doesn\'t work look at the cgDsn variable setting in
 project/conf.env. It should be set to \$cgLocalDsn for local access. Try
 again, If that works, your conf.env setting are good for continuing
 (skip the ssh section and other areas mentioning remote db access).
-
-------------------------------------------------------------------------
 
 Configure ssh
 -------------
@@ -213,12 +192,12 @@ setup properly edit your project/conf.env file. Set the variables:
 
 Remove \~/ssh/libre-bib.ssh file and run again:
 
-> bib setup-bib
+\<blockquote\> bib setup-bib \</blockquote\>
 
 If the \~/ssh/libre-bib.ssh file looks OK, add following line top of
 your \~/.ssh/config file (or near a Host config for your system).
 
-> Include libre-bib.ssh
+\<blockquote\> Include libre-bib.ssh \</blockquote\>
 
 If you want to add more ssh options for the Host, don\'t add them to
 libre-bib.ssh, because that could be overwritten if project/conf.env is
@@ -232,19 +211,20 @@ locally.
 
 In a terminal ssh to the remote system.
 
-> ssh \$cgDbSshUser@\$cgDbHostRemote
+\<blockquote\> ssh \$cgDbSshUser@\$cgDbHostRemote \</blockquote\>
 
 Leave the terminal window open and start another terminal window. In the
 new terminal window type:
 
-> telnet 127.0.0.1 \$cgDbPortRemote
+\<blockquote\> telnet 127.0.0.1 \$cgDbPortRemote \</blockquote\>
 
 You should see \"Connected to 127.0.0.1\" and probably password prompt.
 Exit with ctrl-C or ctrl-\] then \"quit\".
 
 Now test the connection to the database:
 
-> mysql -P \$cgDbPortRemote -u \$cgDbUser -p -h 127.0.0.1 \$cgDbName
+\<blockquote\> mysql -P \$cgDbPortRemote -u \$cgDbUser -p -h 127.0.0.1
+\$cgDbName \</blockquote\>
 
 If that doesn\'t work, look at the error message and see what needs to
 be fixed. Check: db user name, db name, ports, grants and other settings
@@ -252,20 +232,14 @@ on the db system.
 
 If that does work, try connecting with the \"bib\" command.
 
-> bib connect
+\<blockquote\> bib connect \</blockquote\>
 
 If that doesn\'t work look at the cgDsn variable setting in
 project/conf.env. It should be set to \$cgRemoteDsn for remote access.
 Try again, If that works, your conf.env setting are good for continuing.
 
-------------------------------------------------------------------------
-
-------------------------------------------------------------------------
-
 Using libre-bib
 ===============
-
-------------------------------------------------------------------------
 
 Quick Start
 -----------
@@ -296,8 +270,6 @@ libreoffice example.odt
 bib style-update   # Define the bibliography > Entries for the different Types
 bib style-save     # Run this if you change bibliography > Entries
 ```
-
-------------------------------------------------------------------------
 
 libre-bib Tour
 --------------
@@ -585,8 +557,6 @@ app. They are executed in this order, so the last definition wins.
     This is the name of the LibraryThing table that will be created from
     cgLibFile.
 
-------------------------------------------------------------------------
-
 Commands
 --------
 
@@ -716,14 +686,8 @@ Run: \$EDITOR biblio.txt &
 
 Show the libre-bib manual in a browser window.
 
-------------------------------------------------------------------------
-
-------------------------------------------------------------------------
-
 Appendix
 ========
-
-------------------------------------------------------------------------
 
 A. Backups
 ----------
@@ -744,8 +708,6 @@ A. Backups
 
     drop table \`bib\`; RENAME TABLE \`bib~2023~-04-02~14~-18-37\` TO
     bib;
-
-------------------------------------------------------------------------
 
 B. Customizing the defaults
 ---------------------------
@@ -773,14 +735,10 @@ your own Makefile, other bash scripts, or php scripts to run things.
 Your php scripts could include /opt/libre-bib/etc/conf.php to define the
 ENV vars as globals, or just use \$~ENV~\[\'cgVarName\'\].
 
-------------------------------------------------------------------------
-
 C. Emacs Org Mode - Outine
 --------------------------
 
 doc/example/example-outline.org
-
-------------------------------------------------------------------------
 
 D. Full Example
 ---------------
@@ -1099,12 +1057,8 @@ Done. [396]
 Now you can add the Bibliography to the end of your document, and setup
 the styles for the different Type of entries.
 
-------------------------------------------------------------------------
-
 E. Build
 --------
-
-------------------------------------------------------------------------
 
 F. Maps
 -------
