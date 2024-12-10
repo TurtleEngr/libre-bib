@@ -138,11 +138,12 @@ function fUpdateRec($pRec) {
             continue;
         switch ($tCol) {
         case "Identifier":
-        case "Type":
+        case "Address":
         case "Annote":
-        case "Booktitle":
-        case "Title":
+        case "Edition":
         case "Note":
+        case "Title":
+        case "Type":
         case "Custom1":
         case "Custom2":
         case "Custom3":
@@ -187,10 +188,12 @@ function fUpdateBibTable() {
                 continue;
             switch ($tCol) {
             case "Identifier":
+            case "Address":
             case "Annote":
+            case "Edition":
+            case "Note":
             case "Title":
             case "Type":
-            case "Note":
             case "Custom1":
             case "Custom2":
             case "Custom3":
@@ -201,23 +204,30 @@ function fUpdateBibTable() {
                     $tRec[$tCol] .= ': ' . $tRec['Title'];
                 if ($tRec['Edition'] != '')
                     $tRec[$tCol] .= ' (' . $tRec['Edition'] . ' ed.)';
-                $tRec[$tCol] .=  '.';
-                break;
-            case "URL":
-                $tRec[$tCol] = ' URL:' . $tRec[$tCol];
-                if ($tRec['Custom1'] != '') {
-                    # Use only the first entry (space separator)
-                    $tAltList = explode(' ', trim($tRec['Custom1']));
-                    $tRec[$tCol] .= '; Alt:' . $tAltList[0];
-                }
+                $tRec[$tCol] = ' ' . $tRec[$tCol] . '.';
                 break;
             case "Author":
                 if ($tRec['Custom2'] != '')
                     $tRec[$tCol] .= ', and ' . $tRec['Custom2'];
-                $tRec[$tCol] .=  '.';
+                $tRec[$tCol] = ' ' . $tRec[$tCol] . '.';
+                break;
+            case "Publisher":
+                if ($tRec[$tCol] != '')
+                    if ($tRec['Address'] != '')
+                        $tRec[$tCol] = ' ' . $tRec['Address'] . ': ' . $tRec[$tCol] . '.';
+                    else
+                        $tRec[$tCol] = ' ' . $tRec[$tCol] . '.';
                 break;
             case "ISBN":
-                $tRec[$tCol] = ' ISBN: ' . $tRec[$tCol] . '.';
+                $tRec[$tCol] = ' ISBN:' . $tRec[$tCol] . '.';
+                break;
+            case "URL":
+                $tRec[$tCol] = ' URL<' . $tRec[$tCol] . '>';
+                if ($tRec['Custom1'] != '') {
+                    # Use only the first entry (space separator)
+                    $tAltList = explode(' ', trim($tRec['Custom1']));
+                    $tRec[$tCol] .= '  Alt<' . $tAltList[0] . '>';
+                }
                 break;
             case "Custom4":
                 $tRec[$tCol] = ' Seen: ' . $tRec[$tCol] . '.';
