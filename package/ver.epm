@@ -6,7 +6,11 @@
 %vendor TurtleEngr / turtle.engr.com
 %copyright Copyright 2024. All rights reserved.
 %description Bibliography tool for LibreOffice
+<<<<<<< HEAD
 %release test.2024.12.10.23.55
+=======
+%release test.2024.12.06.20.45
+>>>>>>> 8408a38f30fe69d47bd7cd6241c8e4b2614dce13
 %license ../LICENSE
 %readme ../src/doc/manual/libre-bib.html
 %include epm.list

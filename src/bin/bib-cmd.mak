@@ -75,6 +75,10 @@ $(cgDirStatus)/import-lo.date : conf.env $(cgLoFile)
 	$(cgBin)/convert-lo-2-bib.php -c
 	echo "$(mDate) import-lo" >$@
 
+update-bib :
+	$(cgBin)/convert-lo-2-bib.php -c
+
+
 # ----------
 # export: tmp/biblio.txt
 
