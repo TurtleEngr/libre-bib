@@ -4,12 +4,12 @@
 
 ProdName=libre-bib
 ProdAlias=libre-bib
-ProdVer=0.27.0
+ProdVer=0.30.0
 ProdRC=
 ProdBuild=1
 ProdBuildTime=2024.12.11.3.43
 ProdSvnVer=
-ProdWinVer=0.27.0
+ProdWinVer=0.30.0
 ProdDate=2024-12-11
 ProdSummary=Bibliography tool for LibreOffice
 ProdDesc=Bibliography tool for LibreOffice
