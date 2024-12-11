@@ -10,7 +10,6 @@
 <body>
 #+END_EXPORT
 * Libre Bib Manual
-
 * Install and Setup
 ** O.S. Requirments
 
@@ -994,9 +993,8 @@ Done. [396]
    setup the styles for the different Type of entries.
 
 ** E. Build
-
-
-
+- TBD
+- See the Makefile in github project.
 ** F. Maps
 
 The best source for the maps can be found in bin/util.php.
@@ -1019,3 +1017,9 @@ bib-table, so that the Bibliography style is easily setup.
 
 This maps the LibraryThing field names to the Libreoffice Bibliography
 field names.
+** G. Support
++ Project Home: https://github.com/TurtleEngr/libre-bib
++ Stable version is on the "main" branch.
++ Latest version is on the default "develop" branch.
++ File defects and enhancements at
+  https://github.com/TurtleEngr/libre-bib/issues

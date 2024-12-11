@@ -10,3 +10,5 @@ test-dir/
 tmp
 tmp/
 tmp-test/
+dist
+pkg

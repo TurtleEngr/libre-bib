@@ -9,7 +9,7 @@ cgBin=$(cgDirApp)/bin
 mRoot = dist/opt/libre-bib
 mDirList = $(mRoot) dist/usr/local/bin
 mCoreDir = ../src
-#?? cgBuild=true
+RELEASE=1
 
 include package/ver.mak
 
@@ -33,7 +33,7 @@ dist-clean : clean
 
 # ========================================
 # Cleanup and make dist/ area
-build : build-setup package/ver.mak
+build : build-setup mk-doc package/ver.mak
 
 # ========================================
 release :
@@ -50,7 +50,24 @@ release :
 
 # ========================================
 # Make deb package
-package : package/ver.epm
+package : clean dist pkg incver mk-dist mk-pkg
+
+mk-dist : dist
+	-find dist -type l -exec rm {} \; &>/dev/null
+	-rm -rf dist/* &>/dev/null
+	-mkdir -p dist$(cgDirApp) &>/dev/null
+	rsync -avC LICENSE src/* dist$(cgDirApp)/
+	find dist$(cgDirApp) -type d -exec chmod a+rx {} \;
+	find dist$(cgDirApp) -type f -exec chmod a+r {} \;
+	find dist$(cgDirApp) -type f -executable -exec chmod a+rx {} \;
+	bin/incver.sh -p src/VERSION
+
+mk-pkg : package/ver.env package/ver.epm package/epm.list
+	cd package; epm -v -f native -m $(ProdOSDist)-$(ProdArch) --output-dir ../pkg $(ProdName) ver.epm
+	cd package; epm -v -f portable -m $(ProdOSDist)-$(ProdArch) --output-dir ../pkg $(ProdName) ver.epm
+
+package/epm.list : dist$(cgDirApp)
+	cd package; mkepmlist -u root -g root --prefix / ../dist | patch-epm-list -f ./epm.patch >epm.list
 
 # ========================================
 # Push packages to release repositories
@@ -58,7 +75,7 @@ pkg-release:
 
 # ========================================
 # Manual install - only for testing
-install : clean $(cgDirApp) check mk-doc clean
+install : clean $(cgDirApp) check clean
 	-mkdir -p $(cgDirApp)/etc/old &>/dev/null
 	-cp --backup=t $$(find $(cgDirApp)/etc/* -prune -type f) $(cgDirApp)/etc/old/
 	rsync -aC src/* $(cgDirApp)/
@@ -73,6 +90,71 @@ install : clean $(cgDirApp) check mk-doc clean
 # ========================================
 incver :
 	bin/incver.sh -m src/VERSION
+
+# ----------------------------------------
+package/ver.sh :  src/VERSION
+	sed -i "s/ProdVer=.*/ProdVer=$$(cat src/VERSION)/" $@
+
+package/ver.mak package/ver.env package/ver.epm : package/ver.sh
+	cd package; mkver.pl -e 'epm env mak'
+
+# ========================================
+mk-app-dir $(cgDirApp) :
+	sudo mkdir -p $(cgDirApp)
+	sudo chown -R $$SUDO_USER:$$SUDO_USER $(cgDirApp)
+	sudo find $(cgDirApp) -type d -exec chmod a+rx {} \;
+	sudo find $(cgDirApp) -type f -exec chmod a+r {} \;
+
+# Use the rules
+mk-doc : \
+    src/doc/manual/libre-bib.html \
+    src/doc/manual/libre-bib.md \
+    src/doc/example/example-outline.html
+	. src/etc/conf.env; \
+	cgDirApp=$(PWD)/src; \
+	cgBin=$(PWD)/src/bin; \
+	make -f src/bin/bib-cmd.mak rebuild
+
+# --------------------
+db-setup : tmp-test/conf.env tmp-test/status-pkg.txt tmp-test/status-db.txt
+	-rm tmp-test/status/*
+
+tmp-test/conf.env :
+	-rm -rf tmp-test
+	mkdir tmp-test
+	-cd tmp-test; bib setup-bib
+	-cd tmp-test; bib setup-bib
+	echo 'cgDbUser="example"' >>$@
+	echo 'cgUseRemote=false' >>$@
+	echo 'cgUseLib=true' >>$@
+	echo 'cgVerbose=true' >>$@
+#	exit 1
+
+tmp-test/status-pkg.txt :
+	sudo apt-get update
+	-sudo apt-get -y install $(mPackgeList)
+	date >$@
+
+tmp-test/status-db.txt :
+	-echo 'show databases' | mysql -u example | grep biblio_example; \
+	if [ $$? -ne 0 ]; then \
+		. $(cgDirApp)/etc/conf.env; \
+		. tmp-test/conf.env; \
+		echo "create database $$cgDbName;" >cmd.tmp; \
+		echo "create user '$$cgDbUser'@'localhost';" >>cmd.tmp; \
+		echo "grant all privileges on $$cgDbName.* to '$$cgDbUser'@localhost;" >>cmd.tmp; \
+		echo "flush privileges;" >>cmd.tmp; \
+		echo "show databases;" >>cmd.tmp; \
+		echo "show grants for '$$cgDbUser'@localhost;" >>cmd.tmp; \
+		sudo mysql -u root <cmd.tmp; \
+	fi
+	date >$@
+
+# -D $(cgDbName)
+
+# remove later:
+#  galera-4 libdbi-perl mariadb-server mariadb-server-10.5
+#  mariadb-server-core-10.5
 
 # ========================================
 # So far these are just crude "happy-path" tests.
@@ -140,71 +222,6 @@ test10 :
 
 test-done :
 	@echo -e "\n==========\nPassed"
-
-# --------------------
-db-setup : tmp-test/conf.env tmp-test/status-pkg.txt tmp-test/status-db.txt
-	-rm tmp-test/status/*
-
-tmp-test/conf.env :
-	-rm -rf tmp-test
-	mkdir tmp-test
-	-cd tmp-test; bib setup-bib
-	-cd tmp-test; bib setup-bib
-	echo 'cgDbUser="example"' >>$@
-	echo 'cgUseRemote=false' >>$@
-	echo 'cgUseLib=true' >>$@
-	echo 'cgVerbose=true' >>$@
-#	exit 1
-
-tmp-test/status-pkg.txt :
-	sudo apt-get update
-	-sudo apt-get -y install $(mPackgeList)
-	date >$@
-
-tmp-test/status-db.txt :
-	-echo 'show databases' | mysql -u example | grep biblio_example; \
-	if [ $$? -ne 0 ]; then \
-		. $(cgDirApp)/etc/conf.env; \
-		. tmp-test/conf.env; \
-		echo "create database $$cgDbName;" >cmd.tmp; \
-		echo "create user '$$cgDbUser'@'localhost';" >>cmd.tmp; \
-		echo "grant all privileges on $$cgDbName.* to '$$cgDbUser'@localhost;" >>cmd.tmp; \
-		echo "flush privileges;" >>cmd.tmp; \
-		echo "show databases;" >>cmd.tmp; \
-		echo "show grants for '$$cgDbUser'@localhost;" >>cmd.tmp; \
-		sudo mysql -u root <cmd.tmp; \
-	fi
-	date >$@
-
-# -D $(cgDbName)
-
-# remove later:
-#  galera-4 libdbi-perl mariadb-server mariadb-server-10.5
-#  mariadb-server-core-10.5
-
-# ----------------------------------------
-mk-app-dir $(cgDirApp) :
-	sudo mkdir -p $(cgDirApp)
-	sudo chown -R $$SUDO_USER:$$SUDO_USER $(cgDirApp)
-	sudo find $(cgDirApp) -type d -exec chmod a+rx {} \;
-	sudo find $(cgDirApp) -type f -exec chmod a+r {} \;
-
-# Use the rules
-mk-doc : \
-    src/doc/manual/libre-bib.html \
-    src/doc/manual/libre-bib.md \
-    src/doc/example/example-outline.html
-	. src/etc/conf.env; \
-	cgDirApp=$(PWD)/src; \
-	cgBin=$(PWD)/src/bin; \
-	make -f src/bin/bib-cmd.mak rebuild
-
-# ----------------------------------------
-package/ver.sh :  src/VERSION
-	sed -i "s/ProdVer=.*/ProdVer=$$(cat src/VERSION)/" $@
-
-package/ver.mak package/ver.env package/ver.epm : package/ver.sh
-	cd package; mkver.pl -e 'epm env mak'
 
 # ----------------------------------------
 build-setup : build-packages update-my-util update-shfmt update-php-util update-pre-commit check
@@ -383,10 +400,7 @@ tmp/$(mGitProj).zip :
 	libreoffice --headless --convert-to odt $<
 
 %.html : %.org
-	sed 's/^ *- /\n\n/g' $< | \
-	pandoc -f org -t html > $@
-	sed -i -f $(cgBin)/fixup.sed $@
-	-$(mTidyXhtml) $@
+	$(cgBin)/org2html $< $@
 
 # ----------------------------------------
 tmp-test dist pkg tmp :
