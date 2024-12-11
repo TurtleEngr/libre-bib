@@ -207,10 +207,14 @@ package/ver.mak package/ver.env package/ver.epm : package/ver.sh
 	cd package; mkver.pl -e 'epm env mak'
 
 # ----------------------------------------
-mEpmMx=mx19/epm-5.0.2-1-mx19-x86_64.deb
-mEpmUbuntu=ubuntu18/epm-5.0.1-2-linux-5.3-x86_64.deb
-mEpmHelper=epm-helper-1.6.1-3-linux-noarch.deb
+build-setup : build-packages update-my-util update-shfmt update-php-util update-pre-commit check
 
+# ----------------------------------------
+check :
+	bin/check.sh
+	bin/unit-test-shell.sh
+
+# ----------------------------------------
 build-packages : tmp product-packages \
 		/usr/local/bin/epm \
 		/usr/local/bin/mkver.pl \
@@ -218,6 +222,8 @@ build-packages : tmp product-packages \
 		/usr/bin/pod2pdf \
 		/usr/bin/pod2markdown
 
+mEpmMx=mx19/epm-5.0.2-1-mx19-x86_64.deb
+mEpmUbuntu=ubuntu18/epm-5.0.1-2-linux-5.3-x86_64.deb
 /usr/local/bin/epm :
 	if [[ "$(ProdOSDist)" = "mx" ]]; then \
 		cd tmp; wget $(ProdRelRoot)/released/software/ThirdParty/epm/$(mEpmMx); \
@@ -228,6 +234,7 @@ build-packages : tmp product-packages \
 		sudo apt-get install -y tmp/$(notdir $(mEpmUbuntu)); \
 	fi
 
+mEpmHelper=epm-helper-1.6.1-3-linux-noarch.deb
 /usr/local/bin/mkver.pl :
 	cd tmp; wget $(ProdRelRoot)/released/software/ThirdParty/epm/$(mEpmHelper)
 	sudo apt-get install -y tmp/$(mEpmHelper)
@@ -259,17 +266,8 @@ mBeekeeper=Beekeeper-Studio-$(mBeekeeperVer).AppImage
 	sudo chmod a+rx $@
 
 # ----------------------------------------
-
-build-setup : update-my-util update-shfmt update-pre-commit update-php-util check
-
-# ----------------------------------------
-check :
-	bin/check.sh
-	bin/unit-test-shell.sh
-
-# ----------------------------------------
 # my-utility-scripts - multiple scripts
-mMyUtil=tag-1-16-0
+mMyUtil=tag-1-17-0
 mMyUtilList = \
 	bin/incver.sh \
 	bin/org2html.sh \
