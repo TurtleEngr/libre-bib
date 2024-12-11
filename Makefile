@@ -201,7 +201,7 @@ mk-doc : \
 
 # ----------------------------------------
 package/ver.sh :  src/VERSION
-	sed -i "s/ProdVer=.*/ProdVer=\"$$(cat src/VERSION)\"/" $@
+	sed -i "s/ProdVer=.*/ProdVer=$$(cat src/VERSION)/" $@
 
 package/ver.mak package/ver.env package/ver.epm : package/ver.sh
 	cd package; mkver.pl -e 'epm env mak'
@@ -259,19 +259,8 @@ mBeekeeper=Beekeeper-Studio-$(mBeekeeperVer).AppImage
 	sudo chmod a+rx $@
 
 # ----------------------------------------
-<<<<<<< HEAD
-build-setup :   tmp-test dist pkg tmp \
-		src/bin/sort-para.sh \
-		bin/incver.sh \
-		bin/rm-trailing-sp \
-		bin/shunit2.1 \
-		bin/shfmt \
-		bin/phptidy.php \
-		.git/hooks/pre-commit
-		make check
-=======
+
 build-setup : update-my-util update-shfmt update-pre-commit update-php-util check
->>>>>>> 8408a38f30fe69d47bd7cd6241c8e4b2614dce13
 
 # ----------------------------------------
 check :

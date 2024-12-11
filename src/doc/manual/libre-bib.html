@@ -8,9 +8,9 @@
       href="doc.css" /></head>
 <body>
 
-<h1 id="libre-bib-manual">Libre Bib Manual</h1>
-<h1 id="install-and-setup">Install and Setup</h1>
-<h2 id="o.s.-requirments">O.S. Requirments</h2>
+<hr/><hr/><h1 id="libre-bib-manual">Libre Bib Manual</h1>
+<hr/><hr/><h1 id="install-and-setup">Install and Setup</h1>
+<hr/><h2 id="o.s.-requirments">O.S. Requirments</h2>
 <ul>
 <li>A Linux system
 <ul>
@@ -35,7 +35,7 @@
 | MacOS ??, brew     | native  | planned     | manual deps |
 </pre>
 
-<h2 id="install-package">Install Package</h2>
+<hr/><h2 id="install-package">Install Package</h2>
 <ul>
 <li><p>If you install with a libre-bib.deb package with a package manager such as 'apt', all of the required and most of the optional packages will be installed.</p></li>
 <li><p>If you are installing from tgz file, then you'll need to install these manually.</p></li>
@@ -71,25 +71,16 @@
 <h3 id="config">Config</h3>
 <ul>
 <li>run libreoffice at least once before doing more with libre-bib</li>
-<<<<<<< HEAD
 <li>edit the cli/php.ini file (for example: /etc/php/7.4/cli/php.ini) Change the ='variables<sub>order</sub>'= to this: <blockquote> =variables<sub>order</sub> = 'EGPCS'= </blockquote></li>
-=======
-<li>edit the cli/php.ini file (for example: /etc/php/7.4/cli/php.ini) Change the <code>"variables_order"</code> to this: &lt;blockquote&gt; <code>variables_order = "EGPCS"</code> &lt;/blockquote&gt;</li>
->>>>>>> 8408a38f30fe69d47bd7cd6241c8e4b2614dce13
 </ul>
-<h2 id="setup-libre-bib-project">Setup libre-bib project</h2>
-<p>Run: &lt;blockquote&gt; bib setup-bib &lt;/blockquote&gt;</p>
+<hr/><h2 id="setup-libre-bib-project">Setup libre-bib project</h2>
+<p>Run: <blockquote> bib setup-bib </p></blockquote>
 <p>Fix any errors then run it again, until no more errors.</p>
-<<<<<<< HEAD
 <p>If you are planing on using a remote DB, then see the 'Configure ssh' section.</p>
 <hr/><h2 id="configure-the-db">Configure the DB</h2>
-=======
-<p>If you are planing on using a remote DB, then see the "Configure ssh" section.</p>
-<h2 id="configure-the-db">Configure the DB</h2>
->>>>>>> 8408a38f30fe69d47bd7cd6241c8e4b2614dce13
 <h3 id="install-and-test">Install and test</h3>
 <p>The DB packages, mariadb-client and mariadb-server, have been installed on the remote server (or local sever if you are doing this all on one server). Most likely the mariadbd process will already be running. Verify this with:</p>
-<p>&lt;blockquote&gt; ps -fC mariadbd &lt;/blockquote&gt;</p>
+<blockquote><p> ps -fC mariadbd </p></blockquote>
 <p>If you don't see it running, you'll need to consult the mariadb docs to get it running.</p>
 <ul>
 <li><a href="https://opensource.com/article/20/10/mariadb-mysql-linux" class="uri">https://opensource.com/article/20/10/mariadb-mysql-linux</a> (alt: <a href="https://archive.ph/yhDHm" class="uri">https://archive.ph/yhDHm</a> )</li>
@@ -97,7 +88,7 @@
 </ul>
 <p>The first one is a good source for quickly getting going. Depending on your distribution, you may need to do things a bit differently.</p>
 <p>Test the connection on the server system</p>
-<p>&lt;blockquote&gt; sudo mysql -P 3306 -u root -p &lt;/blockquote&gt;</p>
+<blockquote><p> sudo mysql -P 3306 -u root -p </p></blockquote>
 <p>Most likely you'll use your sudo password, or the password you setup for the mysql DB root user.</p>
 <h3 id="create-db-users-and-grants">Create DB, Users, and Grants</h3>
 <p>While signed in as root user to the DB type these commands. Replace the $cgNAME variables with the values of those variables in your project/conf.env file. You can change those now or just use the example names to try things out.</p>
@@ -140,18 +131,12 @@ quit;
 
 <ul>
 <li><p>Test a local connection with $cgDbName</p>
-<<<<<<< HEAD
 <blockquote><p> mysql -P 3306 -u $cgDbName -p -h 127.0.0.1 $cgDbName </p></blockquote></li>
 <li><p>If you will be using libre-bib on the same system as the DB, then try connecting with the 'bib' command.</p>
 <blockquote><p> bib connect </p></blockquote></li>
-=======
-<p>&lt;blockquote&gt; mysql -P 3306 -u $cgDbName -p -h 127.0.0.1 $cgDbName &lt;/blockquote&gt;</p></li>
-<li><p>If you will be using libre-bib on the same system as the DB, then try connecting with the "bib" command.</p>
-<p>&lt;blockquote&gt; bib connect &lt;/blockquote&gt;</p></li>
->>>>>>> 8408a38f30fe69d47bd7cd6241c8e4b2614dce13
 </ul>
 <p>If that doesn't work look at the cgDsn variable setting in project/conf.env. It should be set to $cgLocalDsn for local access. Try again, If that works, your conf.env setting are good for continuing (skip the ssh section and other areas mentioning remote db access).</p>
-<h2 id="configure-ssh">Configure ssh</h2>
+<hr/><h2 id="configure-ssh">Configure ssh</h2>
 <p>In your ~/.ssh/ dir you should see a libre-bib.ssh file. For this to be setup properly edit your project/conf.env file. Set the variables:</p>
 <pre class="in">
 | conf.env var   | Description                              |
@@ -167,35 +152,25 @@ quit;
 </pre>
 
 <p>Remove ~/ssh/libre-bib.ssh file and run again:</p>
-<p>&lt;blockquote&gt; bib setup-bib &lt;/blockquote&gt;</p>
+<blockquote><p> bib setup-bib </p></blockquote>
 <p>If the ~/ssh/libre-bib.ssh file looks OK, add following line top of your ~/.ssh/config file (or near a Host config for your system).</p>
-<p>&lt;blockquote&gt; Include libre-bib.ssh &lt;/blockquote&gt;</p>
+<blockquote><p> Include libre-bib.ssh </p></blockquote>
 <p>If you want to add more ssh options for the Host, don't add them to libre-bib.ssh, because that could be overwritten if project/conf.env is changed. Create another Host line with the same host name and add the option you want.</p>
 <h3 id="test-the-tunnel">Test the tunnel</h3>
 <p>Do this after you have setup the DB, and you have tested connecting locally.</p>
 <p>In a terminal ssh to the remote system.</p>
-<p>&lt;blockquote&gt; ssh $cgDbSshUser@$cgDbHostRemote &lt;/blockquote&gt;</p>
+<blockquote><p> ssh $cgDbSshUser@$cgDbHostRemote </p></blockquote>
 <p>Leave the terminal window open and start another terminal window. In the new terminal window type:</p>
-<<<<<<< HEAD
 <blockquote><p> telnet 127.0.0.1 $cgDbPortRemote </p></blockquote>
 <p>You should see 'Connected to 127.0.0.1' and probably password prompt. Exit with ctrl-C or ctrl-] then 'quit'.</p>
-=======
-<p>&lt;blockquote&gt; telnet 127.0.0.1 $cgDbPortRemote &lt;/blockquote&gt;</p>
-<p>You should see "Connected to 127.0.0.1" and probably password prompt. Exit with ctrl-C or ctrl-] then "quit".</p>
->>>>>>> 8408a38f30fe69d47bd7cd6241c8e4b2614dce13
 <p>Now test the connection to the database:</p>
-<p>&lt;blockquote&gt; mysql -P $cgDbPortRemote -u $cgDbUser -p -h 127.0.0.1 $cgDbName &lt;/blockquote&gt;</p>
+<blockquote><p> mysql -P $cgDbPortRemote -u $cgDbUser -p -h 127.0.0.1 $cgDbName </p></blockquote>
 <p>If that doesn't work, look at the error message and see what needs to be fixed. Check: db user name, db name, ports, grants and other settings on the db system.</p>
-<<<<<<< HEAD
 <p>If that does work, try connecting with the 'bib' command.</p>
 <blockquote><p> bib connect </p></blockquote>
-=======
-<p>If that does work, try connecting with the "bib" command.</p>
-<p>&lt;blockquote&gt; bib connect &lt;/blockquote&gt;</p>
->>>>>>> 8408a38f30fe69d47bd7cd6241c8e4b2614dce13
 <p>If that doesn't work look at the cgDsn variable setting in project/conf.env. It should be set to $cgRemoteDsn for remote access. Try again, If that works, your conf.env setting are good for continuing.</p>
-<h1 id="using-libre-bib">Using libre-bib</h1>
-<h2 id="quick-start">Quick Start</h2>
+<hr/><hr/><h1 id="using-libre-bib">Using libre-bib</h1>
+<hr/><h2 id="quick-start">Quick Start</h2>
 <p>This shows a minimal setup with a local DB. This will use the example files and the minimal default configuration.</p>
 <p>For a detailed example see Appendix 'A Full Example.'</p>
 <pre class="in">
@@ -220,7 +195,7 @@ bib style-update   # Define the bibliography > Entries for the different Types
 bib style-save     # Run this if you change bibliography > Entries
 </pre>
 
-<h2 id="libre-bib-tour">libre-bib Tour</h2>
+<hr/><h2 id="libre-bib-tour">libre-bib Tour</h2>
 <h3 id="files-and-dirs">Files and Dirs</h3>
 <p>This is a quick summary of the directories and files setup in your project directory. The details will be describe in later sections as they are used.</p>
 <p>The bib commands will notice changes and rebuild any dependent files as needed. So you might see more things running than what you've seen before. The 'Env-Var' column shows the variable for the File-Dir. The Cmd column shows the command or commands that create or use the File-Dir.</p>
@@ -349,21 +324,12 @@ bib style-save     # Run this if you change bibliography > Entries
 <li><p>Var: **cgDbLib='lib'**</p>
 <p>This is the name of the LibraryThing table that will be created from cgLibFile.</p></li>
 </ul>
-<<<<<<< HEAD
 <hr/><h2 id="commands">Commands</h2>
 <p>Commands are entered after 'bib'. For example: 'bib setup-bib'</p>
 <p>Just type 'bib' for a quick list of commands.</p>
 <p>To bring up this manual in your default browser, type: 'bib help'</p>
 <p>More than one command can be used. They will be run in order. Execution will stop at the first command that fails. ('ignored' errors are OK.) For example, you have modified some entries in biblio.txt and you have modified your libreoffice document with these new references. You could run: 'bib import-lo update-lo ref-new ref-update'</p>
 <p>If a command doesn't run, it could be the files are up-to-date. If you want to force a command to run, remove the status/ file associated with the command, or 'touch' one of the dependent files. For example: import-lo will only run if the biblio.txt file is newer than the last time import-lo was run. To force it to run: 'rm status/import.lo.date'</p>
-=======
-<h2 id="commands">Commands</h2>
-<p>Commands are entered after "bib". For example: "bib setup-bib"</p>
-<p>Just type "bib" for a quick list of commands.</p>
-<p>To bring up this manual in your default browser, type: "bib help"</p>
-<p>More than one command can be used. They will be run in order. Execution will stop at the first command that fails. ("ignored" errors are OK.) For example, you have modified some entries in biblio.txt and you have modified your libreoffice document with these new references. You could run: "bib import-lo update-lo ref-new ref-update"</p>
-<p>If a command doesn't run, it could be the files are up-to-date. If you want to force a command to run, remove the status/ file associated with the command, or "touch" one of the dependent files. For example: import-lo will only run if the biblio.txt file is newer than the last time import-lo was run. To force it to run: "rm status/import.lo.date"</p>
->>>>>>> 8408a38f30fe69d47bd7cd6241c8e4b2614dce13
 <h3 id="cmd-setup-bib">Cmd: setup-bib</h3>
 <p>After editing the conf.env file, run this command to define the directories and initial files, in the current directory.</p>
 <h3 id="cmd-connect">Cmd: connect</h3>
@@ -407,21 +373,16 @@ bib style-save     # Run this if you change bibliography > Entries
 <p>Run: $EDITOR biblio.txt &amp;</p>
 <h3 id="cmd-help">Cmd: help</h3>
 <p>Show the libre-bib manual in a browser window.</p>
-<h1 id="appendix">Appendix</h1>
-<h2 id="a.-backups">A. Backups</h2>
+<hr/><hr/><h1 id="appendix">Appendix</h1>
+<hr/><h2 id="a.-backups">A. Backups</h2>
 <ul>
-<<<<<<< HEAD
 <li><p>DB Tables: If a table exists and cgBackup is 'true', then the table will be copied to the table name with a datestamp (<sub>YYYY</sub>-MM-DD<sub>HH</sub>-MM-SS) appended. For example, bib -> bib<sub>2023</sub>-04-02<sub>14</sub>-18-37</p></li>
 <li><p>Files: If a file exist and cgBackup is 'true', then the file will be copied to FILE.bak. If the .bak file exist then a '.~N~' will be appended after that (larger Ns are more recent).</p></li>
-=======
-<li><p>DB Tables: If a table exists and cgBackup is "true", then the table will be copied to the table name with a datestamp (<sub>YYYY</sub>-MM-DD<sub>HH</sub>-MM-SS) appended. For example, bib -&gt; bib<sub>2023</sub>-04-02<sub>14</sub>-18-37</p></li>
-<li><p>Files: If a file exist and cgBackup is "true", then the file will be copied to FILE.bak. If the .bak file exist then a ".~N~" will be appended after that (larger Ns are more recent).</p></li>
->>>>>>> 8408a38f30fe69d47bd7cd6241c8e4b2614dce13
 <li><p>Backup cleanup: run TBD????, it will prompt to confirm deletes of backup tables or files.</p></li>
 <li><p>To restore a table. In mysql, follow this example:</p>
 drop table `bib`; RENAME TABLE `bib<sub>2023</sub>-04-02<sub>14</sub>-18-37` TO bib;</li>
 </ul>
-<h2 id="b.-customizing-the-defaults">B. Customizing the defaults</h2>
+<hr/><h2 id="b.-customizing-the-defaults">B. Customizing the defaults</h2>
 <p>If you are managing multiple bibliographies, you might have some common settings. For example, most of the things related to a remote DB will be the same.</p>
 <p>The user config file is the best place for defining the common settings: $cgDirConf/conf.env</p>
 <p>If you change the /opt/libre-bib/etc/conf.env file, you will need to rebuild some things. Here are the steps:</p>
@@ -434,9 +395,9 @@ bib rebuild        # update user default file, and conf.php
 </pre>
 
 <p>Source /opt/libre-bib/etc/conf.env and conf.env in a bash script call your own Makefile, other bash scripts, or php scripts to run things. Your php scripts could include /opt/libre-bib/etc/conf.php to define the ENV vars as globals, or just use $<sub>ENV</sub>['cgVarName'].</p>
-<h2 id="c.-emacs-org-mode---outine">C. Emacs Org Mode - Outine</h2>
+<hr/><h2 id="c.-emacs-org-mode---outine">C. Emacs Org Mode - Outine</h2>
 <p>doc/example/example-outline.org</p>
-<h2 id="d.-full-example">D. Full Example</h2>
+<hr/><h2 id="d.-full-example">D. Full Example</h2>
 <p>This assumes you have everything installed and working. This will use the example files.</p>
 <pre class="in">$ cd $HOME
 $ mkdir -p project/biblio
@@ -698,8 +659,8 @@ Done. [396]
 </pre>
 
 <p>Now you can add the Bibliography to the end of your document, and setup the styles for the different Type of entries.</p>
-<h2 id="e.-build">E. Build</h2>
-<h2 id="f.-maps">F. Maps</h2>
+<hr/><h2 id="e.-build">E. Build</h2>
+<hr/><h2 id="f.-maps">F. Maps</h2>
 <p>The best source for the maps can be found in bin/util.php.</p>
 <h3 id="bib-to-libreoffice-names">bib to libreoffice names</h3>
 <p>This has some minor differences when looking at the field in the Bibliography style section.</p>
