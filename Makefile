@@ -70,10 +70,12 @@ package/epm.list : dist$(cgDirApp)
 
 # ========================================
 # Push packages to release repositories
-release:
+pkg-release:
 	. package/ver.env; rsync -aP pkg/* $$ProdRelDir
-	bin/incver.sh -p src/VERSION
 	git ci -am Released
+	git push origin develop
+	bin/incver.sh -p src/VERSION
+	git ci -am Updated
 
 # ========================================
 # Manual install - only for testing
