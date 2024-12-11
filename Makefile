@@ -60,18 +60,20 @@ mk-dist : dist
 	find dist$(cgDirApp) -type d -exec chmod a+rx {} \;
 	find dist$(cgDirApp) -type f -exec chmod a+r {} \;
 	find dist$(cgDirApp) -type f -executable -exec chmod a+rx {} \;
-	bin/incver.sh -p src/VERSION
 
-mk-pkg : package/ver.env package/ver.epm package/epm.list
-	cd package; epm -v -f native -m $(ProdOSDist)-$(ProdArch) --output-dir ../pkg $(ProdName) ver.epm
-	cd package; epm -v -f portable -m $(ProdOSDist)-$(ProdArch) --output-dir ../pkg $(ProdName) ver.epm
+mk-pkg : package/ver.sh package/epm.list
+	cd package; . ./ver.env; epm -v -f native -m $$ProdOSDist-$$ProdArch --output-dir ../pkg $(ProdName) ver.epm
+	cd package; . ./ver.env; epm -v -f portable -m $$ProdOSDist-$$ProdArch --output-dir ../pkg $(ProdName) ver.epm
 
 package/epm.list : dist$(cgDirApp)
 	cd package; mkepmlist -u root -g root --prefix / ../dist | patch-epm-list -f ./epm.patch >epm.list
 
 # ========================================
 # Push packages to release repositories
-pkg-release:
+release:
+	. package/ver.env; rsync -aP pkg/* $$ProdRelDir
+	bin/incver.sh -p src/VERSION
+	git ci -am Released
 
 # ========================================
 # Manual install - only for testing
@@ -92,10 +94,8 @@ incver :
 	bin/incver.sh -m src/VERSION
 
 # ----------------------------------------
-package/ver.sh :  src/VERSION
-	sed -i "s/ProdVer=.*/ProdVer=$$(cat src/VERSION)/" $@
-
-package/ver.mak package/ver.env package/ver.epm : package/ver.sh
+package/ver.sh : src/VERSION
+	sed -i "s/ProdVer=\".*\"/ProdVer=\"$$(cat src/VERSION)\"/" package/ver.sh
 	cd package; mkver.pl -e 'epm env mak'
 
 # ========================================

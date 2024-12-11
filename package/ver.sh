@@ -15,7 +15,7 @@ export ProdName="libre-bib"
 export ProdAlias="libre-bib"
 # One word [-a-z0-9]
 
-export ProdVer=0.21.5
+export ProdVer="0.27.0"
 # [0-9]*.[0-9]*{.[0-9]*}
 # Requires 2 numbers, 3'rd number is optional
 # %version ProdVer
@@ -80,7 +80,7 @@ export ProdTPCopyright=""
 # Appended to %copyright
 
 export ProdRelServer="moria.whyayh.com"
-export ProdRelRoot="https://moria.whyayh.com/rel"
+export ProdRelRoot="moria.whyayh.com:/rel"
 export ProdRelCategory="software/own/$ProdName"
 # Generated: ProdRelDir=/released/
 # Generated: ProdDevDir=/development/
