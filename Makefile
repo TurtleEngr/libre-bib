@@ -400,7 +400,7 @@ tmp/$(mGitProj).zip :
 	libreoffice --headless --convert-to odt $<
 
 %.html : %.org
-	$(cgBin)/org2html $< $@
+	bin/org2html.sh $< $@
 
 # ----------------------------------------
 tmp-test dist pkg tmp :
