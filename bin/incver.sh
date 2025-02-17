@@ -4,6 +4,13 @@ if [[ $# -ne 2 ]]; then
     cat <<EOF
 Usage
     inver.sh [-M -m -p] FILE
+Description
+    Increment version number in FILE. Format in FILE: Major.Minor.Patch
+    First initialize version in FILE to 3 numbers, e.g. 1.0.0
+Options
+    -M inc major number
+    -m inc minor number
+    -p inc patch number
 EOF
     exit 1
 fi
@@ -30,7 +37,9 @@ case $pLevel in
        pPatch=0
     ;;
     -p) ((++pPatch));;
-    *) echo "Error: invalid option: $pLevel";;
+    *) echo "Error: invalid option: $pLevel"
+        exit 1
+    ;;
 esac
 
 ##echo "${pMajor}.${pMinor}.${pPatch}"
