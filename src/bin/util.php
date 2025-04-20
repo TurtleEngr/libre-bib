@@ -188,7 +188,7 @@ function uPackFile($pDocFile, $pFileList) {
     foreach ($tList as $tFile) {
         shell_exec("/bin/bash -c 'cd $cgDirTmp; tidy $cTidyOpt $tFile.new.xml'");
         # Remove newlines between tags, to remove any spaces in the text
-        shell_exec("/bin/bash -c \"cd $cgDirTmp; tr -d '\n' <$tFile.new.xml >$tFile.xml\"");
+        shell_exec("/bin/bash -c \"cd $cgDirTmp; tr -s '\n' ' ' <$tFile.new.xml >$tFile.xml\"");
 
         shell_exec("/bin/bash -c 'cd $cgDirTmp; zip ../$pDocFile $tFile.xml'");
     }
