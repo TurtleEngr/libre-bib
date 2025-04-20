@@ -182,14 +182,14 @@ function uPackFile($pDocFile, $pFileList) {
         echo "No changes to $pDocFile See $pFileList in $cgDirTmp [util.php:" . __LINE__ . "]\n";
         return;    # ---------->
     }
-    echo "Repack $pDocFile [util.php:" . __LINE__ . "]\n";
 
     $tList = explode(" ", $pFileList);
-    foreach ($tList as $tFile) {
-        shell_exec("/bin/bash -c 'cd $cgDirTmp; tidy $cTidyOpt $tFile.new.xml'");
-        # Remove newlines between tags, to remove any spaces in the text
-        shell_exec("/bin/bash -c \"cd $cgDirTmp; tr -s '\n' ' ' <$tFile.new.xml >$tFile.xml\"");
 
+    echo "Repack $pDocFile [util.php:" . __LINE__ . "]\n";
+    foreach ($tList as $tFile) {
+        shell_exec("/bin/bash -c 'cd $cgDirTmp; tidy $cTidyOpt $tFile.xml'");
+        # Remove newlines between tags, to remove any spaces in the text
+        shell_exec("/bin/bash -c \"cd $cgDirTmp; sed -i 's/\n*/ /g; s///g' $tFile.xml\"");
         shell_exec("/bin/bash -c 'cd $cgDirTmp; zip ../$pDocFile $tFile.xml'");
     }
 
