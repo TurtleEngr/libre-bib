@@ -481,6 +481,7 @@ function uMedia2RepType($pMedia = "") {
         "org"=>"org",
         "paperback"=>"Paperback",
         "paperbook"=>"Paperback",
+        "paper book"=>"Paperback",
         "podcast"=>"podcast",
         "product"=>"product",
         "site"=>"site",
