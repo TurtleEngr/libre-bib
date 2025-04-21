@@ -154,22 +154,19 @@ function uUnpackFile($pDocFile, $pFileList) {
     global $cgDebug;
     global $cgDirTmp;
 
-    $cTidyOpt = "-m -q --tidy-mark no --break-before-br yes --indent-attributes yes --indent-spaces 2 --indent auto --input-xml yes --output-xml yes --vertical-space no --wrap 78 -xml";
+###    $cTidyOpt = "-m -q --tidy-mark no --break-before-br yes --indent-attributes yes --indent-spaces 2 --indent auto --input-xml yes --output-xml yes --vertical-space no --wrap 78 -xml";
 
     $tList = explode(" ", $pFileList);
 
     echo "Unpack $pDocFile [util.php:" . __LINE__ . "]\n";
-    foreach ($tList as $tFile)
-        shell_exec("/bin/bash -c 'cd $cgDirTmp; unzip -o ../$pDocFile $tFile.xml'");
-
     foreach ($tList as $tFile) {
+        shell_exec("/bin/bash -c 'cd $cgDirTmp; unzip -o ../$pDocFile $tFile.xml'");
         if ( ! file_exists("$cgDirTmp/$tFile.xml"))
             throw new Exception("\nError: Could not extract $tFile.xml [util.php:" . __LINE__ . "]");
+        # tidy the xml files
+####        shell_exec("/bin/bash -c 'cd $cgDirTmp; tidy $cTidyOpt $tFile.xml &>/dev/null'");
+        shell_exec("/bin/bash -c 'cd $cgDirTmp; xmllint --pretty 2 $tFile.xml >tmp.xml; mv -f tmp.xml $tFile.xml'");
     }
-
-    # tidy the xml files
-    foreach ($tList as $tFile)
-        shell_exec("/bin/bash -c 'cd $cgDirTmp; tidy $cTidyOpt $tFile.xml &>/dev/null'");
 
     return;    # ---------->
 } # fUnpackFile
@@ -180,20 +177,20 @@ function uPackFile($pDocFile, $pFileList) {
     global $cgNoExec;
     global $cgDirTmp;
 
-    $cTidyOpt = "-m -q --tidy-mark no --break-before-br no --indent-attributes no --indent no --input-xml yes --output-xml yes --vertical-space no --wrap 0 -xml";
+####    $cTidyOpt = "-m -q --tidy-mark no --break-before-br no --indent-attributes no --indent no --input-xml yes --output-xml yes --vertical-space no --wrap 4000 -xml";
 
     if ($cgNoExec) {
         echo "No changes to $pDocFile See $pFileList in $cgDirTmp [util.php:" . __LINE__ . "]\n";
         return;    # ---------->
     }
-    echo "Repack $pDocFile [util.php:" . __LINE__ . "]\n";
 
     $tList = explode(" ", $pFileList);
-    foreach ($tList as $tFile) {
-        shell_exec("/bin/bash -c 'cd $cgDirTmp; tidy $cTidyOpt $tFile.new.xml'");
-        # Remove newlines between tags, to remove any spaces in the text
-        shell_exec("/bin/bash -c \"cd $cgDirTmp; tr -d '\n' <$tFile.new.xml >$tFile.xml\"");
 
+    echo "Repack $pDocFile [util.php:" . __LINE__ . "]\n";
+    foreach ($tList as $tFile) {
+#####        shell_exec("/bin/bash -c 'cd $cgDirTmp; tidy $cTidyOpt $tFile.new.xml'");
+        # Remove newlines between tags, to remove any spaces in the text
+        shell_exec("/bin/bash -c \"cd $cgDirTmp; sed 's|\\n| |g' <$tFile.new.xml >$tFile.xml\"");
         shell_exec("/bin/bash -c 'cd $cgDirTmp; zip ../$pDocFile $tFile.xml'");
     }
 
@@ -484,6 +481,7 @@ function uMedia2RepType($pMedia = "") {
         "org"=>"org",
         "paperback"=>"Paperback",
         "paperbook"=>"Paperback",
+        "paper book"=>"Paperback",
         "podcast"=>"podcast",
         "product"=>"product",
         "site"=>"site",

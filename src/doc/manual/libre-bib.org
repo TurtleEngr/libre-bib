@@ -10,13 +10,12 @@
 <body>
 #+END_EXPORT
 * Libre Bib Manual
-
 * Install and Setup
 ** O.S. Requirments
 
 + A Linux system
   + mx linux (21.x) - works
-  + Ubuntu (18.04) - in progress
+  + Ubuntu (18.04) - works
   + Ubuntu (20+) - not tested, will probably work
   + Debian - not tested, will probably work
   + RedHat - not tested, packages will be different
@@ -27,13 +26,16 @@
 <pre class="in">
 | OS Version         | Package | Tested      | Notes       |
 |--------------------+---------+-------------+-------------|
-| mx linux 21.x      | native  | in-progress |             |
-| Ubuntu 18.04       | native  | planned     |             |
+| mx linux 21.x      | native  | yes         |             |
+| mx linux 21.x      | generic | in-progress |             |
+| Ubuntu 18.04       | native  | in-progress |             |
+| Ubuntu 18.04       | generic | in-progress |             |
 | Ubuntu 20+         | generic | no          | manual deps |
 | Debian ??          | generic | no          | manual deps |
 | RedHat ??          | generic | no          | manual deps |
-| Windows ??, CygWin | generic | planned     | manual deps |
-| MacOS ??, brew     | native  | planned     | manual deps |
+| Windows ??, CygWin | generic | no          | manual deps |
+| MacOS ??, brew     | native  | no          | manual deps |
+| MacOS ??, brew     | generic | no          | manual deps |
 </pre>
 #+END_EXPORT
 
@@ -45,6 +47,9 @@
 
 + If you are installing from tgz file, then you'll need to install
   these manually.
+
++ Packages can be found at:
+  https://moria.whyayh.com/rel/released/software/own/libre-bib/
 
 *** Required Packages
 
@@ -994,9 +999,8 @@ Done. [396]
    setup the styles for the different Type of entries.
 
 ** E. Build
-
-
-
+- TBD
+- See the Makefile in github project.
 ** F. Maps
 
 The best source for the maps can be found in bin/util.php.
@@ -1019,3 +1023,9 @@ bib-table, so that the Bibliography style is easily setup.
 
 This maps the LibraryThing field names to the Libreoffice Bibliography
 field names.
+** G. Support
++ Project Home: https://github.com/TurtleEngr/libre-bib
++ Stable version is on the "main" branch.
++ Latest version is on the default "develop" branch.
++ File defects and enhancements at
+  https://github.com/TurtleEngr/libre-bib/issues
