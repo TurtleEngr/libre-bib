@@ -5,4 +5,4 @@
 # install php7.2-xml
 # install php7.2-mbstring
 
-php phpunit-8.phar test/DateFormatTest.php
+php ../bin/phpunit-8.phar test/DateFormatTest.php
