@@ -133,8 +133,9 @@ tmp-test/conf.env :
 #	exit 1
 
 tmp-test/status-pkg.txt :
+	# mPackageList is not defined
 	sudo apt-get update
-	-sudo apt-get -y install $(mPackgeList)
+	-sudo apt-get -y install $(mPackageList)
 	date >$@
 
 tmp-test/status-db.txt :
@@ -337,7 +338,10 @@ tmp/shfmt_$(mShFmt)_linux_amd64 :
 # ----------------------------------------
 # phptidy.php phpunit.phar
 mPhpTidy=3.3
-mPhpUnit = phpunit-9.6.13.phar
+# if php7.2
+mPhpUnit = phpunit-8.phar
+# if php7.3
+#mPhpUnit = phpunit-9.phar
 
 update-php-util : bin/phptidy.php bin/phpunit.phar
 
@@ -355,6 +359,7 @@ bin/phpunit.phar : tmp/$(mPhpUnit)
 	cp tmp/$(mPhpUnit) bin
 	chmod a+rx bin/$(mPhpUnit)
 	cd bin; ln -s $(mPhpUnit) phpunit.phar
+	sudo apt-get install -y php7.2-xml php7.2-mbstring
 
 tmp/$(mPhpUnit) :
 	cd tmp; wget https://phar.phpunit.de/$(mPhpUnit)
