@@ -1,5 +1,6 @@
 *~
 .phptidy-cache
+.phpunit.result.cache
 CVS/
 build/ver.env
 build/ver.epm
