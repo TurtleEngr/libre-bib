@@ -1,6 +1,10 @@
 # libre-bib
+[//]: # For more badges see: https://shields.io/badges
 
 Libre-Bib is still in development.
+
+![GitHub issue custom search](https://img.shields.io/github/issues-search?query=repo%3ATurtleEngr%2Flibre-bib%20is%3Aopen&style=flat&label=issues)
+![GitHub License](https://img.shields.io/github/license/TurtleEngr/libre-bib)
 
 This tool will help with managing a large Libreoffice Bibliography.  It
 can be used across multiple Libreoffice odt documents.
