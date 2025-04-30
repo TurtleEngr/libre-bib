@@ -1,6 +1,6 @@
 # libre-bib
 
-[//]: # For more badges see: https://shields.io/badges
+[//]: # (For more badges see: https://shields.io/badges)
 
 Libre-Bib is still in development.
 
