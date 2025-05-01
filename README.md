@@ -4,9 +4,9 @@
 
 Libre-Bib is still in development.
 
-![GitHub Tag](https://img.shields.io/github/v/tag/TurtleEngr/libre-bib?label=release-tag)
-![GitHub issue custom search](https://img.shields.io/github/issues-search?query=repo%3ATurtleEngr%2Flibre-bib%20is%3Aopen&style=flat&label=issues)
-![GitHub License](https://img.shields.io/github/license/TurtleEngr/libre-bib)
+[![GitHub Tag](https://img.shields.io/github/v/tag/TurtleEngr/libre-bib?label=release-tag)](https://github.com/TurtleEngr/libre-bib/tags)
+[![GitHub issue custom search](https://img.shields.io/github/issues-search?query=repo%3ATurtleEngr%2Flibre-bib%20is%3Aopen&style=flat&label=issues)](https://github.com/TurtleEngr/libre-bib/issues)
+[![GitHub License](https://img.shields.io/github/license/TurtleEngr/libre-bib)](https://github.com/TurtleEngr/libre-bib/blob/develop/LICENSE)
 
 This tool will help with managing a large Libreoffice Bibliography.  It
 can be used across multiple Libreoffice odt documents.
