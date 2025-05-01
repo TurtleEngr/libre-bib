@@ -4,6 +4,7 @@
 
 Libre-Bib is still in development.
 
+![GitHub Tag](https://img.shields.io/github/v/tag/TurtleEngr/libre-bib?label=release-tag)
 ![GitHub issue custom search](https://img.shields.io/github/issues-search?query=repo%3ATurtleEngr%2Flibre-bib%20is%3Aopen&style=flat&label=issues)
 ![GitHub License](https://img.shields.io/github/license/TurtleEngr/libre-bib)
 
