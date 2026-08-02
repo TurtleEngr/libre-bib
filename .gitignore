@@ -1,0 +1,15 @@
+*~
+.phptidy-cache
+.phpunit.result.cache
+CVS/
+build/ver.env
+build/ver.epm
+cmd.tmp
+int-doc/
+test-dir
+test-dir/
+tmp
+tmp/
+tmp-test/
+dist
+pkg
