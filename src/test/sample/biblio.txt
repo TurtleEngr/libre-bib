@@ -1,0 +1,75 @@
+# test/sample/biblio.txt
+
+Id: achbar-01
+Type: media
+Media: DVD
+Title: The Corporation
+Author: Achbar, Mark
+Date: 2005
+Publisher: Zeitgeist Films
+Tag: important, video
+ASIN: 25564668
+Link: https://www.amazon.com/dp/B0007DBJM8/
+
+Id: achbar-01
+Type: media
+Media: DVD
+Title: The Corporation
+Author: Achbar, Mark
+Date: 2005
+Publisher: Zeitgeist Films
+Tag: important, video
+ASIN: 25564668
+Link: https://www.amazon.com/dp/B0007DBJM8/
+
+Id: alfred-01
+Type: book
+Media: Hardcover
+Title: Mad Science
+Subtitle: Einstein's Fridge, Dewar's Flask, Mach's Speed, and 362 Other Inventions and Discoveries that Made Our World
+Author: Alfred, Randy
+Date: 2012
+Publisher: Little, Brown and Company
+Tag: book
+ISBN: 0316208191
+ASIN: 13107536
+
+Id: korten-07
+Type: book
+Media: Paperback
+Title: When Corporations Rule the World
+Author: Korten, David C.
+Date: 2001-05-10
+Publisher: Kumarian Press
+Edition: 2nd
+Tag: f, important, old:korten-06
+ISBN: 1887208046
+Link: https://www.amazon.com/gp/product/1887208046/
+
+Id: tamera-03
+Type: site
+Media: org
+Title: Tamera Peace Research and Education Center in Portugal
+Date: 2024-03-23
+Tag: organization, organization, biblio
+Link: https://www.tamera.org/
+AltLink: https://tinyurl.com/bdhhkdpz+ https://web.archive.org/web/20240323022225/https://www.tamera.org/
+
+Id: youtube-178
+Type: media
+Media: video
+Title: Rethinking Thinking
+Subtitle: How Intelligent Are Other Animals?
+Date: 2020-01-31
+Publisher: World Science Festival
+Tag: video
+Link: https://www.youtube.com/watch?v=tdsVRh9oKiE
+
+Media: link
+Title: Worldwide survey kills the myth of 'Man the Hunter'
+Subtitle: Women hunt in vast majority of foraging societies, upending old stereotypes
+Author: Alex, Bridget
+Date: 2023-06-28
+Publisher: Science (Journal)
+Link: https://www.science.org/content/article/worldwide-survey-kills-myth-man-hunter
+AltLink: https://tinyurl.com/mryhku7v+ https://web.archive.org/web/20230629011943/https://www.science.org/content/article/worldwide-survey-kills-myth-man-hunter
