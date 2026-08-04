@@ -3,7 +3,6 @@
 # --------------------
 SHELL = /bin/bash
 
-
 # ========================================
 # Adjust these to match the php version
 
