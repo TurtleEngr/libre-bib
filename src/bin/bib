@@ -617,7 +617,7 @@ fRunTests() {
     if [[ "$gpTest" = "all" ]]; then
         gpTest=""
         # shellcheck disable=SC1091
-        source /usr/local/bin/shunit2.1
+        source $cBin/shunit2.1
         exit $?
     fi
     if [[ "$gpTest" = "com" ]]; then
@@ -626,7 +626,7 @@ fRunTests() {
         exit $?
     fi
     # shellcheck disable=SC1091
-    source /usr/local/bin/shunit2.1 -- $gpTest
+    source $cBin/shunit2.1 -- $gpTest
     exit $?
 
     cat <<EOF >/dev/null

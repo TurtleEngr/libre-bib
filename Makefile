@@ -78,8 +78,10 @@ mBin = \
 	bin/pre-commit \
 	bin/rm-trailing-sp \
 	bin/shfmt \
-	bin/shunit2.1 \
 	bin/sort-para.sh \
+	src/bin/shunit2.1 \
+	src/bin/bash-com.inc \
+	src/bin/bash-com.test \
 	$(mPhpUnit)
 
 
@@ -100,6 +102,12 @@ clean :
 
 dist-clean : clean
 	-rm -rf dist
+
+# ========================================
+test :
+	$(mPhpUnit) test/example-test.php
+	src/bin/bib -T all
+	src/bin/bib -T com
 
 # ========================================
 create-build-env : get-dep update-my-utility-scripts $(mBin) .git/hooks/pre-commit check-php-ini
@@ -159,7 +167,13 @@ bin/bash-fmt : $(mUtilScriptDir)/bin/bash-fmt
 bin/shfmt : $(mUtilScriptDir)/bin/shfmt
 	cp $? $@
 
-bin/shunit2.1 : $(mUtilScriptDir)/bin/shunit2.1
+src/bin/shunit2.1 : $(mUtilScriptDir)/bin/shunit2.1
+	cp $? $@
+
+src/bin/bash-com.inc : $(mUtilScriptDir)/bin/bash-com.inc 
+	cp $? $@
+
+src/bin/bash-com.test : $(mUtilScriptDir)/bin/bash-com.test
 	cp $? $@
 
 bin/sort-para.sh : $(mUtilScriptDir)/bin/sort-para.sh
