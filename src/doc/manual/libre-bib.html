@@ -166,7 +166,7 @@
     connection</li>
     <li>make (gnu make 4.3+) - for script and file management</li>
     <li>mariadb-client (10.5+) - mysql</li>
-    <li>mariadb-server (10.5+) - mariadbd (only needed on remote host)</li>
+    <li>mariadb-server (10.5+) - mariadbd</li>
     <li>pandoc (2.9.2+) - required to convert org to html, and odt</li>
     <li>perl (5.32+) for: pod2html, pod2man, pod2text, pod2usage</li>
     <li>php (7.4+)</li>
@@ -205,14 +205,11 @@
     bib setup-bib
   </blockquote>
   <p>Fix any errors then run it again, until no more errors.</p>
-  <p>If you are planing on using a remote DB, then see the "Configure ssh"
-  section.</p>
   <hr />
   <h2 id="configure-the-db">Configure the DB</h2>
   <h3 id="install-and-test">Install and test</h3>
-  <p>The DB packages, mariadb-client and mariadb-server, have been installed
-  on the remote server (or local sever if you are doing this all on one
-  server). Most likely the mariadbd process will already be running. Verify
+  <p>The DB packages, mariadb-client and mariadb-server, have been installed.
+  Most likely the mariadbd process will already be running. Verify
   this with:</p>
   <blockquote>
     <p>ps -fC mariadbd</p>
@@ -292,10 +289,9 @@ quit;
       </blockquote>
     </li>
   </ul>
-  <p>If that doesn't work look at the cgDsn variable setting in
-  project/conf.env. It should be set to $cgLocalDsn for local access. Try
-  again, If that works, your conf.env setting are good for continuing (skip
-  the ssh section and other areas mentioning remote db access).</p>
+  <p>If that doesn't work look at the cgDbHost variable setting in
+  conf.env. It should be set to localhost for local access. Try
+  again, If that works, your conf.env setting are good for continuing.</p>
   <hr />
   <h2 id="configure-ssh">Configure ssh</h2>
   <p>In your ~/.ssh/ dir you should see a libre-bib.ssh file. For this to be
@@ -305,12 +301,9 @@ quit;
 |----------------+------------------------------------------|
 | cgDbHost       | keep this set to the localhost IP        |
 | cgDbName       | name of the mysql database               |
-| cgDbPortRemote | remote port, on project's system.        |
 | cgDbTblLocalPort  | port for mysql on the remote system      |
 | cgDbUser       | DB user with grants to cgDbName          |
 | cgDbPassHint   | hint for the password prompt             |
-| cgDbSshUser    | user that can login to the remote system |
-| cgDbSshKey     | key login to the remote system           |
 </pre>
   <p>Remove ~/ssh/libre-bib.ssh file and run again:</p>
   <blockquote>

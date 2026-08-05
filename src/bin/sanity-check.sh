@@ -304,8 +304,6 @@ fCheckUser() {
     for gVar in \
         cgDebug \
         cgNoExec \
-        cgUseLib \
-        cgUseRemote \
         cgVerbose; do
         fIsBool
     done
@@ -330,8 +328,7 @@ fCheckUser() {
     # ----------
     for gVar in \
         cgBackupNum \
-        cgDbPortLocal \
-        cgDbPortRemote; do
+        cgDbPortLocal; do
         if ! fVar; then
             continue
         fi
@@ -342,8 +339,6 @@ fCheckUser() {
     for gVar in \
         cgDbTblBib \
         cgDbHost \
-        cgDbHostRemote \
-        cgDbLib \
         cgDbTblLo \
         cgDbName \
         cgDbPassCache \
@@ -373,18 +368,6 @@ fCheckUser() {
         if [[ $? -ne 0 ]]; then
             echo "To set this, run: libreoffice $cgDocFile"
         fi
-    fi
-
-    if [[ "$cgUseRemote" == "true" ]]; then
-        gVar=cgSshUser
-        fVar
-        gVar=cgSshKey
-        fIsRead
-    fi
-
-    if [[ "$cgUseLib" == "true" ]]; then
-        gVar=cgLibFile
-        fIsRead
     fi
 
     return $gErr

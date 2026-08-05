@@ -83,8 +83,6 @@ class UtilTest extends TestCase {
         # conf.php loads these as the strings exported by conf.env.
         $GLOBALS["cgDebug"] = "false";
         $GLOBALS["cgNoExec"] = "true";
-        $GLOBALS["cgUseLib"] = "false";
-        $GLOBALS["cgUseRemote"] = "false";
         $GLOBALS["cgVerbose"] = "false";
 
         uFixBool();
@@ -97,8 +95,6 @@ class UtilTest extends TestCase {
     public function testFixBoolIsVerbose() {
         $GLOBALS["cgDebug"] = "true";
         $GLOBALS["cgNoExec"] = "false";
-        $GLOBALS["cgUseLib"] = "false";
-        $GLOBALS["cgUseRemote"] = "false";
         $GLOBALS["cgVerbose"] = "true";
 
         $tOut = uTestCapture(function () { uFixBool(); });

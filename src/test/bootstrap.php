@@ -88,8 +88,6 @@ function uTestResetGlobals() {
     $GLOBALS["cgDebug"] = 0;
     $GLOBALS["cgNoExec"] = 1;
     $GLOBALS["cgVerbose"] = 0;
-    $GLOBALS["cgUseLib"] = 0;
-    $GLOBALS["cgUseRemote"] = 0;
 
     $GLOBALS["cgDbTblBib"] = "bib";
     $GLOBALS["cgDbHost"] = "127.0.0.1";
@@ -98,7 +96,6 @@ function uTestResetGlobals() {
     $GLOBALS["cgDbName"] = "biblio_test";
     $GLOBALS["cgDbPassCache"] = "$cgDirTmpTest/no-such-pass-cache";
     $GLOBALS["cgDbPortLocal"] = "3306";
-    $GLOBALS["cgDbPortRemote"] = "3308";
     $GLOBALS["cgDbUser"] = "test";
 
     $GLOBALS["cgDirTmp"] = $cgDirTmpTest;

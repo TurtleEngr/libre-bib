@@ -60,7 +60,7 @@ Install Package
 -   libreoffice-sdbc-mysql (7.0+) - needed for libreoffice DB connection
 -   make (gnu make 4.3+) - for script and file management
 -   mariadb-client (10.5+) - mysql
--   mariadb-server (10.5+) - mariadbd (only needed on remote host)
+-   mariadb-server (10.5+) - mariadbd
 -   pandoc (2.9.2+) - required to convert org to html, and odt
 -   perl (5.32+) for: pod2html, pod2man, pod2text, pod2usage
 -   php (7.4+)
@@ -100,9 +100,6 @@ Run:
 
 Fix any errors then run it again, until no more errors.
 
-If you are planing on using a remote DB, then see the "Configure ssh"
-section.
-
 ------------------------------------------------------------------------
 
 Configure the DB
@@ -110,9 +107,8 @@ Configure the DB
 
 ### Install and test
 
-The DB packages, mariadb-client and mariadb-server, have been installed
-on the remote server (or local sever if you are doing this all on one
-server). Most likely the mariadbd process will already be running.
+The DB packages, mariadb-client and mariadb-server, have been installed.
+Most likely the mariadbd process will already be running.
 Verify this with:
 
 > ps -fC mariadbd
@@ -189,75 +185,6 @@ quit;
 If that doesn't work look at the cgDsn variable setting in
 project/conf.env. It should be set to \$cgLocalDsn for local access. Try
 again, If that works, your conf.env setting are good for continuing
-(skip the ssh section and other areas mentioning remote db access).
-
-------------------------------------------------------------------------
-
-Configure ssh
--------------
-
-In your \~/.ssh/ dir you should see a libre-bib.ssh file. For this to be
-setup properly edit your project/conf.env file. Set the variables:
-
-``` {.in}
-| conf.env var   | Description                              |
-|----------------+------------------------------------------|
-| cgDbHost       | keep this set to the localhost IP        |
-| cgDbName       | name of the mysql database               |
-| cgDbPortRemote | remote port, on project's system.        |
-| cgDbTblLocalPort  | port for mysql on the remote system      |
-| cgDbUser       | DB user with grants to cgDbName          |
-| cgDbPassHint   | hint for the password prompt             |
-| cgDbSshUser    | user that can login to the remote system |
-| cgDbSshKey     | key login to the remote system           |
-```
-
-Remove \~/ssh/libre-bib.ssh file and run again:
-
-> bib setup-bib
-
-If the \~/ssh/libre-bib.ssh file looks OK, add following line top of
-your \~/.ssh/config file (or near a Host config for your system).
-
-> Include libre-bib.ssh
-
-If you want to add more ssh options for the Host, don't add them to
-libre-bib.ssh, because that could be overwritten if project/conf.env is
-changed. Create another Host line with the same host name and add the
-option you want.
-
-### Test the tunnel
-
-Do this after you have setup the DB, and you have tested connecting
-locally.
-
-In a terminal ssh to the remote system.
-
-> ssh \$cgDbSshUser@\$cgDbHostRemote
-
-Leave the terminal window open and start another terminal window. In the
-new terminal window type:
-
-> telnet 127.0.0.1 \$cgDbPortRemote
-
-You should see "Connected to 127.0.0.1" and probably password prompt.
-Exit with ctrl-C or ctrl-\] then "quit".
-
-Now test the connection to the database:
-
-> mysql -P \$cgDbPortRemote -u \$cgDbUser -p -h 127.0.0.1 \$cgDbName
-
-If that doesn't work, look at the error message and see what needs to be
-fixed. Check: db user name, db name, ports, grants and other settings on
-the db system.
-
-If that does work, try connecting with the "bib" command.
-
-> bib connect
-
-If that doesn't work look at the cgDsn variable setting in
-project/conf.env. It should be set to \$cgRemoteDsn for remote access.
-Try again, If that works, your conf.env setting are good for continuing.
 
 ------------------------------------------------------------------------
 
@@ -364,8 +291,7 @@ $ cd $HOME
     DB setup will be needed.
 
     Usually these vars will be the same across all your bibs: cgDbName,
-    cgDbHost, cgDbPassCache, cgDbPassHint, cgDbUser, cgUseRemote
-    cgDbHostRemote, cgDbPortRemote, cgSshUser, cgSshKey
+    cgDbHost, cgDbPassCache, cgDbPassHint, cgDbUser
 
 -   File: ****\$PWD/conf.env**** - Document config
 
@@ -498,30 +424,6 @@ app. They are executed in this order, so the last definition wins.
 
     This is the port for the DB, on the system where the DB is running.
 
--   Var: ****cgUseRemote=false****
-
-    If "true" then the remote DB will be accessed over a ssh tunnel. See
-    the ssh setup section for the details on setting up the tunnel.
-
--   Var: \*\*cgDbHostRemote="NAME.example.com"\*\*
-
-    If you are using a DB on another system, then define that system's
-    name here.
-
--   Var: \*\*cgDbPortRemote="3308"\*\*
-
-    This will be the port for the DB tunnel. It can be most any unused
-    port number.
-
--   Var: \*\*cgSshUser="\$USER"\*\*
-
-    This is your user name on the remote system.
-
--   Var: \*\*cgSshKey="\$HOME/.ssh/id.KEY-NAME"\*\*
-
-    This is the ssh key name for accessing the remote system. This will
-    be used to define the config file for setting up the ssh tunnel.
-
 -   Var: \*\*cgDocFile="example.odt"\*\*
 
     This it the whole reason for this app and hopefully this shows why
@@ -565,10 +467,6 @@ app. They are executed in this order, so the last definition wins.
 
     If you run the backup-lo command this is where the backup will be
     put. If there is already one there, then that will be backed up.
-
--   Var: ****cgUseLib=false****
-
-    Set this to "true" if you will be using a Library Thing export.
 
 -   Var: \*\*cgLibFile="librarything.tsv"\*\*
 
@@ -747,8 +645,7 @@ B. Customizing the defaults
 ---------------------------
 
 If you are managing multiple bibliographies, you might have some common
-settings. For example, most of the things related to a remote DB will be
-the same.
+settings.
 
 The user config file is the best place for defining the common settings:
 \$cgDirConf/conf.env
@@ -832,19 +729,11 @@ bibliography directory, just delete the conf.env file.
 ``` {.in}
 $ emacs conf.env
 change:
-    export cgDbHostRemote="NAME.example.com"
     export cgDbPassHint="b4n"
     export cgDbUser="$USER"
-    export cgUseRemote=false
-    export cgSshKey="$HOME/.ssh/id.KEY-NAME"
-    export cgUseLib=false
 to
-    export cgDbHostRemote="myserver.example.com"
     export cgDbPassHint="fav-pet"
     export cgDbUser="example"
-    export cgUseRemote=true
-    export cgSshKey="$HOME/.ssh/id.mysys"
-    export cgUseLib=true
 save, and exit
 
 $ bib setup-bib
@@ -912,8 +801,6 @@ $ bib import-lo
 /opt/libre-bib/bin/import-txt-2-lo.php -c
 Verbose is on.
 Backup is on.
-UseRemote is on.
-UseLib is on.
 Problem with setup: Missing: cgDbPassCache tmp/.pass.tmp. To set it,
 run: bib connect [89]
 make: *** [/opt/libre-bib/bin/bib-cmd.mak:100: status/import-lo.date] Error 1
@@ -959,16 +846,12 @@ $ bib import-lo
 /opt/libre-bib/bin/import-txt-2-lo.php -c
 Verbose is on.
 Backup is on.
-UseRemote is on.
-UseLib is on.
 .
 Processed 292 lines. [263]
 Inserted 31 records. [264]
 /opt/libre-bib/bin/convert-lo-2-bib.php -c
 Verbose is on.
 Backup is on.
-UseRemote is on.
-UseLib is on.
 
 Processed: 31 [221]
 date +%F_%T >status/import-lo.date
@@ -994,8 +877,6 @@ librarything schema and import
 /opt/libre-bib/bin/import-tsv-2-lib-db.php -c
 Verbose is on.
 Backup is on.
-UseRemote is on.
-UseLib is on.
 ............
 Processed: 12
 date +%F_%T >status/import-lib.date
@@ -1079,8 +960,6 @@ $ bib ref-update
 ``` {.out}
 Verbose is on.
 Backup is on.
-UseRemote is on.
-UseLib is on.
 Unpack example.odt [330]
 Start processing [303]
 

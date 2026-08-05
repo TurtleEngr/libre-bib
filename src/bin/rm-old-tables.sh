@@ -35,11 +35,7 @@ if [[ "$pBase" = "all" ]]; then
     "
 fi
 
-if [[ "$cgUseRemote" = "true" ]]; then
-    tPort=$cgDbPortRemote
-else
-    tPort=$cgDbPortLocal
-fi
+tPort=$cgDbPortLocal
 
 for tBase in $tBaseList; do
     echo 'select TABLE_NAME from information_schema.tables where TABLE_NAME like' "\"${tBase}_%\";" >tmp/get.cmd

@@ -127,8 +127,6 @@ tmp-test/conf.env :
 	-cd tmp-test; bib setup-bib
 	-cd tmp-test; bib setup-bib
 	echo 'cgDbUser="example"' >>$@
-	echo 'cgUseRemote=false' >>$@
-	echo 'cgUseLib=true' >>$@
 	echo 'cgVerbose=true' >>$@
 #	exit 1
 
