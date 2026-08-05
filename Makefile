@@ -102,7 +102,8 @@ usage :
 
 # ========================================
 clean :
-	-find . -type d -name '*~' -exec rm {} \;
+	-find . -type f -name '*~' -exec rm {} \;
+	-find . -type f -name pod2htmd.tmp -exec rm {} \;
 
 dist-clean : clean
 	-rm -rf dist
@@ -198,3 +199,4 @@ bin/sort-para.sh : $(mUtilScriptDir)/bin/sort-para.sh
 phpunit src/bin/$(mPhpUnit) :
 	rsync -P moria.whyayh.com:/rel/archive/software/ThirdParty/phpunit/*.phar src/bin/
 	cd src/bin; ln -sf $(mPhpUnit) phpunit
+
