@@ -2,7 +2,7 @@
 <?php
 
 # -----------------------------
-function fusage() {
+function fUsage() {
     global $argc;
     global $argv;
 

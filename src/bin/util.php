@@ -110,15 +110,26 @@ function uValidateCommon() {
 
 # -----------------------------
 function uBool($pVal) {
-    #$tMap = array("0"=>0, "1"=>1, "f"=>0, "false"=>0, "t"=>1,
-    #    "true"=>1, "n"=>0, "no"=>0, "y"=>1, "yes"=>1, 0=>0, 1=>1);
-    #$pVal = strtolower($pVal);
+    $tMap = array(
+        "0"=>false,
+        "1"=>true,
+        "f"=>false,
+        "false"=>false,
+        "t"=>true,
+        "true"=>true,
+        "n"=>false,
+        "no"=>false,
+        "y"=>true,
+        "yes"=>true,
+    );
+    if (is_bool($pVal))
+        return $pVal;
 
-    $tMap = array("false"=>0, "true"=>1 );
-
+    $pVal = strtolower($pVal);
     if (array_key_exists($pVal, $tMap))
         return $tMap[$pVal];
-    return 0;
+
+    return false;
 } # fBool
 
 # -----------------------------
@@ -255,7 +266,7 @@ function uLibCol() {
         "Lending_Start",
         "Lending_End"
     );
-    return $tLibId;
+    return $tCol;
 } # fLibCol
 
 # --------------------
