@@ -34,7 +34,9 @@ mPhp7.4 = \
 	php7.4-json \
 	php7.4-mysql \
 	php7.4-opcache \
-	php7.4-readline
+	php7.4-readline \
+	php7.4-mbstring \
+	php7.4-xml
 
 mPhp8.2 = \
 	php8.2 \
@@ -44,17 +46,19 @@ mPhp8.2 = \
 	php8.2-mysql \
 	php8.2-opcache \
 	php8.2-readline \
+	php8.2-mbstring \
+	php8.2-xml
 
-mPhpUnit = bin/phpunit-11.phar
-    # PhpUnit = bin/phpunit-9.phar
+mPhpUnit = src/bin/phpunit-9.phar
+    # PhpUnit = bin/phpunit-11.phar
     # Version  8.x needs php 7.2.0
     # Version  9.x needs php 7.3.0
     # Version 10.x needs php 8.1.0
     # Version 11.x needs php 8.2.0
     # Version 12.x needs php 8.3.0
 
-mPhpIniFile =/etc/php/8.2/cli/php.ini
-           # /etc/php/7.4/cli/php.ini
+mPhpIniFile = /etc/php/8.2/cli/php.ini
+            # /etc/php/7.4/cli/php.ini
 mPhpIni = \
 	'memory_limit = -1' \
 	'error_reporting = E_ALL' \
@@ -105,13 +109,13 @@ dist-clean : clean
 
 # ========================================
 test :
-	$(mPhpUnit) test/example-test.php
 	src/bin/bib -T all
 	src/bin/bib -T com
+	$(mPhpUnit) src/test
 
 # ========================================
 create-build-env : get-dep update-my-utility-scripts $(mBin) .git/hooks/pre-commit check-php-ini
-	export gpForce=1; bin/rm-trailing-sp -t bin/org2html.sh bin/phpunit-*.phar
+	bin/rm-trailing-sp -t bin/org2html.sh
 
 check-php-ini : $(mPhpIniFile)
 	@for tLine in $(mPhpIni); do \
@@ -192,4 +196,4 @@ bin/sort-para.sh : $(mUtilScriptDir)/bin/sort-para.sh
 	sudo apt-get install php php-common
 
 $(mPhpUnit) :
-	rsync -P moria.whyayh.com:/rel/archive/software/ThirdParty/phpunit/*.phar bin/
+	rsync -P moria.whyayh.com:/rel/archive/software/ThirdParty/phpunit/*.phar src/bin/

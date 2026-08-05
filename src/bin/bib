@@ -127,11 +127,13 @@ See: fLog (Internal documentation)
 
 Run the unit test functions in this script.
 
-"B<-T all>" will run all of the functions that begin with "test".
-
 "B<-T list>" will list all of the test functions.
 
+"B<-T all>" will run all of the functions that begin with "test".
+
 "B<-T com>" will run all the tests for bash-com.inc
+
+"B<-T php>" will run all of php tests in test/ dir (test/*Test.php)
 
 Otherwise, "B<pTest>" should match the test function names separated
 with spaces (between quotes).
@@ -557,8 +559,13 @@ testUsage() {
 
     #-----
     tResult=$($cBin/$cName 2>&1)
-    assertContains "$LINENO cmd-call" "$tResult" "Usage:"
+    assertContains "$LINENO cmd-call" "$tResult" "SYNOPSIS"
     assertContains "$LINENO cmd-call" "$tResult" "$cName"
+
+    #-----
+    tResult=$($cBin/$cName -h 2>&1)
+    assertContains "$LINENO cmd-call" "$tResult" "OPTIONS"
+    assertContains "$LINENO cmd-call" "$tResult" "NOTES"
 
     #-----
     return 0
@@ -580,15 +587,15 @@ testScriptFunctions() {
     local tResult
 
     tResult=$(fSetGlobals 2>&1)
-    assertTrue "$LINENO tsf-fSetGlobals" "[ $? -eq 0 ]"
+    assertTrue "$LINENO fSetGlobals" "[ $? -eq 0 ]"
 
     gpHostName="foobar"
     tResult=$(fValidateHostName 2>&1)
-    assertTrue "$LINENO tsf-fValidateHostName.1" "[ $? -eq 0 ]"
+    assertTrue "$LINENO fValidateHostName.1" "[ $? -eq 0 ]"
 
     gpHostName=""
     tResult=$(fValidateHostName 2>&1)
-    assertContains "$LINENO tsf-fValidateHostName.2" "$tResult" "required."
+    assertContains "$LINENO fValidateHostName.2" "$tResult" "required."
 
     return 0
 
@@ -606,9 +613,14 @@ EOF
 # -------------------
 # This should be the last defined function
 fRunTests() {
+    local tPhpVer
+
     if [[ "$gpTest" = "list" ]]; then
         grep 'test.*()' $cBin/$cName | grep -v grep | sed 's/()//g'
         #        grep 'test.*()' $cBin/bash-com.test | grep -v grep | sed 's/()//g'
+        cd $cBin/../test >/dev/null 2>&1
+        ls -1 *Test.php
+        cd - >/dev/null 2>&1
         exit 1
     fi
     SHUNIT_COLOR=auto
@@ -623,6 +635,21 @@ fRunTests() {
     if [[ "$gpTest" = "com" ]]; then
         gpTest=""
         $cBin/bash-com.test
+        exit $?
+    fi
+    if [[ "$gpTest" = "php" ]]; then
+        tPhpVer=$(php --version | head -n 1 | awk '{sub(/\.[0-9]*$/,"",$2); print $2}')
+        case $tPhpVer in
+            7.2) ln -sf $cBin/phpunit-8.*.phar $cBin/phunit
+            7.3) ln -sf $cBin/phpunit-9.*.phar $cBin/phunit
+            7.4) ln -sf $cBin/phpunit-9.*.phar $cBin/phunit
+            8.1) ln -sf $cBin/phpunit-10.*.phar $cBin/phunit
+            8.2) ln -sf $cBin/phpunit-11.*.phar $cBin/phunit
+            8.3) ln -sf $cBin/phpunit-12.*.phar $cBin/phunit
+            8.4) ln -sf $cBin/phpunit-13.*.phar $cBin/phunit
+            *) ln -sf $cBin/phpunit-9.*.phar $cBin/phunit
+        esac
+        $cBin/phpunit $cBin/../test
         exit $?
     fi
     # shellcheck disable=SC1091
