@@ -1,0 +1,85 @@
+* Make Framework
+
+** Definitions
+
++ The files are at
+  https://github.com/TurtleEngr/libre-bib2/tree/develop
++ The src/ dir will be the top directory that will be deployed.
++ cBin=src/bin
++ src/test is where the phpunit test files will be put.
++ src/bin/bib will be the main program that will call the specified
+  php scripts (not yet implemented). It also runs the specified
+  tests, with the -T option.
++ The style.org file defines the coding style for the scripts.
+
+** What is missing?
++ I need you to create the phpunit tests (in the src/test/ directory)
+  for the functions in src/bin/import-txt-2-lo.php and
+  src/bin/util.php
++ Only simple asserts are needed, because the goal is to have a
+  "framework" that I can add to.
++ Note: There is no need adjust the php or shell files, because they
+  are under development.
+
+** Results
+
+*** Code
+
++ See: 
+
+**** phpunit.xml
+<?xml version="1.0" encoding="UTF-8"?>
+<phpunit bootstrap="bootstrap.php"
+         colors="true"
+         backupGlobals="false"
+         beStrictAboutOutputDuringTests="false"
+         displayDetailsOnTestsThatTriggerWarnings="true"
+         displayDetailsOnIncompleteTests="true">
+    <testsuites>
+        <testsuite name="libre-bib2">
+            <directory suffix="Test.php">.</directory>
+        </testsuite>
+    </testsuites>
+</phpunit>
+
+*** Directions
+
++ Drop these into `src/test/`. I cloned the develop branch and ran
+  them — 49 tests, 153 assertions, 3 marked incomplete, green under
+  both phpunit-9.6.35 (the Makefile default) and phpunit-12.5.33 (php
+  8.3).
+
++ **The one design problem worth knowing about:**
+  `import-txt-2-lo.php` still ends with its main section, so
+  `require_once` would run the script. Since you didn't want the bin
+  files touched, `uTestLoadScript()` in bootstrap.php copies
+  everything above the first `# ******` separator to a temp `.inc` and
+  includes that. When you split it into wrapper +
+  `import-txt-2-lo.inc`, the same call finds the `.inc` and uses it
+  instead — the tests don't change.
+
++ `uTestResetGlobals()` sets `cgNoExec=1`, so no SQL reaches a DB and
+  `$gDb` is never touched. That covers more than I expected:
+  `uExecSql`, `uRenameTable`, `fInsertRec`, `fAddRec`, and a full
+  `fImportTxt` run against `sample/biblio.txt` all work without a
+  database. Only `fCreateTable` genuinely needs one.
+
++ A few things the tests turned up:
+
+  + **`uLibCol()` returns `$tLibId`**, which is never assigned —
+    should be `$tCol`. `testLibCol` is `markTestIncomplete` with the
+    asserts already written below it.
+  + **`uMedia2RepType()` is case-inconsistent**: it checks
+    `array_key_exists($pMedia, ...)` against the given case but looks
+    up with `strtolower`, so `uMedia2RepType("DVD")` returns
+    `"unknown"` while `"dvd"` returns `"DVD"`. Callers pass the
+    `Media:` field straight through, which is mixed
+    case. `uRepType2Type()` lowercases first and is fine.
+  + **`uBool()` only maps the strings `"true"`/`"false"`**, so
+    `uBool(true)` is 0 — `uFixBool()` zeroes anything already
+    boolean. Fine while it's fed from `conf.env`, brittle otherwise.
+  + **`bib` fRunTests** makes the symlink `phunit` and then runs
+    `phpunit`.
+
++ All four are also listed at the bottom of README.org, along with how
+  to add a test or wire up a new script.
