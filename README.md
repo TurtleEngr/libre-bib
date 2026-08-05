@@ -12,8 +12,7 @@ This tool will help with managing a large Libreoffice Bibliography.  It
 can be used across multiple Libreoffice odt documents.
 
 Libre-Bib2 is mostly functional. I am using it for managing a large
-Bibliography with about 3,000 records, and my LibraryThing DB has over
-400 references to books or media I own.
+Bibliography with about 3,000 records.
 
 ## Features
 
@@ -28,18 +27,6 @@ Bibliography with about 3,000 records, and my LibraryThing DB has over
 * Update the lo-db from changes in text file.
 
 * Make a backup csv file of the lo-db.
-
-### LibraryThing Database
-
-The [LibraryThing](https://www.librarything.com/home) application can
-used to very quickly collect your book's information, by using the
-ISBN bar codes. No need to type, author, publisher, date, etc.
-
-* Import an exported LibraryThing tsv file to lib-db.
-
-* Merge selected fields from the lib-db to the lo-db.
-
-* Export a new biblio.txt file with the lo-db updates.
 
 ### Formatted Bibliography
 
