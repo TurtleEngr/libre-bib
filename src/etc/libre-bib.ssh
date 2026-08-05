@@ -1,0 +1,10 @@
+# Create a tunnel to your remote MySQL server for the Libre-Bib app.
+
+# Put following uncommented line in your ~/.ssh/config file:
+#Include $HOME/.ssh/libre-bib.ssh
+
+Host ${tHostList}
+        Hostname ${cgDbHostRemote}
+        User ${cgSshUser}
+        IdentityFile ${cgSshKey}
+        LocalForward ${cgDbPortRemote} localhost:${cgDbPortLocal}

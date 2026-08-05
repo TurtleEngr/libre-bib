@@ -1,0 +1,5 @@
+<text:span text:style-name="Endnote_20_Symbol">{</text:span><text:span text:style-name="Endnote_20_Symbol"><text:bibliography-mark text:identifier="{BibId}"
+      text:bibliography-type="{BibType}"
+      {BibData}
+      >{BibId}</text:bibliography-mark></text:span><text:span text:style-name="Endnote_20_Symbol">{BibLoc}}</text:span>
+

@@ -465,7 +465,7 @@ EOF
 # -------------------
 fValidateHostName() {
     if [[ -z "$gpHostName" ]]; then
-        fError2 -m "The -n or -c option is required." -l $LINENO
+        fError -m "The -n or -c option is required." -l $LINENO
     fi
     return
 
@@ -640,14 +640,14 @@ fRunTests() {
     if [[ "$gpTest" = "php" ]]; then
         tPhpVer=$(php --version | head -n 1 | awk '{sub(/\.[0-9]*$/,"",$2); print $2}')
         case $tPhpVer in
-            7.2) ln -sf $cBin/phpunit-8.*.phar $cBin/phunit
-            7.3) ln -sf $cBin/phpunit-9.*.phar $cBin/phunit
-            7.4) ln -sf $cBin/phpunit-9.*.phar $cBin/phunit
-            8.1) ln -sf $cBin/phpunit-10.*.phar $cBin/phunit
-            8.2) ln -sf $cBin/phpunit-11.*.phar $cBin/phunit
-            8.3) ln -sf $cBin/phpunit-12.*.phar $cBin/phunit
-            8.4) ln -sf $cBin/phpunit-13.*.phar $cBin/phunit
-            *) ln -sf $cBin/phpunit-9.*.phar $cBin/phunit
+            7.2) ln -sf $cBin/phpunit-8.*.phar $cBin/phunit ;;
+            7.3) ln -sf $cBin/phpunit-9.*.phar $cBin/phunit ;;
+            7.4) ln -sf $cBin/phpunit-9.*.phar $cBin/phunit ;;
+            8.1) ln -sf $cBin/phpunit-10.*.phar $cBin/phunit ;;
+            8.2) ln -sf $cBin/phpunit-11.*.phar $cBin/phunit ;;
+            8.3) ln -sf $cBin/phpunit-12.*.phar $cBin/phunit ;;
+            8.4) ln -sf $cBin/phpunit-13.*.phar $cBin/phunit ;;
+            *) ln -sf $cBin/phpunit-9.*.phar $cBin/phunit ;;
         esac
         $cBin/phpunit $cBin/../test
         exit $?
@@ -696,6 +696,7 @@ case $tBin in
 esac
 
 source $cBin/bash-com.inc
+source $cBin/../etc/conf.env
 
 # -------------------
 # Configuration Section
@@ -707,11 +708,11 @@ fSetGlobals
 # -------------------
 # Get Args Section
 if [[ $# -eq 0 ]]; then
-    fError2 -m "Missing options." -l $LINENO
+    fError -m "Missing options." -l $LINENO
 fi
 # Or use this if the script expects stdin
 #if [[ -t 0 ]]; then
-#    fError2 -m "Missing input file redirect." -l $LINENO
+#    fError -m "Missing input file redirect." -l $LINENO
 #fi
 
 while getopts :cn:t:hH:lT:vx tArg; do

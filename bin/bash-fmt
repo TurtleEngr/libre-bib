@@ -1,0 +1,131 @@
+#!/bin/bash
+
+export SHFMT_OPTS="-i 4 -ci -bn"
+
+# --------------------
+function fUsage() {
+    cat <<EOF | more 1>&2
+Usage:
+    bash-fmt - <pInFile >pOutFile
+        or
+    bash-fmt pFile...
+        or
+    bash-fmt -h
+
+Description:
+
+    With no argument this script will work as a "git clean filter"
+    Read from stdin and output to stdout. Expand tabs, remove trailing
+    whitespace, and format with shfmt.  If problems, it exits with an
+    error and outputs nothing, so check!
+
+    shfmt can be found at:
+    /rel/archive/software/ThirdParty/shfmt/
+    https://github.com/mvdan/sh/releases/download/v3.1.2/shfmt_v3.1.2_linux_amd64
+
+To use as a "git clean filter":
+
+    In ~/.gitconfig add:
+        [filter "bash-fmt"]
+            clean = bash-fmt
+
+    In the top repo's dir add .gitattributes
+    For example:
+        *.sh    filter=bash-fmt
+        *.inc   filter=bash-fmt
+
+To format all *.sh files
+
+    bash-fmt *.sh *.inc
+EOF
+    exit 1
+} # fUsage
+
+# --------------------
+function fProcess() {
+    local pFile="$1"
+
+    if [ "$pFile" = "-" ]; then
+        cat >$cInFile
+    else
+        cat $pFile >$cInFile
+    fi
+
+    head -n 2 <$cInFile | grep -Eq '#!/bin/bash|#!/usr/bin/env bash' &>/dev/null
+    if [ $? -ne 0 ]; then
+        echo "Warning: Not a bash file [$LINENO]" 1>&2
+    fi
+
+    bash -n <$cInFile >/dev/null 2>&1
+    if [ $? -ne 0 ]; then
+        echo "Error: bash script has syntax errors [$LINENO]" 1>&2
+        gErr=1
+        return 1
+    fi
+
+    # expand tabs, remove trailing whitespace, and try formatting
+    expand <$cInFile |
+        sed -E 's/[[:space:]]*$//' |
+        'shfmt' $SHFMT_OPTS >$cOutFile 2>/dev/null
+    if [ $? -ne 0 ]; then
+        echo "Error: shfmt errors [$LINENO]" 1>&2
+        gErr=1
+        return 1
+    fi
+
+    # Is the formatted file empty?
+    if [ ! -s $cOutFile ]; then
+        echo "Error: shfmt errors [$LINENO]" 1>&2
+        gErr=1
+        return 1
+    fi
+
+    # All OK so output the formatted file
+    if [ "$pFile" = "-" ]; then
+        cat <$cOutFile
+    else
+        cat <$cOutFile >$pFile
+    fi
+    return 0
+} # fProcess
+
+# ========================================
+# Main
+
+gErr=0
+export cInFile=/tmp/in-$$.tmp
+export cOutFile=/tmp/out-$$.tmp
+
+if ! which shfmt &>/dev/null; then
+    echo "Error: missing shfmt [$LINENO]" 1>&2
+    exit 1
+fi
+
+if [ $# -eq 0 ]; then
+    fUsage
+fi
+
+if [ "x$1" = "x-h" ]; then
+    fUsage
+fi
+
+# --------------------
+if [ -f $1 ]; then
+    pFileList="$*"
+    for tFile in $pFileList; do
+        if [ ! -w $tFile ]; then
+            echo "Error: Not writable: $tFile [$LINENO]" 1>&2
+            exit 1
+        fi
+    done
+
+    for tFile in $pFileList; do
+        fProcess $tFile
+    done
+else
+    fProcess -
+fi
+
+rm -f $cInFile $cOutFile &>/dev/null
+
+exit $gErr

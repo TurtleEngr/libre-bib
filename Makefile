@@ -74,17 +74,18 @@ mBin = \
 	/usr/bin/php \
 	/usr/bin/shellcheck \
 	/usr/bin/tidy \
+	bin/.phptidy-config.php \
+	bin/bash-fmt \
 	bin/incver.sh \
 	bin/org2html.sh \
 	bin/phptidy.php \
-	bin/.phptidy-config.php \
 	bin/pre-commit \
 	bin/rm-trailing-sp \
 	bin/shfmt \
 	bin/sort-para.sh \
-	src/bin/shunit2.1 \
 	src/bin/bash-com.inc \
 	src/bin/bash-com.test \
+	src/bin/shunit2.1 \
 	src/bin/$(mPhpUnit)
 
 
@@ -168,6 +169,9 @@ bin/bash-fmt : $(mUtilScriptDir)/bin/bash-fmt
 	cp $? $@
 
 bin/shfmt : $(mUtilScriptDir)/bin/shfmt
+	cp $? $@
+
+bin/bash-fmt : $(mUtilScriptDir)/bin/bash-fmt
 	cp $? $@
 
 src/bin/shunit2.1 : $(mUtilScriptDir)/bin/shunit2.1
