@@ -47,21 +47,14 @@ help :
 
 connect : $(cgDbPassCache)
 	@echo
-	if [[ "$(cgUseRemote)" == "true" ]]; then \
-	    tPort=$(cgDbPortRemote); \
-	    echo "First define tunnel: ssh $(cgDbHostRemote)"; \
-	    echo "See: ~/.ssh/config and ~/.ssh/libre-bib.ssh"; \
-	else \
-	    tPort=$(cgDbPortLocal); \
-	fi; \
 	echo "Test: show databases; use $(cgDbName); show tables; quit"; \
-	mysql -P $$tPort -u $(cgDbUser) --password=$$(cat $(cgDbPassCache)) -h $(cgDbHost) $(cgDbName)
+	mysql -P $(cgDbPortLocal) -u $(cgDbUser) --password=$$(cat $(cgDbPassCache)) -h $(cgDbHost) $(cgDbName)
 
 $(cgDbPassCache) :
 	read -srp 'Password ($(cgDbPassHint))? '; \
 	echo $$REPLY >$@
 
-setup-bib : $(cgDirEtc) $(cgDirStatus) $(cgDirTmp) $(cgDirBackup) $(cgDirConf) $(cgLoFile) $(cgLibFile) $(cgDocFile) ~/.ssh/libre-bib.ssh
+setup-bib : $(cgDirEtc) $(cgDirStatus) $(cgDirTmp) $(cgDirBackup) $(cgDirConf) $(cgLoFile) $(cgDocFile)
 	-mkdir -p $(cgDirStatus) &>/dev/null
 
 # ----------
@@ -100,31 +93,6 @@ restore-lo :
 	if [[ $$REPLY != "y" ]]; then exit 10; fi
 	$(cgBin)/import-tcsv-2-lo-db.php -c -s c
 	echo "$(mDate) restore-lo" >$(cgDirStatus)/$@.date
-
-# ----------
-# If lib-db or lo-db is changed, then run this
-
-update-lo :
-	@echo "Update lo from lib where Titles are similar, first 40 char"
-	@echo "Run this after lib-db, lo-db"
-	$(cgBin)/update-lib-2-lo.php -c
-	$(cgBin)/convert-lo-2-bib.php -c
-	echo "$(mDate) update-lo" >$@
-
-# --------------------
-# Update lib-db
-
-import-lib : $(cgDirStatus)/import-lib.date
-	@echo "Done. $(cgDbLib) table is up-to-date with $(cgLibFile)"
-
-$(cgDirStatus)/import-lib.date : $(cgLibFile)
-	@echo "librarything schema and import"
-	$(cgBin)/import-tsv-2-lib-db.php -c
-	date +%F_%T >$@
-	head -n 1 $(cgLibFile) | sed 's/ /_/g' >$(cgDirTmp)/lib-schema.tsv
-	-diff $(cgDirApp)/etc/lib-schema.tsv $(cgDirTmp)/lib-schema.tsv
-	@echo "Warning: If there are differences, there could be problems."
-	echo "$(mDate) import-lib" >$@
 
 # --------------------
 ref-new : $(cgDirStatus)/ref-new.date
@@ -201,7 +169,7 @@ conf.env : $(cgDirApp)/doc/example/conf.env
 	    diff -ZBbw $@ $?; \
 	fi
 
-$(cgDirStatus) $(cgDirBackup) $(cgDirConf) $(cgDirEtc) $(cgDirTmp) ~/.ssh :
+$(cgDirStatus) $(cgDirBackup) $(cgDirConf) $(cgDirEtc) $(cgDirTmp) :
 	mkdir -p $@
 
 $(cgLoFile) :
@@ -276,11 +244,6 @@ $(cgDirApp)/doc/ref/biblio.dbf : $(cgDirLibreofficeConf)/biblio.dbf
 
 $(cgDirApp)/etc/lib-schema.tsv : $(cgDirApp)/doc/ref/librarything.tsv
 	head -n 1 <$? | sed 's/ /_/g' >$@
-
-~/.ssh/libre-bib.ssh : ${cgDirApp}/etc/libre-bib.ssh conf.env
-	export tHostList="$$cgDbHostRemote $${cgDbHostRemote%%.*}"; \
-	envsubst <${cgDirApp}/etc/libre-bib.ssh >$@
-	chmod u+rw,go= $@
 
 # ========================================
 # Tests

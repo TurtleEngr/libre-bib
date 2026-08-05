@@ -37,9 +37,6 @@ $cgDbBib=$_ENV["cgDbBib"];
 global $cgDbHost;
 $cgDbHost=$_ENV["cgDbHost"];
 
-global $cgDbHostRemote;
-$cgDbHostRemote=$_ENV["cgDbHostRemote"];
-
 global $cgDbLib;
 $cgDbLib=$_ENV["cgDbLib"];
 
@@ -58,26 +55,8 @@ $cgDbPassHint=$_ENV["cgDbPassHint"];
 global $cgDbPortLocal;
 $cgDbPortLocal=$_ENV["cgDbPortLocal"];
 
-global $cgDbPortRemote;
-$cgDbPortRemote=$_ENV["cgDbPortRemote"];
-
 global $cgDbUser;
 $cgDbUser=$_ENV["cgDbUser"];
-
-global $cgUseRemote;
-$cgUseRemote=$_ENV["cgUseRemote"];
-
-global $cgSshUser;
-$cgSshUser=$_ENV["cgSshUser"];
-
-global $cgSshKey;
-$cgSshKey=$_ENV["cgSshKey"];
-
-global $cgUseLib;
-$cgUseLib=$_ENV["cgUseLib"];
-
-global $cgLibFile;
-$cgLibFile=$_ENV["cgLibFile"];
 
 global $cgLoFile;
 $cgLoFile=$_ENV["cgLoFile"];

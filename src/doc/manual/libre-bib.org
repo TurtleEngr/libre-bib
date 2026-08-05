@@ -22,8 +22,6 @@
   + <a href="#configure-the-db">Configure the DB</a>
     + <a href="#install-and-test">Install and test</a>
     + <a href="#create-db-users-and-grants">Create DB, Users, and Grants</a>
-  + <a href="#configure-ssh">Configure ssh</a>
-    + <a href="#test-the-tunnel">Test the tunnel</a>
 + <a href="#using-libre-bib">Using libre-bib</a>
   + <a href="#quick-start">Quick Start</a>
   + <a href="#libre-bib-tour">libre-bib Tour</a>
@@ -149,8 +147,6 @@ Run:
 
 Fix any errors then run it again, until no more errors.
 
-If you are planing on using a remote DB, then see the "Configure ssh" section.
-
 ** Configure the DB
 *** Install and test
 
@@ -245,87 +241,6 @@ quit;
 
 If that doesn't work look at the cgDsn variable setting in
 project/conf.env. It should be set to $cgLocalDsn for local
-access. Try again, If that works, your conf.env setting are good for
-continuing (skip the ssh section and other areas mentioning remote db
-access).
-
-** Configure ssh
-
-In your ~/.ssh/ dir you should see a libre-bib.ssh file. For this to be
-setup properly edit your project/conf.env file. Set the variables:
-
-#+BEGIN_EXPORT html
-<pre class="in">
-| conf.env var   | Description                              |
-|----------------+------------------------------------------|
-| cgDbHost       | keep this set to the localhost IP        |
-| cgDbName       | name of the mysql database               |
-| cgDbPortRemote | remote port, on project's system.        |
-| cgDbLocalPort  | port for mysql on the remote system      |
-| cgDbUser       | DB user with grants to cgDbName          |
-| cgDbPassHint   | hint for the password prompt             |
-| cgDbSshUser    | user that can login to the remote system |
-| cgDbSshKey     | key login to the remote system           |
-</pre>
-#+END_EXPORT
-
-Remove ~/ssh/libre-bib.ssh file and run again:
-
-  <blockquote>
-  bib setup-bib
-  </blockquote>
-
-If the ~/ssh/libre-bib.ssh file looks OK, add following line top of
-your ~/.ssh/config file (or near a Host config for your system).
-
-  <blockquote>
-  Include libre-bib.ssh
-  </blockquote>
-
-If you want to add more ssh options for the Host, don't add them to
-libre-bib.ssh, because that could be overwritten if project/conf.env
-is changed. Create another Host line with the same host name and add
-the option you want.
-
-*** Test the tunnel
-
-Do this after you have setup the DB, and you have tested connecting
-locally.
-
-In a terminal ssh to the remote system.
-
-  <blockquote>
-  ssh $cgDbSshUser@$cgDbHostRemote
-  </blockquote>
-
-Leave the terminal window open and start another terminal window.  In
-the new terminal window type:
-
-  <blockquote>
-  telnet 127.0.0.1 $cgDbPortRemote
-  </blockquote>
-
-You should see "Connected to 127.0.0.1" and probably password
-prompt. Exit with ctrl-C or ctrl-] then "quit".
-
-Now test the connection to the database:
-
-  <blockquote>
-  mysql -P $cgDbPortRemote -u $cgDbUser -p -h 127.0.0.1 $cgDbName
-  </blockquote>
-
-If that doesn't work, look at the error message and see what needs to
-be fixed. Check: db user name, db name, ports, grants and other
-settings on the db system.
-
-If that does work, try connecting with the "bib" command.
-
-  <blockquote>
-  bib connect
-  </blockquote>
-
-If that doesn't work look at the cgDsn variable setting in
-project/conf.env. It should be set to $cgRemoteDsn for remote
 access. Try again, If that works, your conf.env setting are good for
 continuing.
 
@@ -424,7 +339,7 @@ File-Dir.
 
   Usually these vars will be the same across all your bibs: cgDbName,
   cgDbHost, cgDbPassCache, cgDbPassHint, cgDbUser, cgUseRemote
-  cgDbHostRemote, cgDbPortRemote, cgSshUser, cgSshKey
+  cgDbHostRemote, cgDbPortRemote
 
 + File: **$PWD/conf.env** - Document config
 
@@ -560,30 +475,6 @@ app.  They are executed in this order, so the last definition wins.
 + Var: **cgDbPortLocal="3306"**
 
   This is the port for the DB, on the system where the DB is running.
-
-+ Var: **cgUseRemote=false**
-
-  If "true" then the remote DB will be accessed over a ssh tunnel.
-  See the ssh setup section for the details on setting up the tunnel.
-
-+ Var: **cgDbHostRemote="NAME.example.com"**
-
-  If you are using a DB on another system, then define that system's
-  name here.
-
-+ Var: **cgDbPortRemote="3308"**
-
-  This will be the port for the DB tunnel. It can be most any unused
-  port number.
-
-+ Var: **cgSshUser="$USER"**
-
-  This is your user name on the remote system.
-
-+ Var: **cgSshKey="$HOME/.ssh/id.KEY-NAME"**
-
-  This is the ssh key name for accessing the remote system. This will
-  be used to define the config file for setting up the ssh tunnel.
 
 + Var: **cgDocFile="example.odt"**
 
@@ -831,14 +722,11 @@ change:
     export cgDbPassHint="b4n"
     export cgDbUser="$USER"
     export cgUseRemote=false
-    export cgSshKey="$HOME/.ssh/id.KEY-NAME"
     export cgUseLib=false
 to
     export cgDbHostRemote="myserver.example.com"
     export cgDbPassHint="fav-pet"
     export cgDbUser="example"
-    export cgUseRemote=true
-    export cgSshKey="$HOME/.ssh/id.mysys"
     export cgUseLib=true
 save, and exit
 
