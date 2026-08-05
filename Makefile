@@ -49,8 +49,7 @@ mPhp8.2 = \
 	php8.2-mbstring \
 	php8.2-xml
 
-mPhpUnit = src/bin/phpunit-9.phar
-    # PhpUnit = bin/phpunit-11.phar
+mPhpUnit = phpunit-9.6.35.phar
     # Version  8.x needs php 7.2.0
     # Version  9.x needs php 7.3.0
     # Version 10.x needs php 8.1.0
@@ -86,7 +85,7 @@ mBin = \
 	src/bin/shunit2.1 \
 	src/bin/bash-com.inc \
 	src/bin/bash-com.test \
-	$(mPhpUnit)
+	src/bin/$(mPhpUnit)
 
 
 # ========================================
@@ -111,7 +110,7 @@ dist-clean : clean
 test :
 	src/bin/bib -T all
 	src/bin/bib -T com
-	$(mPhpUnit) src/test
+	src/bin/phpunit src/test
 
 # ========================================
 create-build-env : get-dep update-my-utility-scripts $(mBin) .git/hooks/pre-commit check-php-ini
@@ -195,5 +194,6 @@ bin/sort-para.sh : $(mUtilScriptDir)/bin/sort-para.sh
 /usr/bin/php :
 	sudo apt-get install php php-common
 
-$(mPhpUnit) :
+phpunit src/bin/$(mPhpUnit) :
 	rsync -P moria.whyayh.com:/rel/archive/software/ThirdParty/phpunit/*.phar src/bin/
+	cd src/bin; ln -sf $(mPhpUnit) phpunit
