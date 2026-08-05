@@ -23,8 +23,8 @@ convert-lo-2-bib.php - copy lo table to create partially formatted bib fields.
 
 =head1 DESCRIPTION
 
-Generate the cgDbBib table from the $cgDbLo table. Make a backup of
-the cgDbBib table. This preprocessing makes it easier to use these fields
+Generate the cgDbTblBib table from the $cgDbLo table. Make a backup of
+the cgDbTblBib table. This preprocessing makes it easier to use these fields
 in the LibreOffice bibliography, because it only includes prefix and suffix
 punctuation if a field is not empty.
 
@@ -50,7 +50,7 @@ This help.
 
 Set these in conf.env
 
-    cgDbBib
+    cgDbTblBib
     cgDbLo
 
 =for comment =head1 FILES
@@ -116,23 +116,23 @@ function fValidate() {
 # -----------------------------
 function fCreateBibTable() {
     global $cgDbLo;
-    global $cgDbBib;
+    global $cgDbTblBib;
 
-    if (uTableExists($cgDbBib))
-        uRenameTable($cgDbBib);
+    if (uTableExists($cgDbTblBib))
+        uRenameTable($cgDbTblBib);
 
-    if (uTableExists($cgDbBib))
-        uExecSql("drop table $cgDbBib");
+    if (uTableExists($cgDbTblBib))
+        uExecSql("drop table $cgDbTblBib");
 
-    uExecSql("CREATE TABLE $cgDbBib SELECT * FROM $cgDbLo");
-    uExecSql("alter table $cgDbBib add primary key (Identifier)");
+    uExecSql("CREATE TABLE $cgDbTblBib SELECT * FROM $cgDbLo");
+    uExecSql("alter table $cgDbTblBib add primary key (Identifier)");
 } # fCreateBibTable
 
 # -----------------------------
 function fUpdateRec($pRec) {
-    global $cgDbBib;
+    global $cgDbTblBib;
 
-    $tSql = "update $cgDbBib set";
+    $tSql = "update $cgDbTblBib set";
     foreach (array_keys($pRec) as $tCol) {
         if ($pRec[$tCol] == '')
             continue;
@@ -165,13 +165,13 @@ function fUpdateRec($pRec) {
 # -----------------------------
 function fUpdateBibTable() {
     global $gDb;
-    global $cgDbBib;
+    global $cgDbTblBib;
     global $cgDebug;
 
     $tAltList =  array();
 
     # Get col to be updated
-    $tSql = "select * from $cgDbBib";
+    $tSql = "select * from $cgDbTblBib";
     $tRecH = $gDb->prepare($tSql);
     $tRecH->execute();
 

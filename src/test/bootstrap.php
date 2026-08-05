@@ -91,7 +91,7 @@ function uTestResetGlobals() {
     $GLOBALS["cgUseLib"] = 0;
     $GLOBALS["cgUseRemote"] = 0;
 
-    $GLOBALS["cgDbBib"] = "bib";
+    $GLOBALS["cgDbTblBib"] = "bib";
     $GLOBALS["cgDbHost"] = "127.0.0.1";
     $GLOBALS["cgDbLib"] = "lib";
     $GLOBALS["cgDbLo"] = "lo";

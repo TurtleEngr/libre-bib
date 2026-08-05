@@ -380,7 +380,7 @@ $ cd $HOME
 | $cgDbName | biblio_example | Data Base Name        |
 | $cgDbLo   | lo             | import-lo,  export-lo |
 | $cgDbLib  | lib            | import-lib, update-lo |
-| $cgDbBib  | bib            | import-lo             |
+| $cgDbTblBib  | bib            | import-lo             |
 |           | join_lib_lo    | update-lo             |
 ```
 
@@ -555,7 +555,7 @@ app. They are executed in this order, so the last definition wins.
 
     This is the name of the primary LibreOffice bibliographic DB table.
 
--   Var: \*\*cgDbBib="bib"\*\*
+-   Var: \*\*cgDbTblBib="bib"\*\*
 
     When the lo table is updated this table is created to do some simple
     formatting, so the bibliography will not be cluttered with duplicate

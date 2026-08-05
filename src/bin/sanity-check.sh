@@ -340,7 +340,7 @@ fCheckUser() {
 
     # ----------
     for gVar in \
-        cgDbBib \
+        cgDbTblBib \
         cgDbHost \
         cgDbHostRemote \
         cgDbLib \

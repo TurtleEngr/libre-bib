@@ -31,8 +31,8 @@ $cgDirTmp=$_ENV["cgDirTmp"];
 global $cgBackupNum;
 $cgBackupNum=$_ENV["cgBackupNum"];
 
-global $cgDbBib;
-$cgDbBib=$_ENV["cgDbBib"];
+global $cgDbTblBib;
+$cgDbTblBib=$_ENV["cgDbTblBib"];
 
 global $cgDbHost;
 $cgDbHost=$_ENV["cgDbHost"];

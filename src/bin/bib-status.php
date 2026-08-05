@@ -116,7 +116,7 @@ function fGetOps() {
 # -----------------------------
 function fValidate() {
     global $cgDocFile;
-    global $cgDbBib;
+    global $cgDbTblBib;
     global $cgBin;
 
     uValidateCommon();
@@ -186,7 +186,7 @@ function fStatus() {
 } # fStatus
 
 function fDbStatus() {
-    global $cgDbBib;
+    global $cgDbTblBib;
     global $cgDbHostRemote;
     global $cgDbLib;
     global $cgDbLo;
@@ -224,14 +224,14 @@ function fDbStatus() {
         echo "\t" . $tResult[0] . " rows\n";
     }
 
-    if ( ! uTableExists($cgDbBib)) {
-        echo "$cgDbBib table is not defined. Create with: bib import-lo";
+    if ( ! uTableExists($cgDbTblBib)) {
+        echo "$cgDbTblBib table is not defined. Create with: bib import-lo";
     } else {
-        $tStmt = uExecSql("select column_name from information_schema.columns where table_name = '" . $cgDbBib . "'");
+        $tStmt = uExecSql("select column_name from information_schema.columns where table_name = '" . $cgDbTblBib . "'");
         $tResult = $tStmt->fetchAll(PDO::FETCH_COLUMN);
-        echo "\nfields for table $cgDbBib\n\t" . implode(", ", $tResult) . "\n";
+        echo "\nfields for table $cgDbTblBib\n\t" . implode(", ", $tResult) . "\n";
 
-        $tStmt = uExecSql("select count(*) from $cgDbBib");
+        $tStmt = uExecSql("select count(*) from $cgDbTblBib");
         $tResult = $tStmt->fetchAll(PDO::FETCH_COLUMN);
         echo "\t" . $tResult[0] . " rows\n";
     }

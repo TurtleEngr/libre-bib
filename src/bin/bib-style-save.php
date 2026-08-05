@@ -96,7 +96,7 @@ function fGetOps() {
 # -----------------------------
 function fValidate() {
     global $cgDocFile;
-    global $cgDbBib;
+    global $cgDbTblBib;
     global $cgBin;
     global $cgDirApp;
 

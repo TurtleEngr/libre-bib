@@ -53,7 +53,7 @@ cgDirApp is required
 Set these in conf.env
 
     cgDocFile              # Your doc file, to whole reason for this app
-    cgDbBib                # Partially formatted cgDbLo table
+    cgDbTblBib                # Partially formatted cgDbLo table
 
 =for comment =head1 FILES
 
@@ -109,14 +109,14 @@ function fGetOps() {
 # -----------------------------
 function fValidate() {
     global $cgDocFile;
-    global $cgDbBib;
+    global $cgDbTblBib;
     global $cgBin;
     global $cgDirApp;
     global $cgDirEtc;
 
     uValidateCommon();
 
-    if ( ! uTableExists($cgDbBib))
+    if ( ! uTableExists($cgDbTblBib))
         throw new Exception("\nError: -t Table $gpFromTable does not exist. [bib-ref-new.php:" . __LINE__ . "]");
 
     if ( ! file_exists("$cgDirEtc/cite-new.xml"))
@@ -152,7 +152,7 @@ function fUseTemplate($pRef) {
 # -----------------------------
 function fBibLookup($pRefList) {
     global $gDb;
-    global $cgDbBib;
+    global $cgDbTblBib;
     global $cgDebug;
 
     # Add 'type', 'data' from DB col or 'id'
@@ -160,7 +160,7 @@ function fBibLookup($pRefList) {
     $cBib2Xml = uBib2Xml();
 
     foreach (array_keys($pRefList) as $tRef) {
-        $tSql = "select * from $cgDbBib where Identifier = '" . $pRefList[$tRef]['id'] . "'";
+        $tSql = "select * from $cgDbTblBib where Identifier = '" . $pRefList[$tRef]['id'] . "'";
         $tRecH = $gDb->prepare($tSql);
         $tRecH->execute();
         $tRow = $tRecH->fetch(PDO::FETCH_ASSOC);

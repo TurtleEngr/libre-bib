@@ -3,7 +3,7 @@
 # Expected pBase values:
 # all - do all of these:
 # $cgDbLo
-# $cgDbBib
+# $cgDbTblBib
 # $cgDbLib
 
 if [[ -z "$cgDirBackup" ]]; then
@@ -30,7 +30,7 @@ tBaseList=$pBase
 if [[ "$pBase" = "all" ]]; then
     tBaseList="\
         $cgDbLo \
-        $cgDbBib \
+        $cgDbTblBib \
         $cgDbLib \
     "
 fi

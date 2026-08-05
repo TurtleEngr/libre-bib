@@ -26,7 +26,7 @@ bib-ref-update.php - update bib refs into Libreoffice odt document
 First run bib-ref-new.php.
 
 The existing biblio references will be replace with new entries from
-the cgDbBib table. There is no comparison to see if things are
+the cgDbTblBib table. There is no comparison to see if things are
 different.  Everything is just replaced, even things are the same.
 
 =head1 OPTIONS
@@ -52,7 +52,7 @@ This help.
 Set these in conf.env
 
     cgDocFile              # Your doc file, to whole reason for this app
-    cgDbBib                # Partially formatted cgDbLo table
+    cgDbTblBib                # Partially formatted cgDbLo table
 
 =for comment =head1 FILES
 
@@ -107,13 +107,13 @@ function fGetOps() {
 function fValidate() {
     global $cgBin;
     global $cgDocFile;
-    global $cgDbBib;
+    global $cgDbTblBib;
     global $cgDirApp;
     global $cgDirEtc;
 
     uValidateCommon();
 
-    if ( ! uTableExists($cgDbBib))
+    if ( ! uTableExists($cgDbTblBib))
         throw new Exception("\nError: -t Table $gpFromTable does not exist. [bib-ref-update.php:" . __LINE__ . "]");
 
     if ( ! file_exists("$cgDirEtc/cite-update.xml"))
@@ -143,7 +143,7 @@ function fUseTemplate($pRef) {
 # -----------------------------
 function fBibLookup($pRef) {
     global $gDb;
-    global $cgDbBib;
+    global $cgDbTblBib;
     global $cgDebug;
 
     $cBib2Xml = uBib2Xml();
@@ -151,7 +151,7 @@ function fBibLookup($pRef) {
     $pRef['tag'] = "";
     $pRef['data'] = "";
 
-    $tSql = "select * from $cgDbBib where Identifier = '" . $pRef['id'] . "'";
+    $tSql = "select * from $cgDbTblBib where Identifier = '" . $pRef['id'] . "'";
     $tRecH = $gDb->prepare($tSql);
     $tRecH->execute();
     $tRow = $tRecH->fetch(PDO::FETCH_ASSOC);
