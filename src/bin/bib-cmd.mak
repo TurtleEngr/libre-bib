@@ -61,7 +61,7 @@ setup-bib : $(cgDirEtc) $(cgDirStatus) $(cgDirTmp) $(cgDirBackup) $(cgDirConf) $
 # Import: $(cgLoFile)
 
 import-lo : $(cgDirStatus)/import-lo.date
-	@echo "Done. $(cgDbLo) table is up-to-date with $(cgLoFile)"
+	@echo "Done. $(cgDbTblLo) table is up-to-date with $(cgLoFile)"
 
 $(cgDirStatus)/import-lo.date : conf.env $(cgLoFile)
 	$(cgBin)/import-txt-2-lo.php -c
@@ -88,7 +88,7 @@ backup-lo :
 	echo "$(mDate) backup-lo" >$(cgDirStatus)/$@.date
 
 restore-lo :
-	echo "Are you sure you want to replace the $(cgDbLo) table?"
+	echo "Are you sure you want to replace the $(cgDbTblLo) table?"
 	read -p "y/n: "
 	if [[ $$REPLY != "y" ]]; then exit 10; fi
 	$(cgBin)/import-tcsv-2-lo-db.php -c -s c

@@ -52,7 +52,7 @@ This help.
 Set these in conf.env
 
     cgDocFile              # Your doc file, to whole reason for this app
-    cgDbTblBib                # Partially formatted cgDbLo table
+    cgDbTblBib                # Partially formatted cgDbTblLo table
 
 =for comment =head1 FILES
 

@@ -40,8 +40,8 @@ $cgDbHost=$_ENV["cgDbHost"];
 global $cgDbLib;
 $cgDbLib=$_ENV["cgDbLib"];
 
-global $cgDbLo;
-$cgDbLo=$_ENV["cgDbLo"];
+global $cgDbTblLo;
+$cgDbTblLo=$_ENV["cgDbTblLo"];
 
 global $cgDbName;
 $cgDbName=$_ENV["cgDbName"];

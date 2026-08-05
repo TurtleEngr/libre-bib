@@ -85,7 +85,6 @@ function uValidateCommon() {
     global $cgDbPortRemote;
     global $cgDbUser;
     global $cgDebug;
-    global $cgUseRemote;
     global $gDb;
     global $gPassword;
 
@@ -97,11 +96,7 @@ function uValidateCommon() {
         echo "\nWarning: Password is null [util.php:" . __LINE__ . "]\n";
 
     # Create database connection
-    $tDsn = "mysql:dbname=$cgDbName;charset=UTF8;host=$cgDbHost;port=";
-    if ($cgUseRemote)
-        $tDsn .= $cgDbPortRemote;
-    else
-        $tDsn .= $cgDbPortLocal;
+    $tDsn = "mysql:dbname=$cgDbName;charset=UTF8;host=$cgDbHost;port=$cgDbPortLocal";
 
     if ($cgDebug) { echo "$tDsn, $cgDbUser \n"; }
     $gDb = new PDO($tDsn, $cgDbUser, "$gPassword");
@@ -125,14 +120,10 @@ function uBool($pVal) {
 function uFixBool() {
     global $cgDebug;
     global $cgNoExec;
-    global $cgUseLib;
-    global $cgUseRemote;
     global $cgVerbose;
 
     $cgDebug = uBool($cgDebug);
     $cgNoExec = uBool($cgNoExec);
-    $cgUseLib = uBool($cgUseLib);
-    $cgUseRemote = uBool($cgUseRemote);
     $cgVerbose = uBool($cgVerbose);
 
     if ($cgVerbose) {
@@ -142,10 +133,6 @@ function uFixBool() {
             echo "NoExec is on.\n";
         if ($cgVerbose)
             echo "Verbose is on.\n";
-        if ($cgUseRemote)
-            echo "UseRemote is on.\n";
-        if ($cgUseLib)
-            echo "UseLib is on.\n";
     }
 } # fFixBool
 

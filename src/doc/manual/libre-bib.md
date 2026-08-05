@@ -205,7 +205,7 @@ setup properly edit your project/conf.env file. Set the variables:
 | cgDbHost       | keep this set to the localhost IP        |
 | cgDbName       | name of the mysql database               |
 | cgDbPortRemote | remote port, on project's system.        |
-| cgDbLocalPort  | port for mysql on the remote system      |
+| cgDbTblLocalPort  | port for mysql on the remote system      |
 | cgDbUser       | DB user with grants to cgDbName          |
 | cgDbPassHint   | hint for the password prompt             |
 | cgDbSshUser    | user that can login to the remote system |
@@ -378,7 +378,7 @@ $ cd $HOME
 | Variable  | Default        | Used by               |
 |-----------+----------------+-----------------------|
 | $cgDbName | biblio_example | Data Base Name        |
-| $cgDbLo   | lo             | import-lo,  export-lo |
+| $cgDbTblLo   | lo             | import-lo,  export-lo |
 | $cgDbLib  | lib            | import-lib, update-lo |
 | $cgDbTblBib  | bib            | import-lo             |
 |           | join_lib_lo    | update-lo             |
@@ -551,7 +551,7 @@ app. They are executed in this order, so the last definition wins.
     can put after the Tags. It isn't used anywhere else, so you can edit
     or delete the file.
 
--   Var: \*\*cgDbLo="lo"\*\*
+-   Var: \*\*cgDbTblLo="lo"\*\*
 
     This is the name of the primary LibreOffice bibliographic DB table.
 

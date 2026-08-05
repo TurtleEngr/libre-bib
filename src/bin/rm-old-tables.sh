@@ -2,7 +2,7 @@
 
 # Expected pBase values:
 # all - do all of these:
-# $cgDbLo
+# $cgDbTblLo
 # $cgDbTblBib
 # $cgDbLib
 
@@ -29,7 +29,7 @@ fi
 tBaseList=$pBase
 if [[ "$pBase" = "all" ]]; then
     tBaseList="\
-        $cgDbLo \
+        $cgDbTblLo \
         $cgDbTblBib \
         $cgDbLib \
     "

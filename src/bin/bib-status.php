@@ -128,8 +128,6 @@ function fStatus() {
     global $cgDirStatus;
     global $cgDocFile;
     global $cgLoFile;
-    global $cgUseLib;
-    global $cgLibFileIn;
 
     if ( ! file_exists("$cgDirStatus/import-lo.date")) {
         echo "Time to run: bib import-lo\n";
@@ -138,27 +136,6 @@ function fStatus() {
             echo "$cgLoFile is newer, run: bib import-lo\n";
             if ($cgUseLib)
                 echo "If OK, run: bib update-lo\n";
-        }
-    }
-
-    if ($cgUseLib) {
-        if ( ! file_exists("$cgDirStatus/import-lib.date")) {
-            echo "Time to run: bib import-lib\n";
-            echo "If OK,  run: bib update-lo\n";
-        } else {
-            if (filemtime($cgLibFileIn) >
-                filemtime("$cgDirStatus/import-lib.date")) {
-                echo "$gLibFileIn is newer, run: bib import-lib\n";
-                echo "If OK, run: bib update-lo\n";
-            }
-        }
-
-        if (file_exists("$cgDirStatus/import-lib.date") and
-            file_exists("$cgDirStatus/update-lo.date")) {
-            if (filemtime("$cgDirStatus/import-lib.date") >
-                filemtime("$cgDirStatus/update-lo.date")) {
-                echo "Lib table has been updated, run: bib update-lo\n";
-            }
         }
     }
 
@@ -187,21 +164,15 @@ function fStatus() {
 
 function fDbStatus() {
     global $cgDbTblBib;
-    global $cgDbHostRemote;
-    global $cgDbLib;
-    global $cgDbLo;
+    global $cgDbTblLo;
     global $cgDbName;
     global $cgUseLib;
-    global $cgUseRemote;
     global $cgVerbose;
 
     if ( ! $cgVerbose)
         return 0;
 
     echo "\nVerbose is on so listing DB information.\n";
-
-    if ($cgUseRemote)
-        echo "Connected to remote DB at: $cgDbHostRemote\n";
 
     $tStmt = uExecSql("show databases");
     $tResult = $tStmt->fetchAll(PDO::FETCH_COLUMN);
@@ -212,14 +183,14 @@ function fDbStatus() {
     $tResult = $tStmt->fetchAll(PDO::FETCH_COLUMN);
     echo "show tables\n\t" . implode("\n\t", $tResult) . "\n";
 
-    if ( ! uTableExists($cgDbLo)) {
-        echo "$cgDbLo table is not defined. Create with: bib import-lo";
+    if ( ! uTableExists($cgDbTblLo)) {
+        echo "$cgDbTblLo table is not defined. Create with: bib import-lo";
     } else {
-        $tStmt = uExecSql("select column_name from information_schema.columns where table_name = '" . $cgDbLo . "'");
+        $tStmt = uExecSql("select column_name from information_schema.columns where table_name = '" . $cgDbTblLo . "'");
         $tResult = $tStmt->fetchAll(PDO::FETCH_COLUMN);
-        echo "\nfields for table $cgDbLo\n\t" . implode(", ", $tResult) . "\n";
+        echo "\nfields for table $cgDbTblLo\n\t" . implode(", ", $tResult) . "\n";
 
-        $tStmt = uExecSql("select count(*) from $cgDbLo");
+        $tStmt = uExecSql("select count(*) from $cgDbTblLo");
         $tResult = $tStmt->fetchAll(PDO::FETCH_COLUMN);
         echo "\t" . $tResult[0] . " rows\n";
     }
@@ -235,20 +206,6 @@ function fDbStatus() {
         $tResult = $tStmt->fetchAll(PDO::FETCH_COLUMN);
         echo "\t" . $tResult[0] . " rows\n";
     }
-
-    if ($cgUseLib) {
-        if ( ! uTableExists($cgDbLib)) {
-            echo "$cgDbLib table is not defined. Create with: bib import-lib";
-        } else {
-            $tStmt = uExecSql("select column_name from information_schema.columns where table_name = '" . $cgDbLib . "'");
-            $tResult = $tStmt->fetchAll(PDO::FETCH_COLUMN);
-            echo "\nfields for table $cgDbLib\n\t" . implode(", ", $tResult) . "\n";
-            $tStmt = uExecSql("select count(*) from $cgDbLib");
-            $tResult = $tStmt->fetchAll(PDO::FETCH_COLUMN);
-            echo "\t" . $tResult[0] . " rows\n";
-        }
-    }
-
 } # fDbStatus
 
 # ========================================

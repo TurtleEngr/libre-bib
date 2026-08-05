@@ -24,7 +24,7 @@ export-lo-2-txt.php - export lo db to biblio.txt
 
 =head1 DESCRIPTION
 
-Table cgDbLo will be exported to cgDirTmp/cgLoFile. That is, the table
+Table cgDbTblLo will be exported to cgDirTmp/cgLoFile. That is, the table
 will be converted to a text file.
 
 =head1 OPTIONS
@@ -49,7 +49,7 @@ This help.
 
 Set these in conf.env
 
-    cgDbLo
+    cgDbTblLo
     cgDirTmp
     cgLoFile
 
@@ -105,7 +105,7 @@ function fGetOps() {
 
 # -----------------------------
 function fValidate() {
-    global $cgDbLo;
+    global $cgDbTblLo;
     global $cgDebug;
     global $cgDirTmp;
     global $cgLoFile;
@@ -121,14 +121,14 @@ function fValidate() {
     if (($gFileH = fopen($gFileOut, "w")) == FALSE)
         throw new Exception("Cannot open file: $gFileOut. [export-lo-2-txt.php:" . __LINE__ . "]");
 
-    if ( ! uTableExists($cgDbLo))
-        throw new Exception("\nError: Missing table $cgDbLo [export-lo-2-txt.php:" . __LINE__ . "]");
+    if ( ! uTableExists($cgDbTblLo))
+        throw new Exception("\nError: Missing table $cgDbTblLo [export-lo-2-txt.php:" . __LINE__ . "]");
 } # fValidate
 
 # -----------------------------
 function fExportTable() {
     global $cgBin;
-    global $cgDbLo;
+    global $cgDbTblLo;
     global $cgDebug;
     global $cgDirTmp;
     global $gDb;
@@ -146,7 +146,7 @@ function fExportTable() {
         "Pages", "School", "Series", "Volume", "Custom5");
 
     # Get all columns
-    $tRecH = $gDb->prepare("select * from $cgDbLo");
+    $tRecH = $gDb->prepare("select * from $cgDbTblLo");
     $tRecH->execute();
 
     # Get each record and output the biblio.txt block

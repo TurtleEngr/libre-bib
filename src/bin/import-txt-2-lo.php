@@ -23,7 +23,7 @@ import-txt-2lo.php - import biblio.txt to lo db
 
 =head1 DESCRIPTION
 
-Import file cgLoFile to table cgDbLo, in DB cgDbName.
+Import file cgLoFile to table cgDbTblLo, in DB cgDbName.
 
 All records blocks in cgLoFile must start with: "Id:"
 
@@ -50,7 +50,7 @@ This help.
 Set these in conf.env
 
     cgLoFile
-    cgDbLo
+    cgDbTblLo
 
 =for comment =head1 FILES
 
@@ -116,35 +116,35 @@ function fValidate() {
 
 # -----------------------------
 function fCreateTable() {
-    global $cgDbLo;
+    global $cgDbTblLo;
     global $gBackupName;
 
     $gBackupName = "";
-    if (uTableExists($cgDbLo))
-        $gBackupName = uRenameTable($cgDbLo);
+    if (uTableExists($cgDbTblLo))
+        $gBackupName = uRenameTable($cgDbTblLo);
 
-    if (uTableExists($cgDbLo))
-        uExecSql("drop table $cgDbLo");
+    if (uTableExists($cgDbTblLo))
+        uExecSql("drop table $cgDbTblLo");
 
     $cLoCol = uLoCol();
-    $tSql = "CREATE TABLE $cgDbLo (";
+    $tSql = "CREATE TABLE $cgDbTblLo (";
     foreach (array_values($cLoCol) as $tCol)
         $tSql .= "`$tCol` VARCHAR(255),";
     $tSql = rtrim($tSql, ",") . ")";
 
     uExecSql("$tSql");
-    uExecSql("alter table $cgDbLo add primary key (Identifier)");
+    uExecSql("alter table $cgDbTblLo add primary key (Identifier)");
 } # fCreateTable
 
 # -----------------------------
 function fInsertRec($pRec) {
     global $gDb;
-    global $cgDbLo;
+    global $cgDbTblLo;
     global $cgDebug;
     global $gNumLine;
     global $gNumRec;
 
-    $tSql = "INSERT INTO $cgDbLo (`" .
+    $tSql = "INSERT INTO $cgDbTblLo (`" .
         implode("`,`", array_keys($pRec)) .
         "`) VALUES (\"" .
         implode('","', array_values($pRec)) .
@@ -213,7 +213,7 @@ function fImportTxt() {
     global $gNumLine;
     global $gNumRec;
     global $cgDebug;
-    global $cgDbLo;
+    global $cgDbTblLo;
     global $cgVerbose;
 
     $tRec = uLoColValue();
@@ -297,7 +297,7 @@ try {
     fImportTxt();
 } catch(Exception $e) {
     echo "\nProblem creating table: " . $e->getMessage() . "\n";
-    echo "Concider restoring $cgDbLo from $gBackupName\n";
+    echo "Concider restoring $cgDbTblLo from $gBackupName\n";
     exit(2);     # ---------->
 }
 

@@ -23,7 +23,7 @@ export-lo-2-tcvs.php - export lo db to csv or tsv file
 
 =head1 DESCRIPTION
 
-Export the cgDbLo table to file cgBackupFile. Which is usally put in
+Export the cgDbTblLo table to file cgBackupFile. Which is usally put in
 cgDirBackup. Copy cgBackupFile before running this, if you want to
 keep it.
 
@@ -51,7 +51,7 @@ This help.
 
 =head1 ENVIRONMENT
 
-    cgDbLo
+    cgDbTblLo
     cgBackupFile
 
 =for comment =head1 FILES
@@ -92,7 +92,7 @@ function fGetOps() {
     global $gpHelp;
     global $cgNoExec;
     global $gpSep;
-    global $cgDbLo;
+    global $cgDbTblLo;
     global $cgVerbose;
 
     $gpHelp = false;
@@ -117,7 +117,7 @@ function fGetOps() {
 function fValidate() {
     global $gSep;
     global $gpSep;
-    global $cgDbLo;
+    global $cgDbTblLo;
 
     uValidateCommon();
 
@@ -134,8 +134,8 @@ function fValidate() {
         throw new Exception("\nError: Bad -s. Should be 'c' or 's'. [export-lo-2-tcsv.php:" . __LINE__ . "]");
     }
 
-    if ( ! uTableExists($cgDbLo))
-        throw new Exception("\nError: -t Table $cgDbLo does not exist. [export-lo-2-tcsv.php:" . __LINE__ . "]");
+    if ( ! uTableExists($cgDbTblLo))
+        throw new Exception("\nError: -t Table $cgDbTblLo does not exist. [export-lo-2-tcsv.php:" . __LINE__ . "]");
 } # fValidate
 
 # -----------------------------
@@ -144,7 +144,7 @@ function fExportTable() {
     global $cgDebug;
     global $cgBackupFile;
     global $gSep;
-    global $cgDbLo;
+    global $cgDbTblLo;
     global $cgDirApp;
 
     # Get header "official" header from src/biblio.dbf

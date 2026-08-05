@@ -94,7 +94,7 @@ function uTestResetGlobals() {
     $GLOBALS["cgDbTblBib"] = "bib";
     $GLOBALS["cgDbHost"] = "127.0.0.1";
     $GLOBALS["cgDbLib"] = "lib";
-    $GLOBALS["cgDbLo"] = "lo";
+    $GLOBALS["cgDbTblLo"] = "lo";
     $GLOBALS["cgDbName"] = "biblio_test";
     $GLOBALS["cgDbPassCache"] = "$cgDirTmpTest/no-such-pass-cache";
     $GLOBALS["cgDbPortLocal"] = "3306";

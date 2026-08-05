@@ -2,7 +2,7 @@
 
 # Expected pBase values:
 # all - do all of these:
-# $cgDirBackup/backup-${cgDbLo}.csv.sav
+# $cgDirBackup/backup-${cgDbTblLo}.csv.sav
 # $cgDirBackup/${cgDocFile}
 # $cgDirBackup/cite-new.xml
 # $cgDirBackup/cite-update.xml
@@ -32,7 +32,7 @@ fi
 tBaseList=$pBase
 if [[ "$pBase" = "all" ]]; then
     tBaseList="\
-        $cgDirBackup/backup-${cgDbLo}.csv.sav \
+        $cgDirBackup/backup-${cgDbTblLo}.csv.sav \
         $cgDirBackup/${cgDocFile} \
         $cgDirBackup/cite-new.xml \
         $cgDirBackup/cite-update.xml \

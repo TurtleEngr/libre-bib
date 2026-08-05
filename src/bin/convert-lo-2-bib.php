@@ -23,7 +23,7 @@ convert-lo-2-bib.php - copy lo table to create partially formatted bib fields.
 
 =head1 DESCRIPTION
 
-Generate the cgDbTblBib table from the $cgDbLo table. Make a backup of
+Generate the cgDbTblBib table from the $cgDbTblLo table. Make a backup of
 the cgDbTblBib table. This preprocessing makes it easier to use these fields
 in the LibreOffice bibliography, because it only includes prefix and suffix
 punctuation if a field is not empty.
@@ -51,7 +51,7 @@ This help.
 Set these in conf.env
 
     cgDbTblBib
-    cgDbLo
+    cgDbTblLo
 
 =for comment =head1 FILES
 
@@ -105,17 +105,17 @@ function fGetOps() {
 # -----------------------------
 function fValidate() {
     global $cgBin;
-    global $cgDbLo;
+    global $cgDbTblLo;
 
     uValidateCommon();
 
-    if ( ! uTableExists($cgDbLo))
-        throw new Exception("\nError: Missing $cgDbLo Table. [convert-lo-2-bib.php:" . __LINE__ . "]");
+    if ( ! uTableExists($cgDbTblLo))
+        throw new Exception("\nError: Missing $cgDbTblLo Table. [convert-lo-2-bib.php:" . __LINE__ . "]");
 } # fValidate
 
 # -----------------------------
 function fCreateBibTable() {
-    global $cgDbLo;
+    global $cgDbTblLo;
     global $cgDbTblBib;
 
     if (uTableExists($cgDbTblBib))
@@ -124,7 +124,7 @@ function fCreateBibTable() {
     if (uTableExists($cgDbTblBib))
         uExecSql("drop table $cgDbTblBib");
 
-    uExecSql("CREATE TABLE $cgDbTblBib SELECT * FROM $cgDbLo");
+    uExecSql("CREATE TABLE $cgDbTblBib SELECT * FROM $cgDbTblLo");
     uExecSql("alter table $cgDbTblBib add primary key (Identifier)");
 } # fCreateBibTable
 

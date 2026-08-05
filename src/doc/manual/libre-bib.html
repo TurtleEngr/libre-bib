@@ -306,7 +306,7 @@ quit;
 | cgDbHost       | keep this set to the localhost IP        |
 | cgDbName       | name of the mysql database               |
 | cgDbPortRemote | remote port, on project's system.        |
-| cgDbLocalPort  | port for mysql on the remote system      |
+| cgDbTblLocalPort  | port for mysql on the remote system      |
 | cgDbUser       | DB user with grants to cgDbName          |
 | cgDbPassHint   | hint for the password prompt             |
 | cgDbSshUser    | user that can login to the remote system |
@@ -456,7 +456,7 @@ bib style-save     # Run this if you change bibliography &gt; Entries
 | Variable  | Default        | Used by               |
 |-----------+----------------+-----------------------|
 | $cgDbName | biblio_example | Data Base Name        |
-| $cgDbLo   | lo             | import-lo,  export-lo |
+| $cgDbTblLo   | lo             | import-lo,  export-lo |
 | $cgDbLib  | lib            | import-lib, update-lo |
 | $cgDbTblBib  | bib            | import-lo             |
 |           | join_lib_lo    | update-lo             |
@@ -626,7 +626,7 @@ bib style-save     # Run this if you change bibliography &gt; Entries
       delete the file.</p>
     </li>
     <li>
-      <p>Var: <strong><strong>cgDbLo="lo"</strong></strong></p>
+      <p>Var: <strong><strong>cgDbTblLo="lo"</strong></strong></p>
       <p>This is the name of the primary LibreOffice bibliographic DB
       table.</p>
     </li>

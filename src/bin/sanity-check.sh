@@ -344,7 +344,7 @@ fCheckUser() {
         cgDbHost \
         cgDbHostRemote \
         cgDbLib \
-        cgDbLo \
+        cgDbTblLo \
         cgDbName \
         cgDbPassCache \
         cgDbPassHint \
