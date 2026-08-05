@@ -1,0 +1,99 @@
+#+BEGIN_EXPORT html
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+    "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/html;charset=UTF-8">
+<title>Example Outline - Create Docs</title>
+<link rel="stylesheet"
+      href="example-outline.css" /></head>
+<body>
+#+END_EXPORT
+* Example Outline - Create Docs
+- This is an example of using emacs org-mode to create documents.
+- It is a good starting point for large documents. It can be easily
+  converted to html for reviews.
+- Once things look good, the html file can be converted to a
+  libreoffice odt (write) file. After that conversion, you'll continue
+  work only with the odt file, to format the final document.
+** Tips
+*** org-mode tips
+- For help with emacs org-mode see: https://orgmode.org/manuals.html
++ Use a '-' at the  beginning of blocks of text, so the blocks can be
+  collapsed with TAB. The html conversion will remove the '-' and
+  treat it as a paragraph (not a list item).
++ If you want a text block to be a bullet list item, prefix it with a
+  '+'
++ Use '* ', '** ', or '*** ', at the beginning of section. TAB will
+  expand/collapse the sections. You can used more '*', but only the
+  first 3 levels will be converted to HTML h1, h2, etc tags.
++ '<' and '>' characers will be preserved in the HTML output,
+  so can use HTML for some formatting.
++ Do try the table creation mode in org-mode. It is quick and easy
+  for simple tables.
+*** HTML tips
++ Use css to control the formatting.
++ Convert the file to HTML with pandoc. A sed script is used to fix up
+  things before converting. Use: bib to do the conversion.  For
+  example:
+
+  <pre>
+  bib example-outline.html
+  </pre>
+*** biblography tips
++ biblio.txt
++ biblio-note.txt
++ Libre-Bib app
++ LibraryThing
+*** Libreoffice Write
++ Only use "styles" to make formatting changes to text in a docuument.
+  Select the desired text, then select the style.
++ Use the style tool to modify the style of your page, paragraphs, and
+  characters.
++ Need some special formatting, make up a your own style, under a
+  similar style. Never make a manual change to the text.
+** The full process
+*** Org Doc File
++ edit things with: emacs FILE.org (adding {REF} tags as desired)
++ Create HTML file: bib FILE.html
++ Create write file: bib FILE.odt
++ Now only edit FILE.odt
+*** biblio.txt File
++ Edit biblio.txt with references "Id:" is the most important tag.
++ Import biblio.txt: bib import-lo
++ Import librarything.tsv: bib import-lib 
++ Update lo table with lib table: bib update-lo
++ Export a new biblio.txt file with lib changes: bib export-lo
+*** Libreoffice Write
++ Run libreoffice and attach to the bib DB (see libre-bib manual)
++ Use the EndNote character style to format the {REF} tags
+  (But do not manually apply that style!)
++ Use bib to update all new {REF}s from the DB: bib bib-new
++ If the DB has changed, update the {REF}s: bib bib-update
++ Create the Bibliography at the end of doc
++ Edit the Biblio style for each of REF types used.
+
+** Examples
+*** Bullet lists
+- See the earler part of this doc for examples. Look for '+' at
+  beginning of the lines
+*** Tables
+- This is a simple table. Start with a '|', Head1 , '|', Head2, '|',
+  TAB Go to the new line with '|'s, backkup and make a '|-' at the
+  beginning, then TAB. Now the heading part is defined. Continue with
+  puting text between the bars, hitting TAB when you are done with
+  a row.
+
+  | Head1                            | Head1                           |
+  |----------------------------------+---------------------------------|
+  | row1 item                        | row2 item                       |
+  | what if it is a really long line | It will scale to fit            |
+  |                                  | And the css can do the wrapping |
+*** Block quotes
+- Simply use the blockquote tag. And add the {REF} after the quote.
+
+  - <blockquote>ssara df sda fdsa sf dsa
+    fads{eisenstein-12}</blockquote>
+*** Cites inline
+
+- Citations can also be used inline.{eisenstein-10}

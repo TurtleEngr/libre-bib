@@ -1,0 +1,136 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"
+    "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+  <meta http-equiv="Content-Type"
+        content="text/html; charset=utf-8" />
+  <title>Example Outline - Create Docs</title>
+  <link rel="stylesheet"
+        href="example-outline.css" />
+</head>
+<body>
+  <hr />
+  <hr />
+  <h1 id="example-outline---create-docs">Example Outline - Create Docs</h1>
+  <p>This is an example of using emacs org-mode to create documents.</p>
+  <p>It is a good starting point for large documents. It can be easily
+  converted to html for reviews.</p>
+  <p>Once things look good, the html file can be converted to a libreoffice
+  odt (write) file. After that conversion, you'll continue work only with the
+  odt file, to format the final document.</p>
+  <hr />
+  <h2 id="tips">Tips</h2>
+  <h3 id="org-mode-tips">org-mode tips</h3>
+  <p>For help with emacs org-mode see: <a href=
+  "https://orgmode.org/manuals.html">https://orgmode.org/manuals.html</a></p>
+  <ul>
+    <li>Use a '-' at the beginning of blocks of text, so the blocks can be
+    collapsed with TAB. The html conversion will remove the '-' and treat it
+    as a paragraph (not a list item).</li>
+    <li>If you want a text block to be a bullet list item, prefix it with a
+    '+'</li>
+    <li>Use '* ', '** ', or '<strong>*</strong> ', at the beginning of
+    section. TAB will expand/collapse the sections. You can used more '*',
+    but only the first 3 levels will be converted to HTML h1, h2, etc
+    tags.</li>
+    <li>'&lt;' and '&gt;' characers will be preserved in the HTML output, so
+    can use HTML for some formatting.</li>
+    <li>Do try the table creation mode in org-mode. It is quick and easy for
+    simple tables.</li>
+  </ul>
+  <h3 id="html-tips">HTML tips</h3>
+  <ul>
+    <li>
+      <p>Use css to control the formatting.</p>
+    </li>
+    <li>
+      <p>Convert the file to HTML with pandoc. A sed script is used to fix up
+      things before converting. Use: bib to do the conversion. For
+      example:</p>
+      <pre> bib example-outline.html </pre>
+    </li>
+  </ul>
+  <h3 id="biblography-tips">biblography tips</h3>
+  <ul>
+    <li>biblio.txt</li>
+    <li>biblio-note.txt</li>
+    <li>Libre-Bib app</li>
+    <li>LibraryThing</li>
+  </ul>
+  <h3 id="libreoffice-write">Libreoffice Write</h3>
+  <ul>
+    <li>Only use "styles" to make formatting changes to text in a docuument.
+    Select the desired text, then select the style.</li>
+    <li>Use the style tool to modify the style of your page, paragraphs, and
+    characters.</li>
+    <li>Need some special formatting, make up a your own style, under a
+    similar style. Never make a manual change to the text.</li>
+  </ul>
+  <hr />
+  <h2 id="the-full-process">The full process</h2>
+  <h3 id="org-doc-file">Org Doc File</h3>
+  <ul>
+    <li>edit things with: emacs FILE.org (adding {REF} tags as desired)</li>
+    <li>Create HTML file: bib FILE.html</li>
+    <li>Create write file: bib FILE.odt</li>
+    <li>Now only edit FILE.odt</li>
+  </ul>
+  <h3 id="biblio.txt-file">biblio.txt File</h3>
+  <ul>
+    <li>Edit biblio.txt with references "Id:" is the most important tag.</li>
+    <li>Import biblio.txt: bib import-lo</li>
+    <li>Import librarything.tsv: bib import-lib</li>
+    <li>Update lo table with lib table: bib update-lo</li>
+    <li>Export a new biblio.txt file with lib changes: bib export-lo</li>
+  </ul>
+  <h3 id="libreoffice-write-1">Libreoffice Write</h3>
+  <ul>
+    <li>Run libreoffice and attach to the bib DB (see libre-bib manual)</li>
+    <li>Use the EndNote character style to format the {REF} tags (But do not
+    manually apply that style!)</li>
+    <li>Use bib to update all new {REF}s from the DB: bib bib-new</li>
+    <li>If the DB has changed, update the {REF}s: bib bib-update</li>
+    <li>Create the Bibliography at the end of doc</li>
+    <li>Edit the Biblio style for each of REF types used.</li>
+  </ul>
+  <hr />
+  <h2 id="examples">Examples</h2>
+  <h3 id="bullet-lists">Bullet lists</h3>
+  <p>See the earler part of this doc for examples. Look for '+' at beginning
+  of the lines</p>
+  <h3 id="tables">Tables</h3>
+  <p>This is a simple table. Start with a '|', Head1 , '|', Head2, '|', TAB
+  Go to the new line with '|'s, backkup and make a '|-' at the beginning,
+  then TAB. Now the heading part is defined. Continue with puting text
+  between the bars, hitting TAB when you are done with a row.</p>
+  <table>
+    <thead>
+      <tr class="header">
+        <th>Head1</th>
+        <th>Head1</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr class="odd">
+        <td>row1 item</td>
+        <td>row2 item</td>
+      </tr>
+      <tr class="even">
+        <td>what if it is a really long line</td>
+        <td>It will scale to fit</td>
+      </tr>
+      <tr class="odd">
+        <td></td>
+        <td>And the css can do the wrapping</td>
+      </tr>
+    </tbody>
+  </table>
+  <h3 id="block-quotes">Block quotes</h3>
+  <p>Simply use the blockquote tag. And add the {REF} after the quote.</p>
+  <blockquote>
+    <p>ssara df sda fdsa sf dsa fads{eisenstein-12}</p>
+  </blockquote>
+  <h3 id="cites-inline">Cites inline</h3>
+  <p>Citations can also be used inline.{eisenstein-10}</p>
+</body>
+</html>

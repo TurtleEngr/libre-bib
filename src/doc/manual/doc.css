@@ -1,0 +1,54 @@
+body { 
+    margin-left: 5%; 
+    margin-right: 5%; 
+    font-family: Times, serif; 
+    font-size: 110%; 
+    text-align: justify; 
+    background: white;
+    color: black;
+}
+dt { 
+    font-weight: bold; 
+    text-align: left; 
+}
+dd { 
+    text-align: left; 
+}
+blockquote { 
+    margin-left: 10%; 
+    font-family: "Times New Roman", serif; 
+    font-style: italic; 
+    text-align: left; 
+}
+pre { 
+    font-size: 100%; 
+    line-height: 100%; 
+    font-family: Courier New, monospace; 
+    text-align: left; 
+}
+pre.in { 
+    margin-left: 5%; 
+    font-family: Courier New, monospace; 
+    font-weight: bold; 
+    text-align: left; 
+}
+pre.out { 
+    margin-left: 10%; 
+    font-family: Courier New, monospace; 
+    text-align: left; 
+}
+table {
+    border-collapse: collapse;
+    width: 80%;
+    text-align: left; 
+    vertical-align: top;
+}
+th {
+    font-weight: bold; 
+}
+th, td {
+    border: 2px solid black;
+    padding: 8px;
+    text-align: left; 
+    word-wrap: break-word;
+}

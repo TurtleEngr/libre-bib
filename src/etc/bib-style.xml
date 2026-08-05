@@ -1,0 +1,9 @@
+    <text:bibliography-configuration text:prefix=""
+                                     text:suffix=""
+                                     text:sort-by-position="false"
+                                     text:sort-algorithm="alphanumeric"
+                                     fo:language="en"
+                                     fo:country="US">
+      <text:sort-key text:key="identifier"
+                     text:sort-ascending="true" />
+    </text:bibliography-configuration>

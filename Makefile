@@ -171,9 +171,6 @@ bin/bash-fmt : $(mUtilScriptDir)/bin/bash-fmt
 bin/shfmt : $(mUtilScriptDir)/bin/shfmt
 	cp $? $@
 
-bin/bash-fmt : $(mUtilScriptDir)/bin/bash-fmt
-	cp $? $@
-
 src/bin/shunit2.1 : $(mUtilScriptDir)/bin/shunit2.1
 	cp $? $@
 
