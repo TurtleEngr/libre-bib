@@ -26,6 +26,28 @@ fIsBinary()
 } # fIsBinary
 
 # --------------------
+fIncList()
+{
+    local tIncList
+    
+    tIncList=$(git config --get gitproj.hook.tab-include-list)
+    if [ -n "$tIncList" ]; then
+        tIncList=$(echo "$tIncList\$" | sed 's/\./\\./g; s/ /\$|/g')
+    fi
+    echo "$tIncList"
+} # fIncList
+
+# --------------------
+fExcList()
+{
+    tExcList=$(git config --get gitproj.hook.tab-exclude-list)
+    if [ -n "$tExcList" ]; then
+        tExcList=$(echo "$tExcList\$" | sed 's/\./\\./g; s/ /\$|/g')
+    fi
+    echo "$tExcList"
+} # fExcList
+
+# --------------------
 fReport()
 {
     local pExpect=$1
@@ -124,16 +146,32 @@ fCheckWhiteSpace()
 {
     local tFile
     local tResult
+    local tIncList
+    local tExcList
     # Note: DOS EOL files will give a false report.
 
     tResult=$(git config --get --bool gitproj.hook.check-whitespace)
     if [ "$tResult" != "true" ]; then
         return 0
     fi
-
+    
+    tIncList="$(fIncList)"
+    tExcList="$(fExcList)"
+    
     # If there are whitespace errors, print the offending file names
+    gFileList=""
     for tFile in $(git diff-index --color=never --check --cached $gAgainst -- | tr ' ' '!' | awk '/trailing/ {gsub(/:.*/,"",$1); print $1}' | sort -u); do
         tFile=${tFile%%:*}
+        if [ -n "$tIncList" ]; then
+            if $(echo $tFile | grep -qvE "$tIncList"); then
+                continue
+            fi
+        fi
+        if [ -n "$tExcList" ]; then
+            if $(echo $tFile | grep -qE "$tExcList"); then
+                continue
+            fi
+        fi        
         fReport 0 1 $tFile "trailing whitespace" $LINENO
     done
     if [ -n "$gFileList" ]; then
@@ -159,14 +197,12 @@ fCheckForTabs()
         return 0
     fi
 
-    tIncList=$(git config --get gitproj.hook.tab-include-list)
-    tExcList=$(git config --get gitproj.hook.tab-exclude-list)
-    if [ -z "$tIncList" ]; then
-        tIncList='*'
-    fi
-
+    tIncList="$(fIncList)"
+    tExcList="$(fExcList)"
+    
     # If there are tab, in tIncList, but not tExcList, print file
     # Also skip binary files
+    gFileList=""
     for tFile in $(git diff --cached --name-only --diff-filter=ACR $gAgainst | tr ' ' '!'); do
         if [ ! -f "$tFile" ]; then
             continue
@@ -174,9 +210,12 @@ fCheckForTabs()
         if fIsBinary $tFile; then
             continue
         fi
-        if $(echo $tFile | grep -qvE "$tIncList"); then
-            continue
+        if [ -n "$tIncList" ]; then
+            if $(echo $tFile | grep -qvE "$tIncList"); then
+                continue
+            fi
         fi
+        echo "$tExcList"; echo $tFile | grep -E "$tExcList"; echo $?
         if [ -n "$tExcList" ]; then
             if $(echo $tFile | grep -qE "$tExcList"); then
                 continue
