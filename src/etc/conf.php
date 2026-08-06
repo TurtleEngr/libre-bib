@@ -28,6 +28,9 @@ $cgDirStatus=$_ENV["cgDirStatus"];
 global $cgDirTmp;
 $cgDirTmp=$_ENV["cgDirTmp"];
 
+global $cgDirCache;
+$cgDirTmp=$_ENV["cgDirCache"];
+
 global $cgBackupNum;
 $cgBackupNum=$_ENV["cgBackupNum"];
 

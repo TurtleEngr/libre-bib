@@ -82,7 +82,6 @@ function uValidateCommon() {
     global $cgDbName;
     global $cgDbPassCache;
     global $cgDbPortLocal;
-    global $cgDbPortRemote;
     global $cgDbUser;
     global $cgDebug;
     global $gDb;
@@ -91,7 +90,7 @@ function uValidateCommon() {
     if ( ! file_exists("$cgDbPassCache"))
         throw new Exception("Missing: cgDbPassCache $cgDbPassCache. To set it, run: bib connect [util.php:" . __LINE__ . "]");
 
-    $gPassword = rtrim(shell_exec("/bin/bash -c 'cat $cgDbPassCache'"));
+    $gPassword = rtrim(shell_exec("/bin/bash -c 'cat $cgDbPassCache | rot13'"));
     if ("$gPassword" == "")
         echo "\nWarning: Password is null [util.php:" . __LINE__ . "]\n";
 

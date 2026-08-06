@@ -45,16 +45,30 @@ help :
 	sensible-browser file://$(cgDirApp)/doc/manual/libre-bib.html &>/dev/null &
 	exit 1
 
+db-setup : $(cgDirStatus)/db-setup.date
+	echo "$(mDate) db-setup" >$@
+
+$(cgDirStatus)/db-setup.date : $(cgDbPassCache) $(cgDirCache)/.root.pass $(cgDirCache)/.admin.pass
+	$(cgBin)/db-create.sh
+
 connect : $(cgDbPassCache)
 	@echo
 	echo "Test: show databases; use $(cgDbName); show tables; quit"; \
-	mysql -P $(cgDbPortLocal) -u $(cgDbUser) --password=$$(cat $(cgDbPassCache)) -h $(cgDbHost) $(cgDbName)
+	@mysql -P $(cgDbPortLocal) -u $(cgDbUser) --password=$$(cat $(cgDbPassCache) | rot13) -h $(cgDbHost) $(cgDbName)
 
 $(cgDbPassCache) :
-	read -srp 'Password ($(cgDbPassHint))? '; \
-	echo $$REPLY >$@
+	@read -srp 'DB $(cgDbUser) Password ($(cgDbPassHint))? '; \
+	@echo $$REPLY | caesar 13 >$@
 
-setup-bib : $(cgDirEtc) $(cgDirStatus) $(cgDirTmp) $(cgDirBackup) $(cgDirConf) $(cgLoFile) $(cgDocFile)
+$(cgDirCache)/.root.pass :
+	@read -srp 'DB root Password? '; \
+	@echo $$REPLY | caesar 13 >$@
+
+$(cgDirCache)/.admin.pass :
+	@read -srp 'DB admin Password? '; \
+	@echo $$REPLY | caesar 13 >$@
+
+setup-bib : $(cgDirEtc) $(cgDirStatus) $(cgDirTmp) $(cgDirCache) $(cgDirBackup) $(cgDirConf) $(cgLoFile) $(cgDocFile)
 	-mkdir -p $(cgDirStatus) &>/dev/null
 
 # ----------
@@ -169,7 +183,7 @@ conf.env : $(cgDirApp)/doc/example/conf.env
 	    diff -ZBbw $@ $?; \
 	fi
 
-$(cgDirStatus) $(cgDirBackup) $(cgDirConf) $(cgDirEtc) $(cgDirTmp) :
+$(cgDirStatus) $(cgDirBackup) $(cgDirConf) $(cgDirEtc) $(cgDirTmp) $(cgDirCache) :
 	mkdir -p $@
 
 $(cgLoFile) :

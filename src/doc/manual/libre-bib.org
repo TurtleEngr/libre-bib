@@ -349,13 +349,11 @@ File-Dir.
 
 #+BEGIN_EXPORT html
 <pre class="in">
-| Variable  | Default        | Used by               |
-|-----------+----------------+-----------------------|
-| $cgDbName | biblio_example | Data Base Name        |
-| $cgDbTblLo   | lo             | import-lo,  export-lo |
-| $cgDbLib  | lib            | import-lib, update-lo |
-| $cgDbTblBib  | bib            | import-lo             |
-|           | join_lib_lo    | update-lo             |
+| Variable    | Default        | Used by              |
+|-------------+----------------+----------------------|
+| $cgDbName   | biblio_example | Data Base Name       |
+| $cgDbTblLo  | lo             | import-lo, export-lo |
+| $cgDbTblBib | bib            | import-lo            |
 </pre>
 #+END_EXPORT
 
@@ -464,7 +462,14 @@ app.  They are executed in this order, so the last definition wins.
 
   This will be shown when you are prompted for the DB User's password.
 
-+ Var: **cgDbPassCache="$cgDirTmp/.pass.tmp"**
++ Var: **cgDirCache="$cgDirTmp"**
+
+  Sensitive files, such as passwords, will be put in this
+  directory. For good security this directory could be on a mounted
+  USB thumb drive, or an encrypted disk. If this is not found,
+  programs that need DB access will not continue.
+
++ Var: **cgDbPassCache="$cgDirCache/.pass.tmp"**
 
   When you use commands that need to connect to the DB you will be
   prompted for the user's DB password. It will be saved here.  It is
@@ -568,9 +573,6 @@ app.  They are executed in this order, so the last definition wins.
 - Backup the lo table to a cvs file in $cgDirBackup.
 *** Cmd: import-lib
 - Import the librarything.tsv file to the lib table.
-*** Cmd: update-lo
-- After the lib table is created or updated, run update-lo to copy
-  any missing fields in lo from the lib table.
 *** Cmd: ref-new
 
 New biblio {REF} tags have been added to your odt file. Run this command

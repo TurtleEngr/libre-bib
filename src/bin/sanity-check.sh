@@ -315,6 +315,7 @@ fCheckUser() {
         cgDirConf \
         cgDirLibreofficeConf \
         cgDirStatus \
+        cgDirCache \
         cgDirTmp; do
         if ! fVar; then
             continue
