@@ -5,6 +5,16 @@ if [[ "$1" != "-c" ]]; then
     cat <<EOF
 Usage:
     db-create.sh -c
+
+This script works best with a "new" mysql. It might work if there are
+different values defined in conf.env (because errors are ignored).
+
+To reset mysql to the base install state, do this:"
+
+    sudo systemctl stop mysql
+    sudo rm -rf  /var/lib/mysql/*
+    sudo -u mysql mysql_install_db
+    sudo systemctl start mysql
 EOF
     exit 1
 fi
