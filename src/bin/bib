@@ -61,17 +61,10 @@ if [[ "${cgBuild:-false}" != "true" ]]; then
         fUsage
     fi
 
-    # User conf
-    if [[ -x $cgDirConf/conf.env ]]; then
-        # Not checking for errors because sanity-check.sh was run
-        $cgBin/valid-conf.sh <$cgDirConf/conf.env
-        . /tmp/conf.env
-    fi
-
     # Doc conf
     $cgBin/valid-conf.sh <./conf.env
     # Not checking for errors because sanity-check.sh was run
-    . /tmp/conf.env
+    . ./conf.env
 fi
 
 tSilent="-s"

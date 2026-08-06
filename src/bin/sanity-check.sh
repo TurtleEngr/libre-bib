@@ -238,10 +238,8 @@ fCheckApp() {
         bin/fixup.sed \
         bin/gen-conf-php.sh \
         bin/import-tcsv-2-lo-db.php \
-        bin/import-tsv-2-lib-db.php \
         bin/import-txt-2-lo.php \
         bin/sanity-check.sh \
-        bin/update-lib-2-lo.php \
         bin/util.php \
         doc/example/biblio-note.txt \
         doc/example/biblio.txt \
@@ -252,14 +250,10 @@ fCheckApp() {
         doc/example/example-outline.org \
         doc/example/example.odt \
         doc/example/key.txt \
-        doc/example/librarything.tsv \
         doc/manual/libre-bib.html \
         doc/manual/libre-bib.md \
         doc/manual/libre-bib.org \
         doc/ref/biblio.csv \
-        doc/ref/biblio.dbf \
-        doc/ref/biblio.dbt \
-        doc/ref/librarything.tsv \
         etc/bib-style.xml \
         etc/bib-template.xml \
         etc/cite-new.xml \
@@ -267,7 +261,6 @@ fCheckApp() {
         etc/conf.env \
         etc/conf.php \
         etc/libre-bib.ssh \
-        etc/lib-schema.tsv \
         etc/lo-schema.csv; do
         gVal=$cgDirApp/$tFile
         fFileExist
@@ -312,7 +305,6 @@ fCheckUser() {
     for gVar in \
         cgDirBackup \
         cgDirEtc \
-        cgDirConf \
         cgDirLibreofficeConf \
         cgDirStatus \
         cgDirCache \
@@ -394,21 +386,6 @@ fCheckApp
 if [[ ! -f conf.env ]]; then
     # setup-bib has not been called yet
     exit $gErr # ---------->
-fi
-
-if [[ -f $cgDirConf/conf.env ]]; then
-    if [[ ! -x $cgDirConf/conf.env ]]; then
-        echo "Error: $cgDirConf/conf.env is not executable"
-        exit 1
-    fi
-    if ! bash -n $cgDirConf/conf.env; then
-        echo "Error: ./conf.env has syntax errors"
-        exit 1
-    fi
-    if ! $cgBin/valid-conf.sh <$cgDirConf/conf.env; then
-        exit 1
-    fi
-    . /tmp/conf.env
 fi
 
 if [[ ! -x ./conf.env ]]; then

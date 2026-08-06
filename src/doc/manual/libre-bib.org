@@ -36,8 +36,6 @@
     + <a href="#cmd-import-lo">Cmd: import-lo</a>
     + <a href="#cmd-export-lo">Cmd: export-lo</a>
     + <a href="#cmd-backup-lo">Cmd: backup-lo</a>
-    + <a href="#cmd-import-lib">Cmd: import-lib</a>
-    + <a href="#cmd-update-lo">Cmd: update-lo</a>
     + <a href="#cmd-ref-new">Cmd: ref-new</a>
     + <a href="#cmd-ref-update">Cmd: ref-update</a>
     + <a href="#cmd-save-style">Cmd: save-style</a>
@@ -57,7 +55,6 @@
     + <a href="#bib-to-libreoffice-names">bib to libreoffice names</a>
     + <a href="#lo-file-to-lo-table">lo-file to lo-table</a>
     + <a href="#lo-table-to-bib-table">lo-table to bib-table</a>
-    + <a href="#lib-table-to-lo-table">lib-table to lo-table</a>
   + <a href="#g.-support">G. Support</a>
 
 * Install and Setup
@@ -295,12 +292,9 @@ File-Dir.
 | biblio-note.txt            | Var: $cgLoFile;  Cmd: setup-bib          |
 | key.txt                    | Cmd: setup-bib                           |
 | example.odt                | Var: $cgDocFile; Cmd: setup-bib          |
-| librarything.tsv           | Var: $cgLibFile; Cmd: setup-bib          |
 | status/                    | Var: $cgDirStatus; Cmd: setup-bib        |
 | .... import-lo.date        | Cmd: import-lo                           |
 | .... backup-lo.date        | Cmd: backup-lo                           |
-| .... import-lib.date       | Cmd: import-lib (from lib)               |
-| .... update-lo.date        | Cmd: update-lo (from lib)                |
 | backup/                    | Var: $cgDirBackup;  Cmd: setup-bib       |
 | .... backup-lo.csv         | Var; $cgBackupFile; Cmd: backup-lo       |
 | .... backup-lo.csv.bak     | Cmd: backup-lo                           |
@@ -322,22 +316,6 @@ File-Dir.
   this file to override things for all your bib directories, but it
   would be better to edit ~/.config/libre-bib/conf.env.  That way the
   app can be updated without overriding your changes.
-
-+ File: **$cgDirConf/conf.env** - User config
-
-  Default: $cgDirConf=~/.config/libre-bib
-
-  This is optional, but it is useful for defining all of the common
-  settings across all of your bib directories. Copy $PWD/conf.env to
-  this location and uncomment the values to be changed.
-
-  If you use the same cgDbName for all the bibs, then you'll want to
-  define different table names for the different bibs. Using different
-  DB names is safer for keeping the different bibs separate, but more
-  DB setup will be needed.
-
-  Usually these vars will be the same across all your bibs: cgDbName,
-  cgDbHost, cgDbPassCache, cgDbPassHint, cgDbUser
 
 + File: **$PWD/conf.env** - Document config
 
@@ -368,8 +346,7 @@ app.  They are executed in this order, so the last definition wins.
 #+BEGIN_EXPORT html
 <pre class="in">
 1. . /opt/libre-bib/etc/conf.env
-2. . ~/.config/libre-bib/conf.env   # $cgDirConf Optional
-3. . ./conf.env
+2. . ./conf.env
 </pre>
 #+END_EXPORT
 
@@ -401,12 +378,6 @@ app.  They are executed in this order, so the last definition wins.
   This is the directory name (or path) where backup files are put.
   "~" numbers will be put after duplicate backups. With no "/"
   at the beginning, the name will be relative to $PWD.
-
-+ Var: **cgDirConf="$HOME/.config/libre-bib"**
-
-  Config files that are common for your user can be put here.  If you
-  have multiple bib directories, then this will be useful. This should
-  be an absolute path.
 
 + Var: **cgDirEtc="etc"**
 
@@ -547,7 +518,7 @@ app.  They are executed in this order, so the last definition wins.
   fails. ("ignored" errors are OK.) For example, you have modified some
   entries in biblio.txt and you have modified your libreoffice
   document with these new references. You could run: "bib import-lo
-  update-lo ref-new ref-update"
+  ref-new ref-update"
 - If a command doesn't run, it could be the files are up-to-date.  If
   you want to force a command to run, remove the status/ file
   associated with the command, or "touch" one of the dependent files.
@@ -571,8 +542,6 @@ app.  They are executed in this order, so the last definition wins.
   file will be backed up to $cgDirBackup.
 *** Cmd: backup-lo
 - Backup the lo table to a cvs file in $cgDirBackup.
-*** Cmd: import-lib
-- Import the librarything.tsv file to the lib table.
 *** Cmd: ref-new
 
 New biblio {REF} tags have been added to your odt file. Run this command
@@ -647,9 +616,6 @@ touched.
 - If you are managing multiple bibliographies, you might have some
   common settings.
 
-- The user config file is the best place for defining the common
-  settings: $cgDirConf/conf.env
-
 - If you change the /opt/libre-bib/etc/conf.env file, you will need to
   rebuild some things. Here are the steps:
 
@@ -687,7 +653,6 @@ Usage:
     bib [-n] Cmd
 Cmds:
     import-lo, export-lo, backup-lo, restore-lo
-    import-lib, update-lo
     ref-new, ref-update
     status, setup-bib, clean, connect, version, help
 </pre>
@@ -701,7 +666,6 @@ Usage:
         bib [-n] Cmd
 Cmds:
     import-lo, export-lo, backup-lo, restore-lo
-    import-lib, update-lo
     ref-new, ref-update
     status, setup-bib, clean, connect, version, help
 </pre>
@@ -833,40 +797,6 @@ show fields from table lo;
 select Identifier,Booktitle from table lo;
 </pre>
 
-<p>Now let's import the export from LibraryThing.</p>
-
-<pre class="in">$ bib import-lib</pre>
-<pre class="out">
-librarything schema and import
-/opt/libre-bib/bin/import-tsv-2-lib-db.php -c
-Verbose is on.
-Backup is on.
-............
-Processed: 12
-date +%F_%T >status/import-lib.date
-head -n 1 librarything.tsv | sed 's/ /_/g' >tmp/lib-schema.tsv
-diff /opt/libre-bib/etc/lib-schema.tsv tmp/lib-schema.tsv
-Warning: If there are differences, there could be problems.
-</pre>
-
-<pre class="in">$ bib update-lo</pre>
-<pre class="out">
-Update lo from lib where Titles are similar, first 40 char
-Run this after lib-db, lo-db
-...................
-Processed: 19
-...........
-Processed: 11
-Created: bib_2023-05-17_01-40-14
-
-Processed: 31 [221]
-</pre>
-
-<p>This will have created a join table with Titles are in the "lo" and
-"lib" tables. It then updated some empty "lo" fields from the "lib"
-data. For example: Publisher is tricky one.  (Enhancement: Provide an
-option so some "lib" values will override the 'lo' values.)</p>
-
 <pre class="in">$ bib backup-lo</pre>
 <pre class="out">
 cp: cannot stat 'backup/backup-lo.csv': No such file or directory
@@ -899,7 +829,7 @@ see the original example.odt was copied to the backup/ dir.</p>
 
 <pre class="in">$ libreoffice example.odt</pre>
 
-<p>If you run import-lo or import-lib with updated entries, then run
+<p>If you run import-lo with updated entries, then run
 ref-update to update them in the example.odt file. If you add new
 REFs to the document then you would run ref-new again.</p>
 
@@ -943,10 +873,6 @@ This maps the lo text file Tag names to the lo-table field names.
 Do some simple formatting of the lo-table values and put them in the
 bib-table, so that the Bibliography style is easily setup.
 
-*** lib-table to lo-table
-
-This maps the LibraryThing field names to the Libreoffice Bibliography
-field names.
 ** G. Support
 + Project Home: https://github.com/TurtleEngr/libre-bib
 + Stable version is on the "main" branch.

@@ -8,9 +8,6 @@
 
 if [[ -z "$cgDirBackup" ]]; then
     . /opt/libre-bib/etc/conf.env
-    if [[ -x $cgDirConf/conf.env ]]; then
-        . $cgDirConf/conf.env
-    fi
     . ./conf.env
 fi
 

@@ -13,9 +13,6 @@ $cgVerbose=$_ENV["cgVerbose"];
 global $cgDirBackup;
 $cgDirBackup=$_ENV["cgDirBackup"];
 
-global $cgDirConf;
-$cgDirConf=$_ENV["cgDirConf"];
-
 global $cgDirEtc;
 $cgDirEtc=$_ENV["cgDirEtc"];
 

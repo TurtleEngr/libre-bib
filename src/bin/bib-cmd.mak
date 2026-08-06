@@ -45,16 +45,25 @@ help :
 	sensible-browser file://$(cgDirApp)/doc/manual/libre-bib.html &>/dev/null &
 	exit 1
 
-db-setup : $(cgDirStatus)/db-setup.date
-	echo "$(mDate) db-setup" >$@
+setup-bib : conf.env
+	@echo "Edit conf.env then: bib setup-dir"
+
+setup-dir : $(cgDirEtc) $(cgDirStatus) $(cgDirTmp) $(cgDirCache) $(cgDirBackup)  $(cgLoFile) $(cgDocFile)
+	@echo "Now run: bib setup-db"
+
+$(cgDirStatus) $(cgDirBackup) $(cgDirTmp) $(cgDirCache) :
+	mkdir -p $@
+
+$(cgDirEtc) :
+	mkdir -p $@
+	cp -n $(cgDirApp)/etc/* $@
+
+setup-db : $(cgDirStatus)/db-setup.date
 
 $(cgDirStatus)/db-setup.date : $(cgDbPassCache) $(cgDirCache)/.root.pass $(cgDirCache)/.admin.pass
 	$(cgBin)/db-create.sh
-
-connect : $(cgDbPassCache)
-	@echo
-	echo "Test: show databases; use $(cgDbName); show tables; quit"; \
-	@mysql -P $(cgDbPortLocal) -u $(cgDbUser) --password=$$(cat $(cgDbPassCache) | rot13) -h $(cgDbHost) $(cgDbName)
+	@echo "$(mDate) db-setup" >$@
+	@echo "Now test with: bib connect"
 
 $(cgDbPassCache) :
 	@read -srp 'DB $(cgDbUser) Password ($(cgDbPassHint))? '; \
@@ -68,8 +77,10 @@ $(cgDirCache)/.admin.pass :
 	@read -srp 'DB admin Password? '; \
 	@echo $$REPLY | caesar 13 >$@
 
-setup-bib : $(cgDirEtc) $(cgDirStatus) $(cgDirTmp) $(cgDirCache) $(cgDirBackup) $(cgDirConf) $(cgLoFile) $(cgDocFile)
-	-mkdir -p $(cgDirStatus) &>/dev/null
+connect : $(cgDbPassCache)
+	@echo
+	echo "Test: show databases; use $(cgDbName); show tables; quit"; \
+	@mysql -P $(cgDbPortLocal) -u $(cgDbUser) --password=$$(cat $(cgDbPassCache) | rot13) -h $(cgDbHost) $(cgDbName)
 
 # ----------
 # Import: $(cgLoFile)
@@ -183,9 +194,6 @@ conf.env : $(cgDirApp)/doc/example/conf.env
 	    diff -ZBbw $@ $?; \
 	fi
 
-$(cgDirStatus) $(cgDirBackup) $(cgDirConf) $(cgDirEtc) $(cgDirTmp) $(cgDirCache) :
-	mkdir -p $@
-
 $(cgLoFile) :
 	@echo -e '\nMissing: $@. Copy an example from'
 	@echo '$(cgDirApp)/doc/example/biblio.txt'
@@ -197,13 +205,6 @@ $(cgDocFile) :
 	@echo -e '\nMissing $@. Copy an example from'
 	@echo '$(cgDirApp)/doc/example/example.odt'
 	-cp -i $(cgDirApp)/doc/example/example.odt $@
-	touch $@
-
-$(cgLibFile) :
-	@echo -e '\nMissing $@. Copy an example from'
-	@echo '$(cgDirApp)/doc/example/librarything.tsv'
-	@echo 'Manually update it with an export from LibraryThing.'
-	-cp -i $(cgDirApp)/doc/example/librarything.tsv $@
 	touch $@
 
 # ----------
@@ -271,13 +272,4 @@ verify-lo-schema :
 	    echo 'Unexpected differences between'; \
 	    echo '$(cgDirApp)/etc/lo-schema.csv and'; \
 	    echo '$(cgDirTmp)/lo-schema.csv'; \
-	fi
-
-# ----------
-verify-lib-schema : $(cgLibFile)
-	head -n 1 <$? >$(cgDirTmp)/lib-schema.tsv
-	if ! diff $(cgDirApp)/etc/lib-schema.tsv $(cgDirTmp)/lib-schema.tsv; then \
-	    echo 'Unexpected differences between'; \
-	    echo '$(cgDirApp)/etc/lib-schema.tsv and'; \
-	    echo '$(cgDirTmp)/lib-schema.tsv'; \
 	fi
