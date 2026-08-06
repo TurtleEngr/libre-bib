@@ -62,7 +62,7 @@ grant all privileges on *.* to 'root'@'${cgDbHost}';
 create user '$cgDbUser'@'localhost' identified by '$cUserPass';
 create user '$cgDbUser'@'127.0.0.1' identified by '$cUserPass';
 create user '$cgDbUser'@'${cgDbHost}' identified by '$cUserPass';
-grant all privileges on $cgDbName.* to '$cgDbUser'@'$localhost';
+grant all privileges on $cgDbName.* to '$cgDbUser'@'localhost';
 grant all privileges on $cgDbName.* to '$cgDbUser'@'127.0.0.1';
 grant all privileges on $cgDbName.* to '$cgDbUser'@'${cgDbHost}';
 
