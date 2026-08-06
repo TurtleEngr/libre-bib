@@ -51,18 +51,21 @@ if [ ! -x conf.env ]; then
     fUsage
 fi
 
-if ! $cgBin/sanity-check.sh; then
-    echo "Fix the above errors, then try again. [$LINENO]"
-    exit 1
-fi
-
 if ! $cgBin/valid-conf.sh <./conf.env; then
-    echo "Fix the above errors, then try again. [$LINENO]"
+    echo "Fix the above errors from valid-conf, then try again. [$LINENO]"
     exit 1
 fi
 
-# Not checking for errors because sanity-check.sh was run
 . ./conf.env
+
+if [[ ! -d $cgDirStatus ]]; then
+    make -f $cgBin/bib-cmd.mak -s setup-dir
+fi
+
+if ! $cgBin/sanity-check.sh; then
+    echo "Fix the above errors from saniy-check, then try again. [$LINENO]"
+    exit 1
+fi
 
 tSilent="-s"
 if [[ "$cgVerbose" == "true" ]]; then

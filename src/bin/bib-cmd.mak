@@ -55,12 +55,12 @@ setup-bib : conf.env
 setup-dir : $(cgDirEtc) $(cgDirStatus) $(cgDirTmp) $(cgDirCache) $(cgDirBackup)  $(cgLoFile) $(cgDocFile)
 	@echo "Now run: bib setup-db"
 
-$(cgDirStatus) $(cgDirBackup) $(cgDirTmp) $(cgDirCache) :
-	mkdir -p $@
-
 $(cgDirEtc) :
 	mkdir -p $@
 	cp -n $(cgDirApp)/etc/* $@
+
+$(cgDirStatus) $(cgDirBackup) $(cgDirTmp) $(cgDirCache) :
+	mkdir -p $@
 
 setup-db : $(cgDirStatus)/db-setup.date
 
