@@ -21,10 +21,11 @@ awk '
         next
     }
     /#/ {
+        tLine = $0
         gsub(/\s*#.*/, "")
         gsub(/\s*$/, "")
         if ($0 == "") {
-            print ""
+            print tLine
             next
         }
     }
@@ -68,7 +69,7 @@ fi
 chmod a+rx /tmp/conf.env
 
 # Is this still a valid bash file?
-tStr=$(cat /tmp/conf.env | bash 2>&1)
+tStr=$(bash -n /tmp/conf.env 2>&1)
 tErr=$?
 if [ $tErr -ne 0 ]; then
     echo "$tStr" >>/tmp/conf.err

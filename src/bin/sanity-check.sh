@@ -15,7 +15,7 @@ fVar() {
     # Output: gVal
     eval gVal=\$$gVar
     if [[ -z "$gVal" ]]; then
-        echo "Error: $gVar is not defined"
+        echo "Error: $gVar is not defined [$LINENO]"
         ((++gErr))
         return 1 # ---------->
     fi
@@ -27,12 +27,12 @@ fDirExist() {
     # Input: gVar (optional)
     # Input: gVal
     if [[ ! -d $gVal ]]; then
-        echo "Error: $gVar $gVal dir does not exist."
+        echo "Error: $gVar $gVal dir does not exist. [$LINENO]"
         ((++gErr))
         return 1 # ---------->
     fi
     if [[ ! -r $gVal ]]; then
-        echo "Error: $gVar $gVal dir is not readable."
+        echo "Error: $gVar $gVal dir is not readable. [$LINENO]"
         ((++gErr))
         return 1 # ---------->
     fi
@@ -44,7 +44,7 @@ fFileExist() {
     # Input: gVar (optional)
     # Input: gVal
     if [[ ! -r $gVal ]]; then
-        echo "Error: $gVar $gVal file is not readable."
+        echo "Error: $gVar $gVal file is not readable. [$LINENO]"
         ((++gErr))
         return 1 # ---------->
     fi
@@ -56,7 +56,7 @@ fFileExec() {
     # Input: gVar (optional)
     # Input: gVal
     if [[ ! -x $gVal ]]; then
-        echo "Error: $gVar $gVal file is not executable."
+        echo "Error: $gVar $gVal file is not executable. [$LINENO]"
         ((++gErr))
         return 1 # ---------->
     fi
@@ -75,7 +75,7 @@ fIsBool() {
         false) return 0 ;;
         true) return 0 ;;
         *)
-            echo "Error: $gVar $gVal can only be \"true\" or \"false\""
+            echo "Error: $gVar $gVal can only be \"true\" or \"false\" [$LINENO]"
             ((++gErr))
             ;;
     esac
@@ -91,7 +91,7 @@ fIsNum() {
     fi
     tRegEx='^[[:digit:]]+$'
     if [[ ! $gVal =~ $tRegEx ]]; then
-        echo "Error: $gVar $gVal is not a number"
+        echo "Error: $gVar $gVal is not a number [$LINENO]"
         ((++gErr))
         return 1 # ---------->
     fi
@@ -106,7 +106,7 @@ fIsRead() {
         return 1 # ---------->
     fi
     if [[ ! -r $gVal ]]; then
-        echo "Error: $gVar $gVal is not readable"
+        echo "Error: $gVar $gVal is not readable [$LINENO]"
         ((++gErr))
         return 1 # ---------->
     fi
@@ -121,7 +121,7 @@ fIsWrite() {
         return 1 # ---------->
     fi
     if [[ ! -w $gVal ]]; then
-        echo "Error: $gVar $gVal is not writable"
+        echo "Error: $gVar $gVal is not writable [$LINENO]"
         ((++gErr))
         return 1 # ---------->
     fi
@@ -135,7 +135,7 @@ fCheckSh() {
             continue
         fi
         if ! bash -n $gVal &>/dev/null; then
-            echo "Syntax error found in $gVal"
+            echo "Syntax error found in $gVal [$LINENO]"
             ((++gErr))
         fi
     done
@@ -152,12 +152,12 @@ fCheckPhp() {
             continue
         fi
         if ! php -l $gVal &>/dev/null; then
-            echo "Syntax error found in $gVal"
+            echo "Syntax error found in $gVal [$LINENO]"
             ((++gErr))
         fi
     done
     if ! grep -q 'variables_order = "EGPCS"' /etc/php/*/cli/php.ini; then
-        echo 'Error: variables_order = "EGPCS" is not set in' /etc/php/*/cli/php.ini
+        echo "Error: variables_order = 'EGPCS' is not set in: /etc/php/*/cli/php.in [$LINENO]"
         ((++gErr))
         return 1 # ---------->
     fi
@@ -167,7 +167,7 @@ fCheckPhp() {
 # ------------------------------
 fNotOk() {
     if [[ $gErr != 0 ]]; then
-        echo "$gErr errors found so far."
+        echo "$gErr errors found so far. [$LINENO]"
         echo "Have you run: bib setup-bib"
         exit $gErr # ---------->
     fi
@@ -188,7 +188,7 @@ fCheckDep() {
         tidy \
         make; do
         if ! which $tCmd &>/dev/null; then
-            echo "Error: Could not find command: $tCmd"
+            echo "Error: Could not find command: $tCmd [$LINENO]"
             ((++gErr))
         fi
     done
@@ -206,7 +206,7 @@ fCheckApp() {
 
     # ----------
     if [[ "$cgDirApp" != "${cgBin%/bin}" ]]; then
-        echo "Error: cgDirApp or cgBin are not set properly"
+        echo "Error: cgDirApp or cgBin are not set properly [$LINENO]"
         ((++gErr))
     fi
     fNotOk # ?---------->
@@ -261,7 +261,8 @@ fCheckApp() {
         etc/conf.env \
         etc/conf.php \
         etc/libre-bib.ssh \
-        etc/lo-schema.csv; do
+        etc/lo-schema.csv \
+        ; do
         gVal=$cgDirApp/$tFile
         fFileExist
     done
@@ -272,16 +273,16 @@ fCheckApp() {
 
     # ----------
     if ! make -s -n -f $cgBin/bib-cmd.mak check &>/dev/null; then
-        echo "Error in bib-cmd.mak [1]"
+        echo "Error in bib-cmd.mak [$LINENO]"
         ((++gErr))
     fi
     tResult=$(make -s -f $cgBin/bib-cmd.mak check 2>&1)
     if [[ $? -ne 0 ]]; then
-        echo "Error in bib-cmd.mak [2]"
+        echo "Error in bib-cmd.mak [$LINENO]"
         ((++gErr))
     fi
     if [[ "$tResult" != "OK" ]]; then
-        echo "Error in bib-cmd.mak [3], $tResult"
+        echo "Error in bib-cmd.mak, $tResult [$LINENO]"
         ((++gErr))
     fi
     fNotOk # ?---------->
@@ -330,27 +331,29 @@ fCheckUser() {
 
     # ----------
     for gVar in \
-        cgDbTblBib \
+        cgBackupFile \
         cgDbHost \
-        cgDbTblLo \
         cgDbName \
         cgDbPassCache \
         cgDbPassHint \
+        cgDbTblBib \
+        cgDbTblLo \
         cgDbUser \
-        cgBackupFile; do
+        ; do
         fVar
     done
 
     # ----------
     for gVar in \
+        cgDocFile \
         cgLoFile \
-        cgDocFile; do
+        ; do
         fIsRead
     done
 
     # ----------
     if [[ $cgBackupNum -lt 1 || $cgBackupNum -gt 100 ]]; then
-        echo "Error: cgBackupNum $cgBackupNum should be 1 to 100"
+        echo "Error: cgBackupNum $cgBackupNum should be 1 to 100 [$LINENO]"
         ((++gErr))
     fi
 
@@ -359,7 +362,7 @@ fCheckUser() {
     if fVar; then
         fDirExist
         if [[ $? -ne 0 ]]; then
-            echo "To set this, run: libreoffice $cgDocFile"
+            echo "To set this, run: libreoffice $cgDocFile [$LINENO]"
         fi
     fi
 
@@ -368,34 +371,54 @@ fCheckUser() {
 
 # ========================================
 
-if [[ ! -x $cgDirApp/etc/conf.env ]]; then
-    echo "Error: $cgDirApp/etc/conf.env is not executable"
-    exit 1
+if [[ -z "$cgDirApp" ]]; then
+    echo "Error: cgDirApp is not defined. [$LINENO]"
+    exit 1 # ---------->
 fi
-if ! bash -n $cgDirApp/etc/conf.env &>/dev/null; then
-    echo "Error: $cgDirApp/etc/conf.env has syntax errors"
-    exit 1
+if [[ ! -x $cgDirApp/bin/util.php ]]; then
+    echo "Error: cgDirApp is not set to correct location. [$LINENO]"
+    exit 1 # ---------->
 fi
 
-# Trust this is valid
+if [[ -z "$cgBin" ]]; then
+    echo "Error: cgBin is not defined. [$LINENO]"
+    exit 1 # ---------->
+fi
+if [[ ! -x $cgDirApp/bin/util.php ]]; then
+    echo "Error: cgBin is not set to correct location. [$LINENO]"
+    exit 1 # ---------->
+fi
+
+if [[ ! -x $cgDirApp/etc/conf.env ]]; then
+    echo "Error: $cgDirApp/etc/conf.env is not executable [$LINENO]"
+    exit 1 # ---------->
+fi
+if ! bash -n $cgDirApp/etc/conf.env &>/dev/null; then
+    echo "Error: $cgDirApp/etc/conf.env has syntax errors [$LINENO]"
+    exit 1 # ---------->
+fi
+
+# Trust that this is valid
 . $cgDirApp/etc/conf.env
 
 fCheckDep
 fCheckApp
 
 if [[ ! -f conf.env ]]; then
-    # setup-bib has not been called yet
+    echo "Warning: bib  setup-bib has not been called yet [$LINENO]"
     exit $gErr # ---------->
 fi
 
 if [[ ! -x ./conf.env ]]; then
-    echo "Error: ./conf.env is not executable"
+    echo "Error: ./conf.env is not executable [$LINENO]"
     exit 1
 fi
+
 if ! bash -n ./conf.env; then
-    echo "Error: ./conf.env has syntax errors"
+    echo "Error: ./conf.env has syntax errors [$LINENO]"
     exit 1
 fi
+
 if ! $cgBin/valid-conf.sh <./conf.env; then
     exit 1
 fi

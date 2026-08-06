@@ -9,10 +9,18 @@ fUsage() {
 
 Usage:
     bib [-n] Cmds...
+Options
+    -n - no execute (if used, it must be the first option)
 Cmds:
-    edit, import-lo, export-lo, backup-lo, restore-lo
+    edit-lo, edit-conf
+    import-lo, export-lo, backup-lo, restore-lo, update-bib
     ref-new, ref-update, style-save, style-update
     status-bib, setup-bib, connect, clean, clean-all, version, help
+
+If nothing happenss, run 'bib status' to see if the commsnd has
+already been run. To force a command to run remove the corresponging
+date file from the $cgDirStatus
+
 EOF
     exit 1
 } # fUsage
@@ -21,58 +29,50 @@ EOF
 if [[ $# -eq 0 || "$1" = "-h" ]]; then
     fUsage
 fi
-if [[ "$1" != "${1%version}" ]]; then
-    cat /opt/libre-bib/VERSION
-    exit 0
-fi
 pParm=$*
 
-if [[ ! -d $cgDirApp ]]; then
-    echo "Error: cgDirApp $cgDirApp is not correct"
+if [[ ! -x $cgDirApp/bin/util.php ]]; then
+    echo "Error: cgDirApp $cgDirApp is not correct [$LINENO]"
     exit 1
 fi
-if [[ ! -d $cgBin ]]; then
-    echo "Error: cgBin $cgBin is not correct"
+if [[ ! -f $cgBin/bib-cmd.mak ]]; then
+    echo "Error: cgBin $cgBin is not correct [$LINENO]"
     exit 1
-fi
-
-if [[ "$1" = "help" ]]; then
-    echo "See file: $cgDirApp/doc/manual/libre-bib.html"
-    sensible-browser file://$cgDirApp/doc/manual/libre-bib.html &>/dev/null &
-    exit 1
-fi
-
-if [[ "${cgBuild:-false}" != "true" && "$pParm" != "setup-bib" ]]; then
-    if ! $cgBin/sanity-check.sh; then
-        echo "Fix the above error, then try again."
-        exit $?
-    fi
 fi
 
 # App conf (assume this is only name=value)
 . $cgDirApp/etc/conf.env
 
-if [[ "${cgBuild:-false}" != "true" ]]; then
-    if [ ! -f conf.env ]; then
-        echo 'Error: Missing conf.env, copying it now'
-        make -s -f $cgBin/bib-cmd.mak conf.env
-        echo 'Edit conf.env with your details. Uncomment the ones you'
-        echo 'are changing, then run: bib setup-bib'
-        fUsage
-    fi
-
-    # Doc conf
-    $cgBin/valid-conf.sh <./conf.env
-    # Not checking for errors because sanity-check.sh was run
-    . ./conf.env
+if [ ! -x conf.env ]; then
+    echo "Error: Missing conf.env, copying it now [$LINENO]"
+    make -f $cgBin/bib-cmd.mak conf.env
+    echo 'Edit conf.env with your details. Uncomment the ones you'
+    echo 'are changing, then run: bib setup-bib'
+    fUsage
 fi
+
+if ! $cgBin/sanity-check.sh; then
+    echo "Fix the above errors, then try again. [$LINENO]"
+    exit 1
+fi
+
+if ! $cgBin/valid-conf.sh <./conf.env; then
+    echo "Fix the above errors, then try again. [$LINENO]"
+    exit 1
+fi
+
+# Not checking for errors because sanity-check.sh was run
+. ./conf.env
 
 tSilent="-s"
 if [[ "$cgVerbose" == "true" ]]; then
     tSilent=""
 fi
+if [[ "$1" = "-n" ]]; then
+    tSilent=""
+fi
 
-# Commands are executed with make
+# Commands are executed with "make"
 make -f $cgBin/bib-cmd.mak $tSilent $pParm
 
 if [[ "${cgBuild:-false}" != "true" ]]; then

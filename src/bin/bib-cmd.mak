@@ -28,9 +28,13 @@ check :
 version ver :
 	cat $(cgDirApp)/VERSION
 
-add edit :
+add edit edit-lo :
 	$(EDITOR) $(cgLoFile) &
-	@echo "When done run: make import-lo"
+	@echo "When done run: bib import-lo"
+
+edit-conf :
+	$(EDITOR) ./conf.env &
+	@echo "When done run: bib setup-bib"
 
 clean :
 	-$(cgBin)/rm-old-files.sh all $(cgBackupNum)
@@ -85,17 +89,18 @@ connect : $(cgDbPassCache)
 # ----------
 # Import: $(cgLoFile)
 
-import-lo : $(cgDirStatus)/import-lo.date
+import-lo : $(cgDirStatus)/import-lo.date $(cgDirStatus)/update-bib.date
 	@echo "Done. $(cgDbTblLo) table is up-to-date with $(cgLoFile)"
 
-$(cgDirStatus)/import-lo.date : conf.env $(cgLoFile)
+$(cgDirStatus)/import-lo.date : conf.env $(cgLoFile) $(cgBin)/import-txt-2-lo.php
 	$(cgBin)/import-txt-2-lo.php -c
-	$(cgBin)/convert-lo-2-bib.php -c
 	echo "$(mDate) import-lo" >$@
 
-update-bib :
-	$(cgBin)/convert-lo-2-bib.php -c
+update-bib : $(cgDirStatus)/update-bib.date
 
+$(cgDirStatus)/update-bib.date : conf.env $(cgLoFile) $(cgBin)/convert-lo-2-bib.php
+	$(cgBin)/convert-lo-2-bib.php -c
+	echo "$(mDate) update-bib" >$@
 
 # ----------
 # export: tmp/biblio.txt
@@ -195,8 +200,8 @@ conf.env : $(cgDirApp)/doc/example/conf.env
 	fi
 
 $(cgLoFile) :
-	@echo -e '\nMissing: $@. Copy an example from'
-	@echo '$(cgDirApp)/doc/example/biblio.txt'
+	@echo -e "\nMissing: $@. Copy an example $(cgLoFile) from"
+	@echo "$(cgDirApp)/doc/example/biblio.txt"
 	cp -i $(cgDirApp)/doc/example/biblio.txt $@
 	cp -i $(cgDirApp)/doc/example/biblio-note.txt $(basename $(cgLoFile))-note.txt
 	cp -i $(cgDirApp)/doc/example/key.txt key.txt
