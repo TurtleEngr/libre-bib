@@ -65,26 +65,30 @@ $(cgDirStatus) $(cgDirBackup) $(cgDirTmp) $(cgDirCache) :
 setup-db : $(cgDirStatus)/db-setup.date
 
 $(cgDirStatus)/db-setup.date : $(cgDbPassCache) $(cgDirCache)/.root.pass $(cgDirCache)/.admin.pass
-	$(cgBin)/db-create.sh
+	@echo
+	$(cgBin)/db-create.sh -c
 	@echo "$(mDate) db-setup" >$@
 	@echo "Now test with: bib connect"
 
 $(cgDbPassCache) :
+	@echo
 	@read -srp 'DB $(cgDbUser) Password ($(cgDbPassHint))? '; \
-	@echo $$REPLY | caesar 13 >$@
+	echo $$REPLY | caesar 13 >$@
 
 $(cgDirCache)/.root.pass :
+	@echo
 	@read -srp 'DB root Password? '; \
-	@echo $$REPLY | caesar 13 >$@
+	echo $$REPLY | caesar 13 >$@
 
 $(cgDirCache)/.admin.pass :
+	@echo
 	@read -srp 'DB admin Password? '; \
-	@echo $$REPLY | caesar 13 >$@
+	echo $$REPLY | caesar 13 >$@
 
 connect : $(cgDbPassCache)
 	@echo
-	echo "Test: show databases; use $(cgDbName); show tables; quit"; \
-	@mysql -P $(cgDbPortLocal) -u $(cgDbUser) --password=$$(cat $(cgDbPassCache) | rot13) -h $(cgDbHost) $(cgDbName)
+	@echo "Test: show databases; use $(cgDbName); show tables; quit"; \
+	mysql -P $(cgDbPortLocal) -u $(cgDbUser) --password=$$(cat $(cgDbPassCache) | rot13) -h $(cgDbHost) $(cgDbName)
 
 # ----------
 # Import: $(cgLoFile)
@@ -182,7 +186,7 @@ status-bib :
 	$(cgBin)/bib-status.php -c
 	@echo
 	@echo "Last run commands:"
-	@cat $(cgDirStatus)/*.date | sort -r
+	@tail -n 1 $(cgDirStatus)/*.date | sort -r
 
 # ========================================
 # Rules supporting cmds
