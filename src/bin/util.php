@@ -140,8 +140,6 @@ function uUnpackFile($pDocFile, $pFileList) {
     global $cgDebug;
     global $cgDirTmp;
 
-###    $cTidyOpt = "-m -q --tidy-mark no --break-before-br yes --indent-attributes yes --indent-spaces 2 --indent auto --input-xml yes --output-xml yes --vertical-space no --wrap 78 -xml";
-
     $tList = explode(" ", $pFileList);
 
     echo "Unpack $pDocFile [util.php:" . __LINE__ . "]\n";
@@ -149,9 +147,6 @@ function uUnpackFile($pDocFile, $pFileList) {
         shell_exec("/bin/bash -c 'cd $cgDirTmp; unzip -o ../$pDocFile $tFile.xml'");
         if ( ! file_exists("$cgDirTmp/$tFile.xml"))
             throw new Exception("\nError: Could not extract $tFile.xml [util.php:" . __LINE__ . "]");
-        # tidy the xml files
-####        shell_exec("/bin/bash -c 'cd $cgDirTmp; tidy $cTidyOpt $tFile.xml &>/dev/null'");
-        shell_exec("/bin/bash -c 'cd $cgDirTmp; xmllint --pretty 2 $tFile.xml >tmp.xml; mv -f tmp.xml $tFile.xml'");
     }
 
     return;    # ---------->
@@ -163,8 +158,6 @@ function uPackFile($pDocFile, $pFileList) {
     global $cgNoExec;
     global $cgDirTmp;
 
-####    $cTidyOpt = "-m -q --tidy-mark no --break-before-br no --indent-attributes no --indent no --input-xml yes --output-xml yes --vertical-space no --wrap 4000 -xml";
-
     if ($cgNoExec) {
         echo "No changes to $pDocFile See $pFileList in $cgDirTmp [util.php:" . __LINE__ . "]\n";
         return;    # ---------->
@@ -174,7 +167,6 @@ function uPackFile($pDocFile, $pFileList) {
 
     echo "Repack $pDocFile [util.php:" . __LINE__ . "]\n";
     foreach ($tList as $tFile) {
-#####        shell_exec("/bin/bash -c 'cd $cgDirTmp; tidy $cTidyOpt $tFile.new.xml'");
         # Remove newlines between tags, to remove any spaces in the text
         shell_exec("/bin/bash -c \"cd $cgDirTmp; sed 's|\\n| |g' <$tFile.new.xml >$tFile.xml\"");
         shell_exec("/bin/bash -c 'cd $cgDirTmp; zip ../$pDocFile $tFile.xml'");
@@ -182,6 +174,73 @@ function uPackFile($pDocFile, $pFileList) {
 
     return;    # ---------->
 } # fPackFile
+
+# ========================================
+# XML Functions
+
+# --------------------
+function uLoadXml($pPath) {
+    # Parse an unpacked odt XML file and return the DOMDocument.
+    # A parse error is reported through the exception, not as a php warning.
+
+    if ( ! file_exists($pPath))
+        throw new Exception("\nError: Missing: $pPath [util.php:" . __LINE__ . "]");
+
+    $tDoc = new DOMDocument();
+    $tDoc->preserveWhiteSpace = true;
+    $tDoc->formatOutput = false;
+
+    $tWasQuiet = libxml_use_internal_errors(true);
+    $tOk = $tDoc->load($pPath);
+    $tErr = libxml_get_last_error();
+    libxml_clear_errors();
+    libxml_use_internal_errors($tWasQuiet);
+
+    if ( ! $tOk)
+        throw new Exception("\nError: Could not parse $pPath: " .
+            ($tErr ? trim($tErr->message) . " at line " . $tErr->line : "unknown") .
+            " [util.php:" . __LINE__ . "]");
+
+    return $tDoc;    # ---------->
+} # fLoadXml
+
+# --------------------
+function uSaveXml($pDoc, $pPath) {
+    # Write a DOMDocument back out.
+
+    if ($pDoc->save($pPath) === false)
+        throw new Exception("\nError: Could not write $pPath [util.php:" . __LINE__ . "]");
+
+    return;    # ---------->
+} # fSaveXml
+
+# --------------------
+function uFindElement($pDoc, $pName) {
+    # Return the first element with local name pName, or null.
+    # local-name() is used so the namespace prefix does not have to be
+    # registered with the XPath object.
+
+    $tXpath = new DOMXPath($pDoc);
+    $tFound = $tXpath->query("//*[local-name()='" . $pName . "']");
+    if ($tFound === false or $tFound->length == 0)
+        return null;    # ---------->
+
+    return $tFound->item(0);    # ---------->
+} # fFindElement
+
+# --------------------
+function uFindElementList($pDoc, $pName) {
+    # Return an array of every element with local name pName. An array,
+    # not a DOMNodeList, so the caller can safely replace nodes while
+    # walking it.
+
+    $tXpath = new DOMXPath($pDoc);
+    $tRet = array();
+    foreach ($tXpath->query("//*[local-name()='" . $pName . "']") as $tNode)
+        $tRet[] = $tNode;
+
+    return $tRet;    # ---------->
+} # fFindElementList
 
 # ========================================
 # Map Functions
