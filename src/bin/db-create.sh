@@ -46,25 +46,10 @@ cat <<EOF >$cgDirCache/db-create.cmd
 create database $cgDbName;
 
 create user 'admin'@'localhost' identified by '$cAdminPass';
-create user 'admin'@'127.0.0.1' identified by '$cAdminPass';
-create user 'admin'@'${cgDbHost}' identified by '$cAdminPass';
 grant all privileges on *.* to 'admin'@'localhost';
-grant all privileges on *.* to 'admin'@127.0.0.1;
-grant all privileges on *.* to 'admin'@'${cgDbHost}';
-
-create user 'root'@'localhost' identified by '$cRootPass';
-create user 'root'@'127.0.0.1' identified by '$cRootPass';
-create user 'root'@'${cgDbHost}' identified by '$cRootPass';
-grant all privileges on *.* to 'root'@'localhost';
-grant all privileges on *.* to 'root'@'127.0.0.1';
-grant all privileges on *.* to 'root'@'${cgDbHost}';
 
 create user '$cgDbUser'@'localhost' identified by '$cUserPass';
-create user '$cgDbUser'@'127.0.0.1' identified by '$cUserPass';
-create user '$cgDbUser'@'${cgDbHost}' identified by '$cUserPass';
 grant all privileges on $cgDbName.* to '$cgDbUser'@'localhost';
-grant all privileges on $cgDbName.* to '$cgDbUser'@'127.0.0.1';
-grant all privileges on $cgDbName.* to '$cgDbUser'@'${cgDbHost}';
 
 flush privileges;
 
