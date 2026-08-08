@@ -18,7 +18,7 @@ mTidyWide = tidy -q -i -w 4000 -asxhtml --break-before-br no --indent-attributes
 
 mTidyXml = tidy -q -i -w 78 -xml --break-before-br yes --indent-attributes yes --indent-spaces 2 --tidy-mark no --vertical-space no
 
-# ----------
+# --------------------
 # bib Commands
 
 check :
@@ -44,14 +44,17 @@ clean :
 clean-all : clean
 	-rm $(cgDirTmp)/.pass.tmp &>/dev/null
 
+# ----------
 help :
 	@echo "See file: $(cgDirApp)/doc/manual/libre-bib.html"
 	sensible-browser file://$(cgDirApp)/doc/manual/libre-bib.html &>/dev/null &
 	exit 1
 
+# ----------
 setup-bib : conf.env
 	@echo "Edit conf.env then: bib setup-dir"
 
+# ----------
 setup-dir : $(cgDirEtc) $(cgDirStatus) $(cgDirTmp) $(cgDirCache) $(cgDirBackup)  $(cgLoFile) $(cgDocFile)
 	@echo "Now run: bib setup-db"
 
@@ -62,6 +65,7 @@ $(cgDirEtc) :
 $(cgDirStatus) $(cgDirBackup) $(cgDirTmp) $(cgDirCache) :
 	mkdir -p $@
 
+# ----------
 setup-db : $(cgDirStatus)/db-setup.date
 
 $(cgDirStatus)/db-setup.date : $(cgDbPassCache) $(cgDirCache)/.root.pass $(cgDirCache)/.admin.pass
@@ -85,12 +89,13 @@ $(cgDirCache)/.admin.pass :
 	@read -srp 'DB admin Password? '; \
 	echo $$REPLY | caesar 13 >$@
 
+# ----------
 connect : $(cgDbPassCache)
 	@echo
 	@echo "Test: show databases; use $(cgDbName); show tables; quit"; \
 	mysql -P $(cgDbPortLocal) -u $(cgDbUser) --password=$$(cat $(cgDbPassCache) | rot13) -h $(cgDbHost) $(cgDbName)
 
-# ----------
+# --------------------
 # Import: $(cgLoFile)
 
 import-lo : $(cgDirStatus)/import-lo.date $(cgDirStatus)/update-bib.date
@@ -196,7 +201,7 @@ conf.env : $(cgDirApp)/doc/example/conf.env
 	    cp -v $? $@; \
 	    chmod a+rx $@; \
 	else \
-	    echo 'A new conf.env has been copied to $(cgDirTmp)'; \
+	    echo 'A new conf.env has been copied to $(cgDirTmp). Merge changes with conf.env'; \
 	    cp -v $? $(cgDirTmp); \
 	    chmod a+rx $(cgDirTmp)/$@; \
 	    touch $@; \
