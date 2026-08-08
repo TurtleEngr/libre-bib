@@ -7,47 +7,26 @@ SHELL = /bin/bash
 # Adjust these to match the php version
 
 mPkgDep = \
+	bash \
+	libreoffice \
+	libreoffice-sdbc-hsqldb \
+	make \
 	mariadb-client \
-	mariadb-client-core \
-	mariadb-common \
-	mariadb-plugin-provider-bzip2 \
-	mariadb-plugin-provider-lz4 \
-	mariadb-plugin-provider-lzma \
-	mariadb-plugin-provider-lzo \
-	mariadb-plugin-provider-snappy \
 	mariadb-server \
-	mariadb-server-core \
-	libapache2-mod-php \
-	libapache2-mod-php8.2 \
-	shellcheck \
-	tidy \
-	wget \
+	pandoc \
+	perl \
 	php \
+	php-cli \
 	php-common \
+	php-fpm \
+	php-json \
+	php-mbstring \
 	php-mysql \
-	$(mPhp8.2)
-
-mPhp7.4 = \
-	php7.4 \
-	php7.4-cli \
-	php7.4-common \
-	php7.4-json \
-	php7.4-mysql \
-	php7.4-opcache \
-	php7.4-readline \
-	php7.4-mbstring \
-	php7.4-xml
-
-mPhp8.2 = \
-	php8.2 \
-	php8.2-cli \
-	php8.2-common \
-	php8.2-fpm \
-	php8.2-mysql \
-	php8.2-opcache \
-	php8.2-readline \
-	php8.2-mbstring \
-	php8.2-xml
+	php-opcache \
+	php-readline \
+	php-xml \
+	sed \
+	shellcheck
 
 mPhpUnit = phpunit-9.6.35.phar
     # Version  8.x needs php 7.2.0
@@ -88,7 +67,6 @@ mBin = \
 	src/bin/shunit2.1 \
 	src/bin/$(mPhpUnit)
 
-
 # ========================================
 usage :
 	@echo 'clean - remove tmp files'
@@ -109,13 +87,7 @@ dist-clean : clean
 	-rm -rf dist
 
 # ========================================
-test :
-	src/bin/bib -T all
-	src/bin/bib -T com
-	src/bin/phpunit src/test
-
-# ========================================
-create-build-env : get-dep update-my-utility-scripts $(mBin) .git/hooks/pre-commit check-php-ini
+create-build-env : get-dep-pkg update-my-utility-scripts $(mBin) .git/hooks/pre-commit check-php-ini
 	bin/rm-trailing-sp -t bin/org2html.sh
 
 check-php-ini : $(mPhpIniFile)
@@ -126,7 +98,7 @@ check-php-ini : $(mPhpIniFile)
 		fi; \
 	done
 
-get-dep :
+get-dep-pkg :
 	sudo apt-get update
 	@for tPkg in $(mPkgDep); do \
 		if ! dpkg -l $$tPkg >/dev/null 2>&1; then \
@@ -137,6 +109,58 @@ get-dep :
 			exit 1; \
 		fi; \
 	done
+
+# ========================================
+test :
+	src/bin/bib -T all
+	src/bin/bib -T com
+	src/bin/phpunit src/test
+
+# ========================================
+build :
+
+
+# ========================================
+# Complex Targets
+
+# --------------------
+# EPM
+
+mEpmMx=mx19/epm-5.0.2-1-mx19-x86_64.deb
+mEpmUbuntu=ubuntu18/epm-5.0.1-2-linux-5.3-x86_64.deb
+
+/usr/local/bin/epm :
+	if [[ "$(ProdOSDist)" = "mx" ]]; then \
+		cd tmp; wget $(ProdRelRoot)/released/software/ThirdParty/epm/$(mEpmMx); \
+		sudo apt-get install -y tmp/$(notdir $(mEpmMx)); \
+	fi
+	if [[ "$(ProdOSDist)" = "ubuntu" ]]; then \
+		cd tmp; wget $(ProdRelRoot)/released/software/ThirdParty/epm/$(mEpmUbuntu); \
+		sudo apt-get install -y tmp/$(notdir $(mEpmUbuntu)); \
+	fi
+
+# --------------------
+# EPM Helper
+
+mEpmHelper=epm-helper-1.6.1-3-linux-noarch.deb
+
+/usr/local/bin/mkver.pl :
+	cd tmp; wget $(ProdRelRoot)/released/software/ThirdParty/epm/$(mEpmHelper)
+	sudo apt-get install -y tmp/$(mEpmHelper)
+
+# --------------------
+# Beekeeper
+
+mBeekeeperVer=3.9.17
+mBeekeeper=Beekeeper-Studio-$(mBeekeeperVer).AppImage
+
+/usr/local/bin/beekeeper : /usr/local/bin/$(mBeekeeper)
+	cd /usr/local/bin; sudo ln -sf $(mBeekeeper) beekeeper
+
+/usr/local/bin/$(mBeekeeper) :
+	cd tmp; wget https://github.com/beekeeper-studio/beekeeper-studio/releases/download/v$(mBeekeeperVer)/$(mBeekeeper)
+	sudo mv -f tmp/$(mBeekeeper) $@
+	sudo chmod a+rx $@
 
 # ========================================
 # Single Targets
@@ -199,4 +223,3 @@ bin/sort-para.sh : $(mUtilScriptDir)/bin/sort-para.sh
 phpunit src/bin/$(mPhpUnit) :
 	rsync -P moria.whyayh.com:/rel/archive/software/ThirdParty/phpunit/*.phar src/bin/
 	cd src/bin; ln -sf $(mPhpUnit) phpunit
-

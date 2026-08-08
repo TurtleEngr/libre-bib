@@ -1,0 +1,12 @@
+$pDel{"/opt"} = 1;
+$pDel{"/usr/local/bin"} = 1;
+
+$pConf{"/opt/libre-bib/etc/bib-style.xml"} = 1;
+$pConf{"/opt/libre-bib/etc/bib-template.xml"} = 1;
+$pConf{"/opt/libre-bib/etc/cite-new.xml"} = 1;
+$pConf{"/opt/libre-bib/etc/cite-update.xml"} = 1;
+$pConf{"/opt/libre-bib/etc/conf.env"} = 1;
+$pConf{"/opt/libre-bib/etc/conf.php"} = 1;
+$pConf{"/opt/libre-bib/etc/libre-bib.ssh"} = 1;
+$pConf{"/opt/libre-bib/etc/lib-schema.tsv"} = 1;
+$pConf{"/opt/libre-bib/etc/lo-schema.csv"} = 1;
