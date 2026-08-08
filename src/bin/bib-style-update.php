@@ -116,157 +116,61 @@ function fValidate() {
 } # fValidate
 
 # -----------------------------
-function fProcessStyleLine($pLine) {
-    $tStartRegEx = '/<text:bibliography-configuration text:prefix=""/';
-    $tEndRegEx1   = '/ \/>$/';
-    $tEndRegEx2   = '/>$/';
-    $tEndRegEx3   = '/<\/text:bibliography-configuration>/';
+function fReplaceElement($pXmlFile, $pName, $pNewFile, $pOutFile) {
+    # Replace one element in an unpacked odt XML file with the copy
+    # saved by bib-style-save.php, and write the result to pOutFile.
 
-    # The first '/>$' ends bibliography-configuration
-    # If '>$' is seen, then don't look for '/>$', look for end tag
+    global $cgDebug;
+    global $cgDocFile;
 
-    if (preg_match($tStartRegEx, $pLine))
-        return "start";    # ---------->
+    echo "Start processing $pXmlFile [bib-style-update.php:" . __LINE__ . "]\n";
 
-    if (preg_match($tEndRegEx1, $pLine))
-        return "end1";    # ---------->
+    $tDoc = uLoadXml($pXmlFile);
+    $tNode = uFindElement($tDoc, $pName);
 
-    if (preg_match($tEndRegEx3, $pLine))
-        return "end3";    # ---------->
+    if ($tNode === null)
+        throw new Exception("\nError: A bibliography has not been added to $cgDocFile: no $pName in $pXmlFile. [bib-style-update.php:" . __LINE__ . "]");
 
-    if (preg_match($tEndRegEx2, $pLine))
-        return "end2";    # ---------->
+    $tXml = trim(file_get_contents($pNewFile));
 
-    return "";    # ---------->
-} # fProcessStyleLine
+    # The saved copy carries no namespace declarations of its own: it is
+    # parsed against this document, which declares them on its root.
+    $tFrag = $tDoc->createDocumentFragment();
+    if ( ! @$tFrag->appendXML($tXml))
+        throw new Exception("\nError: Could not parse $pNewFile [bib-style-update.php:" . __LINE__ . "]");
+
+    $tNode->parentNode->replaceChild($tFrag, $tNode);
+
+    uSaveXml($tDoc, $pOutFile);
+    echo "Updated $pName from $pNewFile [bib-style-update.php:" . __LINE__ . "]\n";
+
+    return;    # ---------->
+} # fReplaceElement
 
 # -----------------------------
 function fProcessStyleFile() {
-    global $gInH;
-    global $gOutH;
-    global $gEtcH;
-    global $cgDebug;
-    global $cgDocFile;
     global $cgDirEtc;
     global $cgDirTmp;
 
     # This assumes there is only one "bibliography-configuration" tag
     # in the styles.xml file.
 
-    echo "Start processing styles.xml [bib-style-update.php:" . __LINE__ . "]\n";
-
-    $gInH = fopen("$cgDirTmp/styles.xml", 'r');
-    $gNewH = fopen("$cgDirEtc/bib-style.xml", 'r');
-    $gOutH = fopen("$cgDirTmp/styles.new.xml", 'w');
-
-    $tFound = 0;
-    $tIn = 0;
-    $tInAttr = 0;
-    $tNumLine = 0;
-    while ($tLine = fgets($gInH)) {
-        ++$tNumLine;
-        if ($tNumLine % 100 == 0)
-            echo '.';
-
-        $tResult = fProcessStyleLine($tLine);
-        if ($tResult == "start") {
-            $tIn = $tInAttr = $tFound = 1;
-            while ($tNewLine = fgets($gNewH))
-                fputs($gOutH, $tNewLine);
-            continue;
-        }
-
-        # Skip over the old section
-        if ( ! $tIn)
-            fputs($gOutH, $tLine);
-
-        # if '/>', done
-        if ($tIn && $tInAttr && $tResult == "end1")
-            $tIn = $tInAttr = 0;
-
-        # if '>', now just look for end tag
-        if ($tIn && $tInAttr && $tResult == "end2")
-            $tInAttr = 0;
-
-        # End tag?
-        if ($tIn && $tResult == "end3")
-            $tIn = 0;
-    }
-    echo "\nProcessed $tNumLine lines in styles.xml. [bib-style-update.php:" . __LINE__ . "]\n";
-
-    if ( ! $tFound)
-        throw new Exception("\nError: A bibliography has not been added to $cgDocFile. [bib-style-update.php:" . __LINE__ . "]");
-
-    fclose($gInH);
-    fclose($gNewH);
-    fclose($gOutH);
+    fReplaceElement("$cgDirTmp/styles.xml", "bibliography-configuration",
+        "$cgDirEtc/bib-style.xml", "$cgDirTmp/styles.new.xml");
 
     return;    # ---------->
 } # fProcessStyleFile
 
 # -----------------------------
-function fProcessContentLine($pLine) {
-    $tStartRegEx = '/<text:bibliography-source>/';
-    $tEndRegEx   = '<\/text:bibliography-source>';
-
-    if (preg_match($tStartRegEx, $pLine))
-        return "start";    # ---------->
-
-    if (preg_match($tEndRegEx, $pLine))
-        return "end";    # ---------->
-
-    return "";    # ---------->
-} # fProcessContentLine
-
-# -----------------------------
 function fProcessContentFile() {
-    global $gInH;
-    global $gOutH;
-    global $cgDebug;
-    global $cgDocFile;
     global $cgDirEtc;
     global $cgDirTmp;
 
     # This assumes there is only one "bibliography-source" tag in the
     # content.xml file.
 
-    echo "Start processing content.xml [bib-style-update.php:" . __LINE__ . "]\n";
-
-    $gInH = fopen("$cgDirTmp/content.xml", 'r');
-    $gNewH = fopen("$cgDirEtc/bib-template.xml", 'r');
-    $gOutH = fopen("$cgDirTmp/content.new.xml", 'w');
-
-    $tFound = 0;
-    $tIn = 0;
-    $tNumLine = 0;
-    while ($tLine = fgets($gInH)) {
-        ++$tNumLine;
-        if ($tNumLine % 500 == 0)
-            echo '.';
-
-        $tResult = fProcessContentLine($tLine);
-        if ($tResult == "start") {
-            $tIn = $tFound = 1;
-            while ($tNewLine = fgets($gNewH))
-                fputs($gOutH, $tNewLine);
-            continue;
-        }
-
-        # Skip over the old section
-        if ( ! $tIn)
-            fputs($gOutH, $tLine);
-
-        if ($tIn && $tResult == "end")
-            $tIn = 0;
-    }
-    echo "\nProcessed $tNumLine lines in content.xml. [bib-style-update.php:" . __LINE__ . "]\n";
-
-    if ( ! $tFound)
-        throw new Exception("\nError: A bibliography has not been added to $cgDocFile. [bib-style-update.php:" . __LINE__ . "]");
-
-    fclose($gInH);
-    fclose($gNewH);
-    fclose($gOutH);
+    fReplaceElement("$cgDirTmp/content.xml", "bibliography-source",
+        "$cgDirEtc/bib-template.xml", "$cgDirTmp/content.new.xml");
 
     return;    # ---------->
 } # fProcessContentFile
@@ -282,6 +186,7 @@ try {
     exit(3);    # ---------->
 }
 
+
 # ========================================
 # Write section
 try {
@@ -294,6 +199,7 @@ try {
         . __LINE__ . "]\n";
     exit(4);    # ---------->
 }
+
 
 echo "Done. [bib-style-update.php:" . __LINE__ . "]\n";
 exit(0);    # ---------->

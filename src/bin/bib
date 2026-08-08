@@ -44,11 +44,11 @@ fi
 . $cgDirApp/etc/conf.env
 
 if [ ! -x conf.env ]; then
-    echo "Error: Missing conf.env, copying it now [$LINENO]"
+    echo "Warning: Missing conf.env, copying it now [$LINENO]"
     make -f $cgBin/bib-cmd.mak conf.env
     echo 'Edit conf.env with your details. Uncomment the ones you'
-    echo 'are changing, then run: bib setup-bib'
-    fUsage
+    echo 'are changing, then run: bib setup-dir'
+    exit 1
 fi
 
 if ! $cgBin/valid-conf.sh <./conf.env; then

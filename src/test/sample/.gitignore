@@ -1,7 +1,10 @@
 backup/
 bib-cache/
+biblio-note.txt
+biblio.txt
 conf.env
 etc/
 example.odt
+key.txt
 status/
 tmp/

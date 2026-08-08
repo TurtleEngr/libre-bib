@@ -256,10 +256,10 @@ class UtilTest extends TestCase {
     } # testPackFileWithNoExec
 
     public function testUnpackFile() {
-        # uUnpackFile shells out to unzip and xmllint, so it needs a
-        # small .odt in test/sample/ before it can be tested. Note that
-        # unzip's stderr is not redirected, so a failed unpack writes to
-        # the terminal as well as throwing.
+        # uUnpackFile shells out to unzip, so it needs a small .odt in
+        # test/sample/ before it can be tested. Note that unzip's stderr
+        # is not redirected, so a failed unpack writes to the terminal
+        # as well as throwing.
         $this->markTestIncomplete("uUnpackFile needs a sample .odt in test/sample/");
 
         global $cgDirSample;
@@ -269,5 +269,97 @@ class UtilTest extends TestCase {
         uUnpackFile("$cgDirSample/sample.odt", "content");
         $this->assertFileExists($GLOBALS["cgDirTmp"] . "/content.xml");
     } # testUnpackFile
+
+    # ----------------------------------------
+    # XML helpers
+
+    private function tWriteXml($pBody) {
+        global $cgDirTmpTest;
+
+        $tPath = "$cgDirTmpTest/util-test.xml";
+        file_put_contents($tPath,
+            '<?xml version="1.0" encoding="UTF-8"?>' .
+            '<office:document-content' .
+            ' xmlns:office="urn:oasis:names:tc:opendocument:xmlns:office:1.0"' .
+            ' xmlns:text="urn:oasis:names:tc:opendocument:xmlns:text:1.0">' .
+            $pBody . '</office:document-content>');
+        return $tPath;    # ---------->
+    } # tWriteXml
+
+    public function testLoadXml() {
+        $tPath = $this->tWriteXml('<office:body><text:p>hi</text:p></office:body>');
+        $tDoc = uLoadXml($tPath);
+
+        $this->assertInstanceOf(DOMDocument::class, $tDoc);
+        $this->assertSame("office:document-content", $tDoc->documentElement->nodeName);
+    } # testLoadXml
+
+    public function testLoadXmlThrowsOnMissingFile() {
+        global $cgDirTmpTest;
+
+        $this->expectException(Exception::class);
+        uLoadXml("$cgDirTmpTest/no-such-file.xml");
+    } # testLoadXmlThrowsOnMissingFile
+
+    public function testLoadXmlThrowsOnBadXml() {
+        global $cgDirTmpTest;
+
+        # The libxml message goes into the exception, not to stderr.
+        $tPath = "$cgDirTmpTest/util-test-bad.xml";
+        file_put_contents($tPath, "<a><b></a>");
+
+        $this->expectException(Exception::class);
+        uLoadXml($tPath);
+    } # testLoadXmlThrowsOnBadXml
+
+    public function testSaveXmlRoundTrips() {
+        global $cgDirTmpTest;
+
+        $tPath = $this->tWriteXml('<office:body><text:p>hi</text:p></office:body>');
+        $tOut = "$cgDirTmpTest/util-test-out.xml";
+        @unlink($tOut);
+
+        uSaveXml(uLoadXml($tPath), $tOut);
+
+        $this->assertFileExists($tOut);
+        $this->assertSame(uLoadXml($tPath)->C14N(), uLoadXml($tOut)->C14N());
+    } # testSaveXmlRoundTrips
+
+    public function testFindElementIgnoresThePrefix() {
+        # local-name() is used, so "text:p" is found as "p".
+        $tDoc = uLoadXml($this->tWriteXml(
+            '<office:body><text:p text:style-name="P1">hi</text:p></office:body>'));
+        $tNode = uFindElement($tDoc, "p");
+
+        $this->assertNotNull($tNode);
+        $this->assertSame("P1", $tNode->getAttribute("text:style-name"));
+    } # testFindElementIgnoresThePrefix
+
+    public function testFindElementReturnsNullWhenAbsent() {
+        $tDoc = uLoadXml($this->tWriteXml('<office:body><text:p>hi</text:p></office:body>'));
+        $this->assertNull(uFindElement($tDoc, "bibliography-source"));
+    } # testFindElementReturnsNullWhenAbsent
+
+    public function testFindElementReturnsTheFirstOne() {
+        $tDoc = uLoadXml($this->tWriteXml(
+            '<office:body><text:p>one</text:p><text:p>two</text:p></office:body>'));
+        $this->assertSame("one", uFindElement($tDoc, "p")->textContent);
+    } # testFindElementReturnsTheFirstOne
+
+    public function testFindElementList() {
+        $tDoc = uLoadXml($this->tWriteXml(
+            '<office:body><text:p>one</text:p><text:p>two</text:p></office:body>'));
+        $tList = uFindElementList($tDoc, "p");
+
+        # An array, not a DOMNodeList, so nodes can be replaced while walking.
+        $this->assertIsArray($tList);
+        $this->assertCount(2, $tList);
+        $this->assertSame("two", $tList[1]->textContent);
+    } # testFindElementList
+
+    public function testFindElementListIsEmptyWhenAbsent() {
+        $tDoc = uLoadXml($this->tWriteXml('<office:body><text:p>hi</text:p></office:body>'));
+        $this->assertSame(array(), uFindElementList($tDoc, "bibliography-mark"));
+    } # testFindElementListIsEmptyWhenAbsent
 
 } # UtilTest

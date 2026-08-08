@@ -110,142 +110,58 @@ function fValidate() {
 } # fValidate
 
 # -----------------------------
-function fProcessStyleLine($pLine) {
-    $tStartRegEx = '/<text:bibliography-configuration text:prefix=""/';
-    $tEndRegEx1   = '/ \/>$/';
-    $tEndRegEx2   = '/>$/';
-    $tEndRegEx3   = '/<\/text:bibliography-configuration>/';
+function fSaveElement($pXmlFile, $pName, $pOutFile) {
+    # Copy one element out of an unpacked odt XML file, and write it to
+    # pOutFile. The element is written exactly as it appears in the
+    # source, so it can be spliced straight back in by bib-style-update.
 
-    # The first '/>$' ends bibliography-configuration
-    # If '>$' is seen, then don't look for '/>$', look for end tag
+    global $cgDebug;
+    global $cgDocFile;
 
-    if (preg_match($tStartRegEx, $pLine))
-        return "start";    # ---------->
+    echo "Start processing $pXmlFile [bib-style-save.php:" . __LINE__ . "]\n";
 
-    if (preg_match($tEndRegEx1, $pLine))
-        return "end1";    # ---------->
+    $tDoc = uLoadXml($pXmlFile);
+    $tNode = uFindElement($tDoc, $pName);
 
-    if (preg_match($tEndRegEx3, $pLine))
-        return "end3";    # ---------->
+    if ($tNode === null)
+        throw new Exception("\nError: A bibliography has not been added to $cgDocFile: no $pName in $pXmlFile. [bib-style-save.php:" . __LINE__ . "]");
 
-    if (preg_match($tEndRegEx2, $pLine))
-        return "end2";    # ---------->
+    $tXml = $tDoc->saveXML($tNode);
+    if ($tXml === false)
+        throw new Exception("\nError: Could not read $pName from $pXmlFile [bib-style-save.php:" . __LINE__ . "]");
 
-    return "";    # ---------->
-} # fProcessStyleLine
+    if (file_put_contents($pOutFile, $tXml . "\n") === false)
+        throw new Exception("\nError: Could not write $pOutFile [bib-style-save.php:" . __LINE__ . "]");
+
+    echo "Saved $pName to $pOutFile [bib-style-save.php:" . __LINE__ . "]\n";
+
+    return;    # ---------->
+} # fSaveElement
 
 # -----------------------------
 function fProcessStyleFile() {
-    global $gInH;
-    global $gOutH;
-    global $cgDebug;
-    global $cgDocFile;
     global $cgDirEtc;
     global $cgDirTmp;
 
     # This assumes there is only one "bibliography-configuration" tag
     # in the styles.xml file.
 
-    echo "Start processing styles.xml [bib-style-save.php:" . __LINE__ . "]\n";
-
-    $gInH = fopen("$cgDirTmp/styles.xml", 'r');
-    $gOutH = fopen("$cgDirEtc/bib-style.xml", 'w');
-
-    $tFound = 0;
-    $tIn = 0;
-    $tInAttr = 0;
-    $tNumLine = 0;
-    while ($tLine = fgets($gInH)) {
-        ++$tNumLine;
-        if ($tNumLine % 100 == 0)
-            echo '.';
-
-        $tResult = fProcessStyleLine($tLine);
-        if ($tResult == "start")
-            $tIn = $tInAttr = $tFound = 1;
-
-        if ($tIn)
-            fputs($gOutH, $tLine);
-
-        # if '/>', done
-        if ($tIn && $tInAttr && $tResult == "end1")
-            break;
-
-        # if '>', now just look for end tag
-        if ($tIn && $tInAttr && $tResult == "end2")
-            $tInAttr = 0;
-
-        # End tag?
-        if ($tIn && $tResult == "end3")
-            break;
-    }
-    echo "\nProcessed $tNumLine lines in styles.xml. [bib-style-save.php:" . __LINE__ . "]\n";
-
-    if ( ! $tFound)
-        throw new Exception("\nError: A bibliography has not been added to $cgDocFile. [bib-style-save.php:" . __LINE__ . "]");
-
-    fclose($gInH);
-    fclose($gOutH);
+    fSaveElement("$cgDirTmp/styles.xml", "bibliography-configuration",
+        "$cgDirEtc/bib-style.xml");
 
     return;    # ---------->
 } # fProcessStyleFile
 
 # -----------------------------
-function fProcessContentLine($pLine) {
-    $tStartRegEx = '/<text:bibliography-source>/';
-    $tEndRegEx   = '<\/text:bibliography-source>';
-
-    if (preg_match($tStartRegEx, $pLine))
-        return "start";    # ---------->
-
-    if (preg_match($tEndRegEx, $pLine))
-        return "end";    # ---------->
-
-    return "";    # ---------->
-} # fProcessContentLine
-
-# -----------------------------
 function fProcessContentFile() {
-    global $gInH;
-    global $gOutH;
-    global $cgDebug;
-    global $cgDocFile;
     global $cgDirEtc;
     global $cgDirTmp;
 
     # This assumes there is only one "bibliography-source" tag in the
     # content.xml file.
 
-    echo "Start processing content.xml [bib-style-save.php:" . __LINE__ . "]\n";
-
-    $gInH = fopen("$cgDirTmp/content.xml", 'r');
-    $gOutH = fopen("$cgDirEtc/bib-template.xml", 'w');
-
-    $tFound = 0;
-    $tIn = 0;
-    $tNumLine = 0;
-    while ($tLine = fgets($gInH)) {
-        ++$tNumLine;
-        if ($tNumLine % 500 == 0)
-            echo '.';
-
-        $tResult = fProcessContentLine($tLine);
-        if ($tResult == "start")
-            $tIn = $tFound = 1;
-
-        if ($tIn)
-            fputs($gOutH, $tLine);
-
-        if ($tIn && $tResult == "end")
-            break;
-    }
-    echo "\nProcessed $tNumLine lines in content.xml. [bib-style-save.php:" . __LINE__ . "]\n";
-
-    if ( ! $tFound)
-        throw new Exception("\nError: A bibliography has not been added to $cgDocFile. [bib-style-save.php:" . __LINE__ . "]");
-
-    fclose($gInH);
-    fclose($gOutH);
+    fSaveElement("$cgDirTmp/content.xml", "bibliography-source",
+        "$cgDirEtc/bib-template.xml");
 
     return;    # ---------->
 } # fProcessContentFile
@@ -261,6 +177,7 @@ try {
     exit(3);    # ---------->
 }
 
+
 # ========================================
 # Write section
 try {
@@ -272,6 +189,7 @@ try {
         . __LINE__ . "]\n";
     exit(4);    # ---------->
 }
+
 
 echo "Done. [bib-style-save.php:" . __LINE__ . "]\n";
 exit(0);    # ---------->

@@ -134,8 +134,6 @@ function fStatus() {
     } else {
         if (filemtime($cgLoFile) > filemtime("$cgDirStatus/import-lo.date")) {
             echo "$cgLoFile is newer, run: bib import-lo\n";
-            if ($cgUseLib)
-                echo "If OK, run: bib update-lo\n";
         }
     }
 
@@ -166,7 +164,6 @@ function fDbStatus() {
     global $cgDbTblBib;
     global $cgDbTblLo;
     global $cgDbName;
-    global $cgUseLib;
     global $cgVerbose;
 
     if ( ! $cgVerbose)
