@@ -245,10 +245,7 @@ rebuild : $(cgDirApp)/etc/conf.php $(cgDirApp)/doc/example/conf.env
 
 $(cgDirApp)/etc/conf.php : $(cgDirApp)/etc/conf.env
 	$(cgBin)/gen-conf-php.sh <$? >$@
-	echo -e '\nglobal $$cgBin;' >>$@
-	echo -e '$$cgBin=$$_ENV["cgBin"];' >>$@
-	echo -e '\nglobal $$cgDirApp;' >>$@
-	echo -e '$$cgDirApp=$$_ENV["cgDirApp"];' >>$@
+	chmod a+rx $@
 
 $(cgDirApp)/doc/example/conf.env : $(cgDirApp)/etc/conf.env
 	sed 's/^export /    #/' <$? >$@

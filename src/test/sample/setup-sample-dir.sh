@@ -13,7 +13,6 @@ fi
 
 bib setup-bib
 sed -i '
-  s/ *#cgDebug=false/cgDebug=true/
   s/ *#export cgDirLibreofficeConf/export cgDirLibreofficeConf/
   s/ *#cgDbPassHint="b4n"/cgDbPassHint="demo"/
   s/ *#cgDocFile="example.odt"/cgDocFile="test-doc.odt"/
