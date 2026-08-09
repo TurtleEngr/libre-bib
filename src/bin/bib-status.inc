@@ -97,15 +97,15 @@ class BibStatus {
         }
 
         if (file_exists("$this->mDirStatus/import-lo.date") and
-            file_exists("$this->mDirStatus)/backup-lo.date")) {
+            file_exists("$this->mDirStatus/backup-lo.date")) {
             if (filemtime("$this->mDirStatus/import-lo.date") >
-                filemime("$this->mDirStatus)/backup-lo.date")) {
+                filemtime("$this->mDirStatus/backup-lo.date")) {
                 echo "lo table is newer, maybe backup? Run: bib backup-lo\n";
             }
         }
 
-        if (file_exists("$this->mDirStatus)/bib-update.date")) {
-            if (filemtime($this->mDocFile) > filemtime("$this->mDirStatus)/bib-update.date")) {
+        if (file_exists("$this->mDirStatus/bib-update.date")) {
+            if (filemtime($this->mDocFile) > filemtime("$this->mDirStatus/bib-update.date")) {
                 echo "$this->mDocFile is new, maybe run: bib bib-new and bib-update\n";
             }
         }

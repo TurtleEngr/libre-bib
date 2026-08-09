@@ -17,6 +17,7 @@ class ExportLo2Txt {
     public $mConf;
     public $mDb;
     public $mUtil;
+    public $mBin;
     public $mDbTblLo;
     public $mDebug;
     public $mDirTmp;
@@ -32,6 +33,7 @@ class ExportLo2Txt {
     # -----------------------------
     public function __construct($pConf, $pOpt = array()) {
         $this->mConf = $pConf;
+        $this->mBin = isset($pConf["cgBin"]) ? $pConf["cgBin"] : "";
         $this->mDbTblLo = isset($pConf["cgDbTblLo"]) ? $pConf["cgDbTblLo"] : "";
         $this->mDebug = isset($pConf["cgDebug"]) ? $pConf["cgDebug"] : "";
         $this->mDirTmp = isset($pConf["cgDirTmp"]) ? $pConf["cgDirTmp"] : "";
@@ -129,7 +131,7 @@ class ExportLo2Txt {
 
         echo "\nSorting \n";
         $tTmpFile = $this->mDirTmp . '/t.tmp';
-        shell_exec("/bin/bash -c \"$cgBin/sort-para.sh <$this->mFileOut >$tTmpFile\"");
+        shell_exec("/bin/bash -c \"" . $this->mBin . "/sort-para.sh <$this->mFileOut >$tTmpFile\"");
         rename($tTmpFile, $this->mFileOut);
     } # fExportTable
 

@@ -89,6 +89,26 @@ class BibRefUpdateTest extends TestCase {
     } # testConstructorKeepsTheOptions
 
     # ----------------------------------------
+    # fBibLookup - the DB path, with a canned row
+
+    public function testBibLookupBuildsARefFromARow() {
+        # Same missed call as bib-ref-new: Map::uBibType2Xml() is only
+        # reached once the lookup finds a row.
+        $this->tApp->mDb = new uTestDb(uTestConf(), array(
+            "Identifier"=>"artymiak-11",
+            "Type"=>1,
+            "Author"=>"Artymiak, Jacek"
+        ));
+
+        $tRef = $this->tApp->fBibLookup("artymiak-11");
+
+        $this->assertSame("artymiak-11", $tRef["id"]);
+        $this->assertSame(Map::uBibType2Xml(1), $tRef["type"]);
+        $this->assertIsArray($tRef["data"]);
+        $this->assertContains("Artymiak, Jacek", $tRef["data"]);
+    } # testBibLookupBuildsARefFromARow
+
+    # ----------------------------------------
     # Needs a DB
 
     public function testValidateNeedsSetup() {

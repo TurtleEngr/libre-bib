@@ -132,3 +132,37 @@ function uTestCapture($pFunc) {
     }
     return $tOut;    # ---------->
 } # uTestCapture
+
+# ========================================
+# A Db that answers one canned row, so the code paths that read a
+# record can be tested without a live DB. uPrepare() is the only
+# method the lookups use.
+
+class uTestStmt {
+    public $mRow;
+
+    public function __construct($pRow) {
+        $this->mRow = $pRow;
+    } # __construct
+
+    public function execute($pArgs = array()) {
+        return true;    # ---------->
+    } # execute
+
+    public function fetch($pMode = null) {
+        return $this->mRow;    # ---------->
+    } # fetch
+} # uTestStmt
+
+class uTestDb extends Db {
+    public $mRow;
+
+    public function __construct($pConf, $pRow) {
+        parent::__construct(null, $pConf);
+        $this->mRow = $pRow;
+    } # __construct
+
+    public function uPrepare($pSql, $pFile, $pFunc, $pLine) {
+        return new uTestStmt($this->mRow);    # ---------->
+    } # uPrepare
+} # uTestDb

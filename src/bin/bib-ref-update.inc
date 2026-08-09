@@ -122,7 +122,7 @@ class BibRefUpdate {
         # the attributes itself and do its own escaping.
         $tRef = array(
             'id'=>$pId,
-            'type'=>uBibType2Xml($tRow['Type']),
+            'type'=>Map::uBibType2Xml($tRow['Type']),
             'data'=>array()
         );
 

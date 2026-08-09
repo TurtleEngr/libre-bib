@@ -99,6 +99,7 @@ mCheckProd = \
 	src/etc/conf.php \
 	src/etc/lo-schema.csv \
 	src/test/BibRefNewTest.php \
+	src/test/CallsTest.php \
 	src/test/BibRefUpdateTest.php \
 	src/test/BibStatusTest.php \
 	src/test/BibStyleSaveTest.php \

@@ -125,6 +125,37 @@ class BibRefNewTest extends TestCase {
     } # testXmlValueLeavesPlainTextAlone
 
     # ----------------------------------------
+    # fBibLookup - the DB path, with a canned row
+
+    public function testBibLookupBuildsACiteFromARow() {
+        # This is the path that threw "Call to undefined function
+        # uBibType2Xml()": the call is only reached when the lookup
+        # finds a row, so no test without a DB row ever ran it.
+        $this->tApp->mDb = new uTestDb(uTestConf(), array(
+            "Identifier"=>"artymiak-11",
+            "Type"=>1,
+            "Author"=>"Artymiak, Jacek",
+            "Title"=>"LibreOffice Calc Functions"
+        ));
+
+        $tCite = $this->tApp->fBibLookup("artymiak-11");
+
+        $this->assertSame("artymiak-11", $tCite["id"]);
+        $this->assertSame(Map::uBibType2Xml(1), $tCite["type"]);
+        $this->assertStringContainsString("Artymiak", $tCite["data"]);
+    } # testBibLookupBuildsACiteFromARow
+
+    public function testBibLookupCachesTheRow() {
+        $this->tApp->mDb = new uTestDb(uTestConf(), array(
+            "Identifier"=>"artymiak-11", "Type"=>1, "Author"=>"Artymiak, Jacek"
+        ));
+
+        $this->tApp->fBibLookup("artymiak-11");
+
+        $this->assertArrayHasKey("artymiak-11", $this->tApp->mBibCache);
+    } # testBibLookupCachesTheRow
+
+    # ----------------------------------------
     # fUseTemplate
 
     public function testUseTemplateFillsEveryField() {

@@ -173,7 +173,7 @@ class BibRefNew {
 
         $tCite = array(
             'id'=>$pId,
-            'type'=>uBibType2Xml($tRow['Type']),
+            'type'=>Map::uBibType2Xml($tRow['Type']),
             'data'=>"",
             'loc'=>""
         );
