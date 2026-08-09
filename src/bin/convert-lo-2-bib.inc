@@ -111,10 +111,6 @@ class ConvertLo2Bib {
             case "Custom3":
                 # These are not changed
                 continue 2;
-            case "Author":
-                # Update only if Authors added
-                if ( ! preg_match("/; /", $pRec['Author']))
-                    continue 2;
             }
             $tSql .= ' ' . $tCol . ' = "' . $pRec[$tCol] . '",';
         }

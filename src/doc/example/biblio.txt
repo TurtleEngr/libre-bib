@@ -36,7 +36,7 @@ ASIN: 13107536
 Id: craphound-01
 Type: article
 Media: link
-Title: Shop ;  Cory Doctorow's craphound.com
+Title: Cory Doctorow's craphound.com Shop
 Tags: current, link, biblio, link
 Link: https://craphound.com/shop/
 
@@ -61,7 +61,7 @@ ASIN: 109
 Id: doctorow-04
 Type: book
 Media: ebook
-Title: Great Big Beautiful Tomorrow (Outspoken Authors Book 8), The
+Title: The Great Big Beautiful Tomorrow (Outspoken Authors Book 8)
 Author: Doctorow, Cory
 Date: 2011
 Publisher: PM Press
@@ -75,7 +75,7 @@ Title: In Real Life
 Author: Doctorow, Cory
 Authors: Jen Wang
 Date: 2014
-Publisher: First Second (2014), 192 pages
+Publisher: First Second
 Tags: e, biblio
 ASIN: 14752976
 
@@ -102,7 +102,8 @@ ASIN: 22788475
 Id: doctorow-08
 Type: book
 Media: ebook
-Title: Rapture of the Nerds: A tale of the singularity, posthumanity, and awkward social situations, The
+Title: The Rapture of the Nerds
+Subtitle: A tale of the singularity, posthumanity, and awkward social situations
 Author: Doctorow, Cory
 Date: 2012
 Publisher: Tom Doherty Associates
@@ -127,7 +128,8 @@ Link: https://www.amazon.com/dp/B082RS7N3X
 Id: doctorow-11
 Type: article
 Media: article
-Title: The Dawn of Everything: Pluralistic: 08 Mar 2022
+Title: The Dawn of Everything
+Subtitle: Pluralistic: 08 Mar 2022
 Author: Doctorow, Cory
 Date: 2022-02-08
 DateSeen: 2022-11-22
@@ -158,10 +160,13 @@ Link: https://www.amazon.com/gp/product/B08V8Q938Q/
 Id: eisenstein-01
 Type: book
 Media: ebook
-Title: The Ascent of Humanity: Civilization and the Human Sense of Self
+Title: The Ascent of Humanity
+Subtitle: Civilization and the Human Sense of Self
 Author: Eisenstein, Charles
 Date: 2013
-Publisher: North Atlantic Books (2013), Edition: Reprint, 577 pages
+Publisher: North Atlantic Books
+Date: 2013
+Edition: Reprint
 Tags: biblio, important
 ASIN: 4982806
 Link: http://ascentofhumanity.com/text/
@@ -184,7 +189,7 @@ Link: http://charleseisenstein.net/project/the-next-level-podcast-5-2016/
 Id: eisenstein-04
 Type: article
 Media: link
-Title: Rituals for Lover Earth ;  Charles Eisenstein
+Title: Rituals for Lover Earth
 Author: Eisenstein, Charles
 Tags: culture, link, biblio, link
 Link: http://charleseisenstein.net/rituals-for-lover-earth/
@@ -192,7 +197,7 @@ Link: http://charleseisenstein.net/rituals-for-lover-earth/
 Id: eisenstein-05
 Type: article
 Media: link
-Title: The EcoSexual Awakening ;  Charles Eisenstein
+Title: The EcoSexual Awakening
 Author: Eisenstein, Charles
 Tags: culture, link, biblio, link
 Link: http://charleseisenstein.net/the-ecosexual-awakening/
@@ -200,7 +205,7 @@ Link: http://charleseisenstein.net/the-ecosexual-awakening/
 Id: eisenstein-06
 Type: article
 Media: link
-Title: The Polarization Trap ;  Charles Eisenstein
+Title: The Polarization Trap
 Author: Eisenstein, Charles
 Tags: culture, link, biblio, link
 Link: http://charleseisenstein.org/essays/the-polarization-trap/?fbclid=IwAR3F-5pNeqnrnkcYea_dGGHpK2b-WcGtGE3nOK2Tzjrl2y9NvHf34Ld6ySA
@@ -208,7 +213,7 @@ Link: http://charleseisenstein.org/essays/the-polarization-trap/?fbclid=IwAR3F-5
 Id: eisenstein-07
 Type: article
 Media: link
-Title: Unlearning: For Change Agents ;  Charles Eisenstein
+Title: Unlearning: For Change Agents
 Author: Eisenstein, Charles
 Tags: culture, link, biblio, link
 Link: https://charleseisenstein.org/courses/unlearning-for-change-agents/
@@ -216,7 +221,7 @@ Link: https://charleseisenstein.org/courses/unlearning-for-change-agents/
 Id: eisenstein-08
 Type: article
 Media: link
-Title: The Coronation ;  Charles Eisenstein
+Title: The Coronation
 Author: Eisenstein, Charles
 Tags: culture, link, biblio, link
 Link: https://charleseisenstein.org/essays/the-coronation/?_page=2
@@ -224,7 +229,7 @@ Link: https://charleseisenstein.org/essays/the-coronation/?_page=2
 Id: eisenstein-09
 Type: article
 Media: link
-Title: The Polarization Trap ;  Charles Eisenstein
+Title: The Polarization Trap
 Author: Eisenstein, Charles
 Tags: essay, link, biblio, link
 Link: https://charleseisenstein.org/essays/the-polarization-trap/
@@ -232,24 +237,28 @@ Link: https://charleseisenstein.org/essays/the-polarization-trap/
 Id: eisenstein-10
 Type: book
 Media: book
-Title: The More Beautiful World Our Hearts Know Is Possible (Sacred Activism Book 2)
+Title: The More Beautiful World Our Hearts Know Is Possible
+Subtitle: (Sacred Activism Book 2)
 Author: Eisenstein, Charles
 Tags: book, biblio, book
 
 Id: eisenstein-11
 Type: book
 Media: book
-Title: Climate: A New Story
+Title: Climate
+Subtitle: A New Story
 Author: Eisenstein, Charles
 Tags: book, biblio, book
 
 Id: eisenstein-12
 Type: book
 Media: ebook
-Title: Sacred Economics: Money, Gift, and Society in the Age of Transition
+Title: Sacred Economics
+Subtitle: Money, Gift, and Society in the Age of Transition
 Author: Eisenstein, Charles
 Date: 2011-07-12
-Publisher: EVOLVER EDITIONS (2011), 497 pages
+Publisher: EVOLVER EDITIONS
+dATE: 2011
 Tags: book, biblio, book
 ISBN: 9781583943984
 ASIN: 11569343
@@ -258,7 +267,7 @@ Link: https://www.amazon.com/gp/product/B004ZZNNKU/
 Id: eisenstein-13
 Type: book
 Media: ebook
-Title: The Ascent of Humanity; Full text
+Title: The Ascent of Humanity (Full text)
 Author: Eisenstein, Charles
 Tags: culture, link, biblio, link
 Link: http://ascentofhumanity.com/text/
@@ -266,7 +275,8 @@ Link: http://ascentofhumanity.com/text/
 Id: eisler-01
 Type: book
 Media: ebook
-Title: Chalice and the Blade: Our History, Our Future---Updated With a New Epilogue, The
+Title: The Chalice and the Blade
+Subtitle: Our History, Our Future---Updated With a New Epilogue
 Author: Eisler, Riane
 Date: 2011
 Publisher: HarperCollins
@@ -276,10 +286,11 @@ ASIN: 37422
 Id: eisler-02
 Type: book
 Media: hardcover
-Title: Sacred Pleasure: Sex, Myth, and the Politics of the Body
+Title: Sacred Pleasure
+Subtitle: Sex, Myth, and the Politics of the Body
 Author: Eisler, Riane
 Date: 1995
-Publisher: Harpercollins (1995), Edition: 1, 512 pages
+Publisher: Harpercollins
 Tags: biblio, important
 ISBN: 006250293X
 ASIN: 76901
@@ -287,10 +298,12 @@ ASIN: 76901
 Id: eisler-03
 Type: book
 Media: hardcover
-Title: Sacred Pleasure: Sex, Myth, and the Politics of the Body-
+Title: Sacred Pleasure
+Subtitle: Sex, Myth, and the Politics of the Body
 Author: Eisler, Riane
 Date: 2012
-Publisher: Harpercollins (1995), Edition: 1, 512 pages
+Publisher: Harpercollins
+Date: 1995
 Tags: book, biblio, important, book
 ISBN: 006250293X
 ASIN: 76901
@@ -298,7 +311,7 @@ ASIN: 76901
 Id: eisler-04
 Type: book
 Media: book
-Title: Chalice and the Blade, The
+Title: The Chalice and the Blade
 Author: Eisler, Riane
 Tags: book, biblio, book
 Link: http://www.amazon.com/Chalice-Blade-Our-History-Future/dp/0062502891/
@@ -306,7 +319,8 @@ Link: http://www.amazon.com/Chalice-Blade-Our-History-Future/dp/0062502891/
 Id: eisler-05
 Type: book
 Media: book
-Title: Sacred Pleasures: Sex, Myth, and the Politics of the BodNew Paths to Power and Love
+Title: Sacred Pleasures
+Subtitle: Sex, Myth, and the Politics of the BodNew Paths to Power and Love
 Author: Eisler, Riane
 Tags: book, biblio, book
 Link: http://www.amazon.com/Sacred-Pleasure-Politics-Body-New-Paths/dp/0062502832/
