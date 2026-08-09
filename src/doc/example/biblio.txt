@@ -73,7 +73,7 @@ Type: book
 Media: ebook
 Title: In Real Life
 Author: Doctorow, Cory
-Authors: Wang, Jen; Wang, Jen
+Authors: Jen Wang
 Date: 2014
 Publisher: First Second (2014), 192 pages
 Tags: e, biblio

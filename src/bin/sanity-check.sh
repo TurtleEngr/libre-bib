@@ -260,7 +260,6 @@ fCheckApp() {
         etc/cite-update.xml \
         etc/conf.env \
         etc/conf.php \
-        etc/libre-bib.ssh \
         etc/lo-schema.csv \
         ; do
         gVal=$cgDirApp/$tFile
