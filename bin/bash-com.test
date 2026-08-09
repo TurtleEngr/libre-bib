@@ -1,0 +1,1320 @@
+#!/bin/bash
+# $Source: /repo/per-bruce.cvs/bin/bash-com.test,v $
+# $Revision: 1.22 $ $Date: 2026/08/04 03:23:47 $ GMT
+
+# --------------------------------
+fComBashTestUsage() {
+    # This is mainly used to test fComUsage, for the script usage styles
+    return
+    cat <<\EOF >/dev/null
+=internal-pod
+
+=internal-head1 bash-com.test
+
+=internal-head2 bash-com.test Usage
+
+=internal-cut
+
+=pod
+
+=head1 NAME
+
+bash-com.test - test the bash-com.inc functions
+
+=head1 SYNOPSIS
+
+        bash-com.test [testName,testName,...]
+
+=head1 DESCRIPTION
+
+shunit2.1 is used to run the unit tests. If no test function names are
+listed, then all of the test functions will be run.
+
+=head1 RETURN VALUE
+
+0 - if OK
+
+=head1 ERRORS
+
+Look for the assert errors.
+
+=for comment =head1 EXAMPLES
+
+=for comment =head1 ENVIRONMENT
+
+=for comment =head1 FILES
+
+=head1 SEE ALSO
+
+shunit2.1
+
+=for comment =head1 NOTES
+
+=for comment =head1 CAVEATS
+
+=for comment =head1 DIAGNOSTICS
+
+=for comment =head1 BUGS
+
+=for comment =head1 RESTRICTIONS
+
+=for comment =head1 AUTHOR
+
+=head1 HISTORY
+
+$Revision: 1.22 $ $Date: 2026/08/04 03:23:47 $ GMT
+
+=cut
+EOF
+}
+
+# --------------------------------
+fCleanUp() {
+    fComCleanUp
+} # fCleanUp
+
+# --------------------------------
+fComUDebug() {
+    if [[ ${gpUnitDebug:-0} -ne 0 ]]; then
+        echo "fComUDebug: $*"
+    fi
+    return
+    cat <<EOF
+
+=internal-head2 Com Unit Test Functions
+
+EOF
+} # fComUDebug
+
+# --------------------------------
+oneTimeSetUp() {
+    . $cBin/bash-com.inc
+
+    # Point the config file globals at /tmp paths BEFORE fComSetGlobals
+    # runs, so the tests never write to ~/.config or to ./.bash-com.test.conf
+    export gpTopDir=/tmp/$USER/bash-com-test
+    export gpConfGlobal=/tmp/$USER/bash-com-test/global.conf
+    export gpConfLocal=/tmp/$USER/bash-com-test/local.conf
+    export gpConfProj=/tmp/$USER/bash-com-test/proj.conf
+    mkdir -p $gpTopDir 2>/dev/null
+
+    fComSetGlobals
+
+    echo "sudo chmod a+r /var/log/user.log /var/log/app/bash-com.test.log"
+
+    sudo touch /var/log/user.log /var/log/app/bash-com.test.log
+    sudo chmod a+rwx /var/log/app/
+    sudo chmod a+rw /var/log/user.log /var/log/app/bash-com.test.log
+
+    # Save global values
+    export tDefault_Tmp=$Tmp
+    export tDefault_cBin=$cBin
+    export tDefault_cCurDir=$cCurDir
+    export tDefault_cName=$cName
+    export tDefault_cPID=$cPID
+    export tDefault_cTmp1=$cTmp1
+    export tDefault_cTmpF=$cTmpF
+    export tDefault_cVer=$cVer
+    export tDefault_gErr=0
+    export tDefault_gpDebug=0
+    export tDefault_gpFacility=user
+    export tDefault_gpLog=0
+    export tDefault_gpVerbose=0
+
+    # New defaults from the merge
+    export tDefault_gpTopDir=$gpTopDir
+    export tDefault_gpConfGlobal=$gpConfGlobal
+    export tDefault_gpConfLocal=$gpConfLocal
+    export tDefault_gpConfProj=$gpConfProj
+    export tDefault_gpAuto=0
+    export tDefault_gpYesNo=""
+    export tDefault_gpMaxLoop=30
+    return 0
+
+    cat <<EOF >/dev/null
+=internal-pod
+
+=internal-head2 Test bash-com.inc
+
+=internal-head3 oneTimeSetuUp
+
+Records all of the script's expected initial global variable settings,
+defined in fComSetGlobals. Also redirects gpConfGlobal/gpConfLocal/gpConfProj
+to /tmp paths so tests never touch the real user config.
+
+Calls:
+
+ $cBin/bash-com.inc
+ fComSetGlobals
+
+=internal-cut
+EOF
+} # oneTimeSetUp
+
+oneTimeTearDown() {
+    if [[ $gpDebug -eq 0 ]]; then
+        echo sudo rm /var/log/app/bash-com.test.log
+        sudo chmod go-w /var/log/user.log /var/log/app /var/log/app/*
+        rm -rf /tmp/$USER/bash-com-test 2>/dev/null
+    fi
+    return 0
+} # oneTimeTearDown
+
+# --------------------------------
+setUp() {
+    # Restore global values, before each test
+    Tmp=$tDefault_Tmp
+    cBin=$tDefault_cBin
+    cCurDir=$tDefault_cCurDir
+    cName=$tDefault_cName
+    cPID=$tDefault_cPID
+    cTmp1=$tDefault_cTmp1
+    cTmpF=$tDefault_cTmpF
+    cVer=$tDefault_cVer
+    gErr=$tDefault_gErr
+    gpDebug=$tDefault_gpDebug
+    gpFacility=$tDefault_gpFacility
+    gpLog=$tDefault_gpLog
+    gpVerbose=$tDefault_gpVerbose
+
+    # New globals from the merge
+    gpTopDir=$tDefault_gpTopDir
+    gpConfGlobal=$tDefault_gpConfGlobal
+    gpConfLocal=$tDefault_gpConfLocal
+    gpConfProj=$tDefault_gpConfProj
+    gpAuto=$tDefault_gpAuto
+    gpYesNo=$tDefault_gpYesNo
+    gpMaxLoop=$tDefault_gpMaxLoop
+
+    # Wipe any config files left from a prior test
+    rm -f $gpConfGlobal $gpConfLocal $gpConfProj 2>/dev/null
+    return
+
+    cat <<EOF >/dev/null
+=internal-pod
+
+=internal-head3 setUp
+
+Before each test runs, this restores all of the script's initial
+global variable settings, and removes any test config files.
+
+=internal-cut
+EOF
+} # setUp
+
+# --------------------------------
+testComInitialConfig() {
+    local tProg
+    local tResult
+
+    assertEquals "$LINENO init" "$PWD" "$cCurDir"
+    assertTrue "$LINENO init" "[ -d $cCurDir ]"
+
+    assertNotNull "$LINENO init" "$cBin"
+    assertTrue "$LINENO init" "[ -d $cBin ]"
+    assertTrue "$LINENO init" "[ -f $cBin/$cName ]"
+    assertTrue "$LINENO init" "[ -x $cBin/$cName ]"
+    assertTrue "$LINENO init" "[ -x $cBin/bash-com.inc ]"
+    assertTrue "$LINENO init" "[ -x $cBin/bash-com.test ]"
+
+    assertEquals "$LINENO init" "0" "$gpDebug"
+    assertEquals "$LINENO init" "0" "$gpVerbose"
+    assertEquals "$LINENO init" "0" "$gpLog"
+    assertEquals "$LINENO init" "user" "$gpFacility"
+    assertEquals "$LINENO init" "0" "$gErr"
+    assertNull "$LINENO init" "$(echo $cVer | tr -d '.[:digit:]')"
+    assertEquals "$LINENO init" "/tmp/$USER/$cName" "$Tmp"
+    #assertEquals "$LINENO init" "$Tmp/file-$cPID" "$cTmpF"
+    assertEquals "$LINENO init" "${cTmpF}-1.tmp" "$cTmp1"
+
+    # New globals from the merge
+    assertNotNull "$LINENO init gpTopDir" "$gpTopDir"
+    assertNotNull "$LINENO init gpConfGlobal" "$gpConfGlobal"
+    assertNotNull "$LINENO init gpConfLocal" "$gpConfLocal"
+    assertNotNull "$LINENO init gpConfProj" "$gpConfProj"
+    assertEquals "$LINENO init gpAuto" "0" "$gpAuto"
+    assertEquals "$LINENO init gpYesNo" "" "$gpYesNo"
+    assertEquals "$LINENO init gpMaxLoop" "30" "$gpMaxLoop"
+
+    # ADJUST?
+    assertEquals "$LINENO init" "/tmp/$USER/$cName" "$Tmp"
+
+    for tProg in logger pod2text pod2usage pod2html pod2man pod2markdown tidy awk tr; do
+        which $tProg &>/dev/null
+        assertTrue "$LINENO missing: $tProg" "[ $? -eq 0 ]"
+    done
+    return
+
+    cat <<EOF >/dev/null
+=internal-pod
+
+=internal-head3 testInitialConfig
+
+Verify all of the global variables are correctly defined. Look for
+"ADJUST" comment for tests that might need to be changed for your
+script.
+
+=internal-cut
+EOF
+} # testInitialConfig
+
+# --------------------------------
+testComLog_MultiplePermutations() {
+    local tMsg
+    local tLevel
+    local tLine
+    local tErr
+    local tResult
+    local tLog
+    local tTestMsg
+
+    # Check the format, for a number of settings
+    gpLog=0
+    gpVerbose=0
+    gpDebug=0
+    tMsg="Testing 123"
+    tLine="458"
+    tErr="42"
+
+    gpUnitDebug=0
+    for gpLog in 0 1; do
+        for gpVerbose in 0 1; do
+            # TBD: why does gpVerbose=2 fail?
+            for gpDebug in 0 1 2; do
+                for tLevel in alert crit err warning notice info debug debug-1 debug-3; do
+                    for tLog in "fLog2" "fLog"; do
+                        echo -n '.' 1>&2
+                        tTestMsg="l-$gpLog.v-$gpVerbose.d-$gpDebug.$tLevel.$tLog"
+                        if [[ "$tLog" = "fLog2" ]]; then
+                            fComUDebug " "
+                            fComUDebug "Call: fLog2 $tLevel \"$tMsg\" $tLine $tErr"
+                            tResult=$(fLog2 $tLevel "$tMsg" $tLine $tErr 2>&1)
+                        fi
+                        if [[ "$tLog" = "fLog" ]]; then
+                            fComUDebug " "
+                            fComUDebug "Call: fLog -p $tLevel -m \"$tMsg\" -l $tLine -e $tErr"
+                            tResult=$(fLog -p $tLevel -m "$tMsg" -l $tLine -e $tErr 2>&1)
+                        fi
+                        fComUDebug "tResult=$tResult"
+
+                        if [[ $gpVerbose -eq 0 ]] && echo $tLevel | grep -Eq 'notice|info'; then
+                            assertNull "$LINENO $tTestMsg not notice,info" "$tResult"
+                            continue
+                        fi
+                        if [[ $gpVerbose -eq 1 ]] && echo $tLevel | grep -Eq 'info'; then
+                            assertNull "$LINENO $tTestMsg not info" "$tResult"
+                            continue
+                        fi
+                        if [[ $gpDebug -eq 0 && "${tLevel%%-*}" = "debug" ]]; then
+                            assertNull "$LINENO $tTestMsg not debug" "$tResult"
+                            continue
+                        fi
+                        if [[ $gpDebug -lt 2 && "$tLevel" = "debug-2" ]]; then
+                            assertNull "$LINENO $tTestMsg not debug-2" "$tResult"
+                            continue
+                        fi
+                        if [[ $gpDebug -lt 3 && "$tLevel" = "debug-3" ]]; then
+                            assertNull "$LINENO $tTestMsg not debug-3" "$tResult"
+                            continue
+                        fi
+                        assertContains "$LINENO $tResult" "$tResult" "$cName"
+                        assertContains "$LINENO $tTestMsg.level" "$tResult" "$tLevel:"
+                        assertContains "$LINENO $tTestMsg.msg" "$tResult" "$tMsg"
+                        assertContains "$LINENO $tTestMsg.line" "$tResult" '['$tLine']'
+                        assertContains "$LINENO $tTestMsg.$tLevel.err" "$tResult" '('$tErr')'
+                    done
+                done
+            done
+        done
+    done
+    echo 1>&2
+    gpUnitDebug=0
+    return
+
+    cat <<EOF >/dev/null
+=internal-pod
+
+=internal-head3 testLog
+
+Test fLog2 and fLog.
+
+=internal-cut
+EOF
+} # testLog
+
+# --------------------------------
+testComLogForce() {
+    local tResult
+
+    # gpVerbose=0 normally suppresses notice/info messages.
+    gpLog=0
+    gpVerbose=0
+    gpDebug=0
+
+    tResult=$(fLog -p notice -m "force-notice-test" -l $LINENO 2>&1)
+    assertNull "$LINENO notice without -f" "$tResult"
+
+    tResult=$(fLog -f -p notice -m "force-notice-test" -l $LINENO 2>&1)
+    assertContains "$LINENO notice with -f" "$tResult" "notice:"
+    assertContains "$LINENO notice with -f" "$tResult" "force-notice-test"
+
+    tResult=$(fLog -p info -m "force-info-test" -l $LINENO 2>&1)
+    assertNull "$LINENO info without -f" "$tResult"
+
+    tResult=$(fLog -f -p info -m "force-info-test" -l $LINENO 2>&1)
+    assertContains "$LINENO info with -f" "$tResult" "info:"
+    assertContains "$LINENO info with -f" "$tResult" "force-info-test"
+    return
+
+    cat <<EOF >/dev/null
+=internal-pod
+
+=internal-head3 testComLogForce
+
+Verify that fLog -f forces output of notice/info messages even when
+gpVerbose is 0.
+
+=internal-cut
+EOF
+} # testComLogForce
+
+# --------------------------------
+testComLogInternal() {
+    local tResult
+
+    gpLog=0
+    gpVerbose=2
+    gpDebug=0
+
+    tResult=$(fLog -i -p warning -m "internal-test" -l $LINENO 2>&1)
+    assertContains "$LINENO" "$tResult" "Internal:"
+    assertContains "$LINENO" "$tResult" "internal-test"
+    return
+
+    cat <<EOF >/dev/null
+=internal-pod
+
+=internal-head3 testComLogInternal
+
+Verify fLog -i prepends "Internal: " to the message.
+
+=internal-cut
+EOF
+} # testComLogInternal
+
+# --------------------------------
+testComSysLog() {
+    local tErr
+    local tLevel
+    local tLine
+    local tLog
+    local tMsg
+    local tResult
+    local tTestMsg
+
+    # ADJUST? This is dependent on your syslog configuration.
+    export tSyslog=/var/log/user.log
+
+    # Check syslog
+    gpUnitDebug=0
+    gpLog=1
+    gpVerbose=0
+    tMsg="Testing 123"
+    #for tLevel in emerg alert crit err warning; do
+    for tLevel in alert crit err warning; do
+        for tLog in "fLog2" "fLog"; do
+            echo -n '.' 1>&2
+            tTestMsg="$tLevel.$tLog"
+            fComUDebug " "
+            if [[ "$tLog" = "fLog2" ]]; then
+                fComUDebug "Call: $tLog $tLevel $tMsg"
+                tResult=$($tLog $tLevel "$tMsg" 2>&1)
+            fi
+            if [[ "$tLog" = "fLog" ]]; then
+                fComUDebug "Call: $tLog -p $tLevel -m \"$tMsg\""
+                tResult=$($tLog -p $tLevel -m "$tMsg" 2>&1)
+            fi
+            fComUDebug "tResult=$tResult"
+            assertContains "$LINENO $tTestMsg" "$tResult" "$tLevel:"
+            tResult=$(tail -n1 $tSyslog)
+            fComUDebug "syslog tResult=$tResult"
+            assertContains "$LINENO $tTestMsg" "$tResult" "$tLevel:"
+            assertContains "$LINENO $tTestMsg" "$tResult" "$tMsg"
+        done
+    done
+    echo 1>&2
+    gpUnitDebug=0
+    return
+
+    cat <<EOF >/dev/null
+=internal-pod
+
+=internal-head3 testSysLog
+
+Test fLog2 and fLog, and verify messages are in a syslog file.
+
+=internal-cut
+EOF
+} # testSysLog
+
+# --------------------------------
+testComSysLogLocal1() {
+    local tErr
+    local tLevel
+    local tLine
+    local tLog
+    local tMsg
+    local tResult
+    local tTestMsg
+
+    if ! grep -q TLocal1 /etc/rsyslog.d/* >/dev/null 2>&1; then
+        echo -e '\tSkipping testComSysLogLocal1 - it has not been defined.' 1>&2
+        return 0
+    fi
+
+    # The TLocal1 rsyslog config routes local1 facility messages to
+    # /var/log/app/ using the logger tag as the filename, so messages
+    # sent with "-t $cName -p local1.*" land in /var/log/app/$cName.log
+    # ADJUST? This is dependent on your syslog configuration.
+    local tSyslog=/var/log/app/$cName.log
+    sudo chmod a+rwx /var/log/app
+    sudo chmod a+rw $tSyslog
+    sudo echo >$tSyslog
+
+    # Check syslog
+    gpUnitDebug=0
+    gpLog=1
+    gpFacility=local1
+    gpVerbose=0
+    tMsg="Testing 123"
+    #for tLevel in crit err warning; do
+    for tLevel in crit err warning; do
+        for tLog in "fLog2" "fLog"; do
+            echo -n '.' 1>&2
+            tTestMsg="$tLevel.$tLog"
+            fComUDebug " "
+            if [[ "$tLog" = "fLog2" ]]; then
+                fComUDebug "Call: $tLog $tLevel $tMsg"
+                tResult=$($tLog $tLevel "$tMsg" 2>&1)
+            fi
+            if [[ "$tLog" = "fLog" ]]; then
+                fComUDebug "Call: $tLog -p $tLevel -m \"$tMsg\""
+                tResult=$($tLog -p $tLevel -m "$tMsg" 2>&1)
+            fi
+            sleep 1
+            fComUDebug "tResult=$tResult"
+            assertContains "$LINENO $tTestMsg" "$tResult" "$tLevel:"
+            tResult=$(tail -n1 $tSyslog)
+            fComUDebug "syslog tResult=$tResult"
+            assertContains "$LINENO $tTestMsg" "$tResult" "$tLevel:"
+            assertContains "$LINENO $tTestMsg" "$tResult" "local1.$tLevel"
+            assertContains "$LINENO $tTestMsg" "$tResult" "$cName:"
+            assertContains "$LINENO $tTestMsg" "$tResult" "$HOSTNAME"
+            assertContains "$LINENO $tTestMsg" "$tResult" "$tMsg"
+        done
+    done
+    echo 1>&2
+
+    gpUnitDebug=0
+    return
+
+    cat <<EOF >/dev/null
+=internal-pod
+
+=internal-head3 testSysLog
+
+Test fLog2 and fLog, and verify messages are in a syslog file created by
+rsyslog rule for local1. See template.sh NOTES, Custom Script Logs.
+
+=internal-cut
+EOF
+} # testSysLogLocal1
+
+# --------------------------------
+testComErrorLog() {
+    local tMsg
+    local tLevel
+    local tLine
+    local tErr
+    local tResult
+    local tLog
+    local tTestMsg
+
+    gpUnitDebug=0
+    gpLog=0
+    gpVerbose=0
+    local tMsg="Testing 123"
+    local tLine="458"
+    for gpLog in 0 1; do
+        for tLog in "fError2" "fError"; do
+            echo -n '.' 1>&2
+            tTestMsg="l-$gpLog.$tLog"
+            fComUDebug " "
+            if [[ "$tLog" = "fError2" ]]; then
+                fComUDebug "Call: $tLog \"$tMsg\" $tLine"
+                tResult=$($tLog "$tMsg" $tLine 2>&1)
+            fi
+            if [[ "$tLog" = "fError" ]]; then
+                fComUDebug "Call: $tLog -m \"$tMsg\" -l $tLine"
+                tResult=$($tLog -m "$tMsg" -l $tLine 2>&1)
+            fi
+            fComUDebug "tResult=$tResult"
+            assertContains "$LINENO $tTestMsg.name" "$tResult" "$cName"
+            assertContains "$LINENO $tTestMsg.crit" "$tResult" "crit:"
+            assertContains "$LINENO $tTestMsg.msg" "$tResult" "$tMsg"
+            assertContains "$LINENO $tTestMsg.line" "$tResult" '['$tLine']'
+            # shellcheck disable=SC2026
+            assertContains "$LINENO $tTestMsg.err" "$tResult" '('1')'
+            assertContains "$LINENO $tTestMsg.usage" "$tResult" "Usage:"
+        done
+    done
+    echo 1>&2
+    gpUnitDebug=0
+    return
+
+    cat <<EOF >/dev/null
+=internal-pod
+
+=internal-head3 testErrorLog
+
+Test fError2 and fError.
+
+=internal-cut
+EOF
+} # testErrorLog
+
+# --------------------------------
+testComErrorContinue() {
+    local tResult
+
+    gpLog=0
+    gpVerbose=0
+    gpDebug=0
+
+    # -c should log at "err" (not "crit"), and not call fUsage
+    tResult=$(fError -c -m "continue-test" -l $LINENO 2>&1)
+    assertContains "$LINENO -c" "$tResult" "err:"
+    assertContains "$LINENO -c" "$tResult" "continue-test"
+    assertNotContains "$LINENO -c no usage" "$tResult" "Usage:"
+
+    # -n is an alias for -c
+    tResult=$(fError -n -m "noexit-test" -l $LINENO 2>&1)
+    assertContains "$LINENO -n" "$tResult" "err:"
+    assertContains "$LINENO -n" "$tResult" "noexit-test"
+    assertNotContains "$LINENO -n no usage" "$tResult" "Usage:"
+
+    # -i should add "Internal: "
+    tResult=$(fError -c -i -m "internal-error-test" -l $LINENO 2>&1)
+    assertContains "$LINENO -c -i" "$tResult" "Internal:"
+    assertContains "$LINENO -c -i" "$tResult" "internal-error-test"
+    return
+
+    cat <<EOF >/dev/null
+=internal-pod
+
+=internal-head3 testComErrorContinue
+
+Test fError -c, -n (continue without exit), and -i (internal).
+
+=internal-cut
+EOF
+} # testComErrorContinue
+
+# --------------------------------
+testComCleanUp() {
+    local tResult
+    gpDebug=0
+
+    assertEquals "$LINENO clean" "/tmp/$USER/$cName" "$Tmp"
+    assertTrue "$LINENO clean" "[ -d $Tmp ]"
+
+    assertEquals "$LINENO clean" "$Tmp/file-$cPID" "$cTmpF"
+
+    assertEquals "$LINENO clean" "${cTmpF}-1.tmp" "$cTmp1"
+    touch $cTmp1
+    assertTrue "$LINENO clean" "[ -f $cTmp1 ]"
+
+    tResult=$(fComCleanUp 2>&1)
+    assertFalse "$LINENO clea" "[ -f $cTmp1 ]"
+    return
+
+    cat <<EOF >/dev/null
+=internal-pod
+
+=internal-head3 testComCleanUp
+
+Test fComCleanUp. Verify the tmp files are removed.
+
+=internal-cut
+EOF
+} # testComCleanUp
+
+# --------------------------------
+testComUsage() {
+    local tResult
+
+    gpUnitDebug=0
+
+    #-----
+    tResult=$(fComUsage -s short -f $cBin/$cName 2>&1)
+    fComUDebug "tResult=$tResult"
+    assertContains "$LINENO usage" "$tResult" "NAME"
+
+    #-----
+    tResult=$(fComUsage -s foo -f $cBin/$cName 2>&1)
+    fComUDebug "tResult=$tResult"
+    assertContains "$LINENO usage" "$tResult" "DESCRIPTION"
+    assertContains "$LINENO usage" "$tResult" "HISTORY"
+
+    #-----
+    tResult=$(fComUsage -f $cBin/$cName -s 2>&1)
+    fComUDebug "tResult=$tResult"
+    assertContains "$LINENO usage" "$tResult" "crit: Internal: fComUsage: Value required"
+
+    #-----
+    tResult=$(fComUsage -s long -f $cBin/$cName 2>&1)
+    assertContains "$LINENO usage" "$tResult" "DESCRIPTION"
+    assertContains "$LINENO usage" "$tResult" "HISTORY"
+
+    #-----
+    tResult=$(fComUsage -s man -f $cBin/$cName 2>&1)
+    assertContains "$LINENO usage" "$tResult" '.IX Header "DESCRIPTION"'
+    assertContains "$LINENO usage" "$tResult" '.IX Header "HISTORY"'
+
+    #-----
+    tResult=$(fComUsage -s html -f $cBin/$cName -t "$cName Usage" 2>&1)
+    assertContains "$LINENO usage" "$tResult" '<li><a href="#DESCRIPTION">DESCRIPTION</a></li>'
+    assertContains "$LINENO usage" "$tResult" '<h1 id="HISTORY">HISTORY</h1>'
+    assertContains "$LINENO usage" "$tResult" "<title>$cName Usage</title>"
+
+    #-----
+    tResult=$(fComUsage -s md -f $cBin/$cName 2>&1)
+    assertContains "$LINENO usage" "$tResult" '# DESCRIPTION'
+    assertContains "$LINENO usage" "$tResult" '# HISTORY'
+
+    #-----
+    tResult=$(fComUsage -i -s long -f $cBin/$cName -f $cBin/bash-com.inc 2>&1)
+    fComUDebug "tResult=$tResult"
+    assertContains "$LINENO internal" "$tResult" 'Template Use'
+    assertContains "$LINENO internal" "$tResult" 'fComSetGlobals'
+
+    #-----
+    tResult=$(fComUsage -i -s html -t "Internal Doc" -f $cBin/$cName -f $cBin/bash-com.inc -f $cBin/bash-com.test 2>&1)
+    fComUDebug "tResult=$tResult"
+    assertContains "$LINENO int-html" "$tResult" '<a href="#Template-Use">Template Use</a>'
+    assertContains "$LINENO int-html" "$tResult" '<h3 id="fComSetGlobals">fComSetGlobals</h3>'
+    assertContains "$LINENO int-html" "$tResult" '<title>Internal Doc</title>'
+    assertContains "$LINENO int-html" "$tResult" '<h3 id="testComUsage">testComUsage</h3>'
+
+    #-----
+    tResult=$(fComUsage -i -s md -f $cBin/$cName -f $cBin/bash-com.inc -f $cBin/bash-com.test 2>&1)
+    assertContains "$LINENO int-md" "$tResult" '## Template Use'
+    assertContains "$LINENO int-md" "$tResult" '### fComSetGlobals'
+    assertContains "$LINENO int-md" "$tResult" '### testComUsage'
+
+    #-----
+    tResult=$(fComUsage -a -s long -f $cBin/$cName -f $cBin/bash-com.inc 2>&1)
+    #-----
+    gpUnitDebug=0
+    return
+
+    cat <<EOF >/dev/null
+=internal-pod
+
+=internal-head3 testComUsage
+
+Test fComUsage. Verify the different output styles work.
+
+=internal-cut
+EOF
+} # testComUsage
+
+# --------------------------------
+testComFunctions() {
+    local tResult
+
+    tResult=$(fComCheckDeps 2>&1)
+    assertTrue "$LINENO fComCheckDep tResult=$tResult" "[ $? -eq 0 ]"
+
+    tResult=$(fComSetGlobals 2>&1)
+    assertTrue "$LINENO fComSetGlobals tResult=$tResult" "[ $? -eq 0 ]"
+    return
+
+    cat <<EOF >/dev/null
+=internal-pod
+
+=internal-head3 testComFunctions
+
+Just verify these functions exist and run.
+
+Calls:
+
+ fComCheckDeps
+ fComSetGlobals
+
+=internal-cut
+EOF
+} # testComFunctions
+
+# --------------------------------
+testComLogFallback() {
+    local tResult
+    local tExpected
+    local tMsg="Testing fLog fallback 456"
+    local tLine="123"
+    local tErr="7"
+
+    gpLog=0
+    gpVerbose=2
+    gpDebug=0
+
+    # Call fLog with positional args (no options) - should fall back to fLog2
+    tResult=$(fLog warning "$tMsg" $tLine $tErr 2>&1)
+    assertContains "$LINENO fLog fallback" "$tResult" "$cName"
+    assertContains "$LINENO fLog fallback" "$tResult" "warning:"
+    assertContains "$LINENO fLog fallback" "$tResult" "$tMsg"
+    assertContains "$LINENO fLog fallback" "$tResult" "[$tLine]"
+    assertContains "$LINENO fLog fallback" "$tResult" "($tErr)"
+
+    # Verify output matches a direct fLog2 call
+    tExpected=$(fLog2 warning "$tMsg" $tLine $tErr 2>&1)
+    assertEquals "$LINENO fLog fallback equals fLog2" "$tExpected" "$tResult"
+    return
+
+    cat <<EOF >/dev/null
+=internal-pod
+
+=internal-head3 testComLogFallback
+
+Test that fLog, called with positional args (no options), falls back to
+fLog2 and produces identical output.
+
+=internal-cut
+EOF
+} # testComLogFallback
+
+# --------------------------------
+testComErrorFallback() {
+    local tResult
+    local tExpected
+    local tMsg="Testing fError fallback 789"
+    local tLine="456"
+
+    gpLog=0
+    gpVerbose=0
+    gpDebug=0
+
+    # Call fError with positional args (no options) - should fall back to fError2
+    tResult=$(fError "$tMsg" $tLine 2>&1)
+    assertContains "$LINENO fError fallback" "$tResult" "$cName"
+    assertContains "$LINENO fError fallback" "$tResult" "crit:"
+    assertContains "$LINENO fError fallback" "$tResult" "$tMsg"
+    assertContains "$LINENO fError fallback" "$tResult" "[$tLine]"
+    assertContains "$LINENO fError fallback" "$tResult" "Usage:"
+
+    # Verify output matches a direct fError2 call
+    tExpected=$(fError2 "$tMsg" $tLine 2>&1)
+    assertEquals "$LINENO fError fallback equals fError2" "$tExpected" "$tResult"
+    return
+
+    cat <<EOF >/dev/null
+=internal-pod
+
+=internal-head3 testComErrorFallback
+
+Test that fError, called with positional args (no options), falls back to
+fError2 and produces identical output.
+
+=internal-cut
+EOF
+} # testComErrorFallback
+
+# --------------------------------
+testComStackTrace() {
+    local tResult
+
+    gpLog=0
+    tResult=$(fComStackTrace 2>&1)
+    assertTrue "$LINENO" "$?"
+    assertContains "$LINENO $tResult" "$tResult" "Stack trace at: bash-com.inc"
+    assertContains "$LINENO $tResult" "$tResult" "testComStackTrace"
+    return
+
+    cat <<EOF >/dev/null
+=internal-pod
+
+=internal-head3 testComStackTrace
+
+Verify that fComStackTrace prints a frame for the calling function and
+identifies bash-com.inc as the source.
+
+=internal-cut
+EOF
+} # testComStackTrace
+
+# --------------------------------
+testComYesNo() {
+    local tResult
+
+    gpAuto=1
+    gpYesNo="y"
+    fComYesNo "Continue" >/dev/null 2>&1
+    assertTrue "$LINENO auto-y rc" "$?"
+    assertEquals "$LINENO auto-y" "y" "$gResponse"
+
+    gpAuto=1
+    gpYesNo="n"
+    fComYesNo "Continue" >/dev/null 2>&1
+    assertFalse "$LINENO auto-n rc" "$?"
+    assertEquals "$LINENO auto-n" "n" "$gResponse"
+
+    gpAuto=0
+    gpYesNo=""
+    fComYesNo "Continue" >/dev/null 2>&1 < <(echo yes)
+    assertTrue "$LINENO read-y rc" "$?"
+    assertEquals "$LINENO read-y" "y" "$gResponse"
+
+    tResult=$(fComYesNo "Continue" 2>&1 < <(echo Yes))
+    assertTrue "$LINENO read-Y rc" "$?"
+    assertContains "$LINENO read-Y prompt" "$tResult" "Continue [y/n]?"
+
+    fComYesNo "Continue" >/dev/null 2>&1 < <(echo no)
+    assertFalse "$LINENO read-no rc" "$?"
+    assertEquals "$LINENO read-no" "n" "$gResponse"
+
+    fComYesNo "Continue" >/dev/null 2>&1 < <(echo xx)
+    assertFalse "$LINENO read-xx rc" "$?"
+    assertEquals "$LINENO read-xx" "n" "$gResponse"
+
+    return 0
+
+    cat <<EOF >/dev/null
+=internal-pod
+
+=internal-head3 testComYesNo
+
+Verify fComYesNo for both auto (gpAuto=1, gpYesNo="y"/"n") and
+interactive paths.
+
+=internal-cut
+EOF
+} # testComYesNo
+
+# --------------------------------
+testComSelect() {
+    local tResult
+    local tList="apple banana cherry"
+    local tHelp="Pick a fruit by number"
+
+    # Select option 1 (QUIT) -> non-zero, "Quitting"
+    tResult=$(fComSelect "Pick: " "$tList" "$tHelp" 2>&1 < <(echo -e "1\n"))
+    assertFalse "$LINENO quit rc" "$?"
+    assertContains "$LINENO" "$tResult" "QUIT"
+    assertContains "$LINENO" "$tResult" "Quitting"
+
+    # Select option 2 (HELP), then 1 (QUIT)
+    tResult=$(fComSelect "Pick: " "$tList" "$tHelp" 2>&1 < <(echo -e "2\n1\n"))
+    assertFalse "$LINENO help-quit rc" "$?"
+    assertContains "$LINENO" "$tResult" "HELP"
+    assertContains "$LINENO" "$tResult" "Pick a fruit by number"
+
+    # Select option 3 -> first list item (apple) -> success
+    fComSelect "Pick: " "$tList" "$tHelp" >/dev/null 2>&1 < <(echo -e "3\n")
+    assertTrue "$LINENO valid rc" "$?"
+    assertEquals "$LINENO valid response" "apple" "$gResponse"
+
+    return 0
+
+    cat <<EOF >/dev/null
+=internal-pod
+
+=internal-head3 testComSelect
+
+Verify fComSelect handles QUIT, HELP, and a valid selection. The list
+is always prefixed with QUIT (1) and HELP (2), so list items start
+at index 3.
+
+=internal-cut
+EOF
+} # testComSelect
+
+# --------------------------------
+testComMenu() {
+    local tResult
+    declare -agx gMainMenu
+    declare -agx gMainActn
+    declare -agx gSub1Menu
+    declare -agx gSub1Actn
+    declare -gx gMenuTitle='Main Menu'
+
+    gMainMenu[0]="Select a MainMenu Item: "
+    gMainActn[0]="Main help text"
+    gMainMenu[1]="Quit"
+    gMainActn[1]="func exit 0"
+    gMainMenu[2]="Help"
+    gMainActn[2]="help"
+    gMainMenu[3]="{item-1} Main Item m1"
+    gMainActn[3]="func echo hello world"
+    gMainMenu[4]="{item-2} Main Item m2"
+    gMainActn[4]="func echo another world"
+    gMainMenu[5]="{sub-1} Sub Menu1"
+    gMainActn[5]="menu gSub1Menu gSub1Actn"
+
+    gSub1Menu[0]="Select a Sub1Menu Item: "
+    gSub1Actn[0]="Sub1 help text"
+    gSub1Menu[1]="Back1"
+    gSub1Actn[1]="back"
+    gSub1Menu[2]="Help1"
+    gSub1Actn[2]="help"
+    gSub1Menu[3]="{item-1-3} Sub1 Item1-3"
+    gSub1Actn[3]="func echo item1-3 selected"
+
+    gpMaxLoop=4
+    gpDebug=0
+
+    # Pick item 3 (echo hello world), then item 1 (Quit -> exits via "func exit")
+    # We use a subshell so the exit doesn't kill the test runner.
+    tResult=$(fComMenu "$gMenuTitle" gMainMenu gMainActn 2>&1 < <(echo -e '3\n1'))
+    assertContains "$LINENO main prompt" "$tResult" "Select a MainMenu Item"
+    assertContains "$LINENO main item m1" "$tResult" "Main Item m1"
+    assertContains "$LINENO main item m2" "$tResult" "Main Item m2"
+    assertContains "$LINENO sub menu" "$tResult" "Sub Menu1"
+    assertContains "$LINENO func exec" "$tResult" "hello world"
+    assertNotContains "$LINENO no braces" "$tResult" "{"
+
+    # Help (item 2) shows help text, then Quit
+    tResult=$(fComMenu "$gMenuTitle" gMainMenu gMainActn 2>&1 < <(echo -e '2\n1'))
+    assertContains "$LINENO help shown" "$tResult" "Main help text"
+
+    # Drill into sub-menu (item 5), then back (item 1), then quit (item 1)
+    tResult=$(fComMenu "$gMenuTitle" gMainMenu gMainActn 2>&1 < <(echo -e '5\n1\n1'))
+    assertContains "$LINENO sub prompt" "$tResult" "Select a Sub1Menu Item:"
+    assertContains "$LINENO main returns" "$tResult" "Select a MainMenu Item"
+
+    return 0
+
+    cat <<EOF >/dev/null
+=internal-pod
+
+=internal-head3 testComMenu
+
+Verify fComMenu handles func, menu, back and help actions and that
+{...} markers are stripped from displayed text.
+
+=internal-cut
+EOF
+} # testComMenu
+
+# --------------------------------
+testComMenuHelp() {
+    local tResult
+    declare -agx gHelpActn
+
+    gHelpActn[0]="Some help text for fComMenuHelp"
+    gHelpActn[1]="anything"
+
+    tResult=$(fComMenuHelp gHelpActn 2>&1)
+    assertContains "$LINENO" "$tResult" "Some help text for fComMenuHelp"
+    assertContains "$LINENO" "$tResult" "--------------------"
+    return 0
+
+    cat <<EOF >/dev/null
+=internal-pod
+
+=internal-head3 testComMenuHelp
+
+Verify fComMenuHelp prints element [0] of an action array between
+separator lines.
+
+=internal-cut
+EOF
+} # testComMenuHelp
+
+# --------------------------------
+testComAllMustBeReadable() {
+    local tResult
+    local tStatus
+    local tDir=$Tmp/readable-test
+
+    if [[ "$(id -u)" -eq 0 ]]; then
+        echo -e '\tSkipping testComAllMustBeReadable - root bypasses permission checks.' 1>&2
+        return 0
+    fi
+
+    mkdir -p $tDir
+    touch $tDir/ok-file
+
+    tResult=$(fComAllMustBeReadable $tDir 2>&1)
+    tStatus=$?
+    assertTrue "$LINENO clean" $tStatus
+
+    # Make a file unreadable
+    chmod a-r $tDir/ok-file
+    tResult=$(fComAllMustBeReadable $tDir 2>&1)
+    tStatus=$?
+    assertFalse "$LINENO unreadable file rc" $tStatus
+    assertContains "$LINENO unreadable file msg" "$tResult" "All directories and files must be readable"
+    chmod a+r $tDir/ok-file
+
+    # Make a sub-dir unreadable
+    mkdir -p $tDir/subdir
+    chmod a-r $tDir/subdir
+    tResult=$(fComAllMustBeReadable $tDir 2>&1)
+    tStatus=$?
+    assertFalse "$LINENO unreadable dir rc" $tStatus
+    assertContains "$LINENO unreadable dir msg" "$tResult" "All directories and files must be readable"
+
+    # Make the dir non-executable but readable
+    chmod a+r,a-x $tDir/subdir
+    tResult=$(fComAllMustBeReadable $tDir 2>&1)
+    tStatus=$?
+    assertFalse "$LINENO non-executable dir rc" $tStatus
+    assertContains "$LINENO non-executable dir msg" "$tResult" "All directories must be executable"
+
+    chmod -R a+rx $tDir
+    rm -rf $tDir
+    return 0
+
+    cat <<EOF >/dev/null
+=internal-pod
+
+=internal-head3 testComAllMustBeReadable
+
+Verify fComAllMustBeReadable detects unreadable files, unreadable
+directories, and non-executable directories.
+
+=internal-cut
+EOF
+} # testComAllMustBeReadable
+
+# --------------------------------
+testComSetConfig() {
+    local tResult
+
+    # -l (gpConfLocal) - file must be auto-created if missing
+    assertFalse "$LINENO" "[ -f $gpConfLocal ]"
+    fComSetConfig -l -k script.testit.test-str -v "test a string" 2>/dev/null
+    assertTrue "$LINENO -l rc" "[ $? -eq 0 ]"
+    assertTrue "$LINENO -l file" "[ -f $gpConfLocal ]"
+    grep -q '\[script "testit"\]' $gpConfLocal
+    assertTrue "$LINENO -l section" "[ $? -eq 0 ]"
+    grep -q 'test-str = test a string' $gpConfLocal
+    assertTrue "$LINENO -l value" "[ $? -eq 0 ]"
+
+    # -i (integer) normalization (file already exists, no warning)
+    fComSetConfig -l -i -k script.testit.test-int -v "2K"
+    grep -q 'test-int = 2048' $gpConfLocal
+    assertTrue "$LINENO -i value" "[ $? -eq 0 ]"
+
+    # -b (boolean) (file already exists, no warning)
+    fComSetConfig -l -b -k script.testit.test-bool -v "true"
+    grep -q 'test-bool = true' $gpConfLocal
+    assertTrue "$LINENO -b value" "[ $? -eq 0 ]"
+
+    # -g (gpConfGlobal) - file must be auto-created if missing
+    assertFalse "$LINENO -g" "[ -f $gpConfGlobal ]"
+    fComSetConfig -g -k script.testit.global-str -v "global value" 2>/dev/null
+    assertTrue "$LINENO -g file" "[ -f $gpConfGlobal ]"
+    grep -q 'global-str = global value' $gpConfGlobal
+    assertTrue "$LINENO -g value" "[ $? -eq 0 ]"
+
+    # -L (gpConfProj) - file must be auto-created if missing
+    assertFalse "$LINENO -L" "[ -f $gpConfProj ]"
+    fComSetConfig -L -k script.testit.proj-str -v "proj value" 2>/dev/null
+    assertTrue "$LINENO -L file" "[ -f $gpConfProj ]"
+    grep -q 'proj-str = proj value' $gpConfProj
+    assertTrue "$LINENO -L value" "[ $? -eq 0 ]"
+
+    # -f to an arbitrary path - file is auto-created (with parent)
+    local tFile=$Tmp/sub/fcfg.conf
+    rm -rf $Tmp/sub
+    fComSetConfig -f $tFile -k script.testit.f-str -v "file value" 2>/dev/null
+    assertTrue "$LINENO -f file" "[ -f $tFile ]"
+    grep -q 'f-str = file value' $tFile
+    assertTrue "$LINENO -f value" "[ $? -eq 0 ]"
+    rm -rf $Tmp/sub
+
+    # Missing key
+    tResult=$(fComSetConfig -l -v "no key" 2>&1)
+    assertFalse "$LINENO no-key rc" "[ $? -eq 0 ]"
+    assertContains "$LINENO no-key msg" "$tResult" "missing key"
+
+    # Missing value
+    tResult=$(fComSetConfig -l -k script.testit.foo 2>&1)
+    assertFalse "$LINENO no-value rc" "[ $? -eq 0 ]"
+    assertContains "$LINENO no-value msg" "$tResult" "missing value"
+    return 0
+
+    cat <<EOF >/dev/null
+=internal-pod
+
+=internal-head3 testComSetConfig
+
+Verify fComSetConfig writes to gpConfLocal/-Global/-Proj and to a -f
+path, auto-creates files (and parent dirs) that don't exist, and rejects
+calls with missing -k or -v.
+
+=internal-cut
+EOF
+} # testComSetConfig
+
+# --------------------------------
+testComGetConfig() {
+    local tResult
+    local tOpt
+    gpDebug=0
+
+    for tOpt in "-g -l -L"; do
+        fComSetConfig $tOpt -k script.testit.test-str-get -v "test a string" 2>/dev/null
+        fComSetConfig $tOpt -i -k script.testit.test-int-get -v "2K"
+        fComSetConfig $tOpt -b -k script.testit.test-bool-get -v "true"
+        fComSetConfig $tOpt -k script.testit.test-tbd-get -v "TBD"
+
+        if [[ $gpDebug -ne 0 ]]; then
+            cat $gpConfLocal
+        fi
+
+        tResult=$(fComGetConfig $tOpt -k script.testit.test-str-get)
+        assertEquals "$LINENO $tOpt str" "test a string" "$tResult"
+
+        tResult=$(fComGetConfig $tOpt -k script.testit.test-str-get)
+        assertEquals "$LINENO $tOpt str" "test a string" "$tResult"
+
+        fComGetConfig $tOpt -k script.testit.test-str-get >/dev/null
+        assertEquals "$LINENO $tOpt str" "test a string" "$gResponse"
+
+        tResult=$(fComGetConfig $tOpt -i -k script.testit.test-int-get)
+        assertEquals "$LINENO $tOpt int" "2048" "$tResult"
+
+        fComGetConfig $tOpt -i -k script.testit.test-int-get >/dev/null
+        assertEquals "$LINENO $tOpt int" "2048" "$gResponse"
+
+        tResult=$(fComGetConfig $tOpt -b -k script.testit.test-bool-get)
+        assertEquals "$LINENO $tOpt bool" "true" "$tResult"
+
+        fComGetConfig $tOpt -b -k script.testit.test-bool-get >/dev/null
+        assertEquals "$LINENO $tOpt bool" "true" "$gResponse"
+
+        # Not found
+        fComGetConfig $tOpt -k script.testit.foobar >/dev/null 2>&1
+        assertTrue "$LINENO not-found rc" "$?"
+
+        # -e exits when not found (run in subshell)
+        tResult=$(fComGetConfig $tOpt -k script.testit.foobar -e 2>&1)
+        assertFalse "$LINENO -e missing rc" "$?"
+        assertContains "$LINENO -e missing msg" "$tResult" "script.testit.foobar is not defined"
+
+        # -e exits when an EXISTING value equals pDefault.
+        # (When the key doesn't exist at all, you hit "is not defined" first.)
+        fComSetConfig $tOpt -k script.testit.matches-default -v "fallback" >/dev/null 2>&1
+        tResult=$(fComGetConfig $tOpt -k script.testit.matches-default -d "fallback" -e 2>&1)
+        assertFalse "$LINENO -e default rc" "$?"
+        assertContains "$LINENO -e default msg" "$tResult" "should not be set to"
+
+        # -e exits when value is "TBD"
+        tResult=$(fComGetConfig $tOpt -k script.testit.test-tbd-get -e 2>&1)
+        assertFalse "$LINENO -e TBD rc" "$?"
+        assertContains "$LINENO -e TBD msg" "$tResult" "should not be set to: TBD"
+    done
+
+    return 0
+
+    cat <<EOF >/dev/null
+=internal-pod
+
+=internal-head3 testComGetConfig
+
+Verify fComGetConfig returns values, defaults, and that -e errors on
+missing / "TBD" / matches-default values.
+
+=internal-cut
+EOF
+} # testComGetConfig
+
+# --------------------------------
+testComUnsetConfig() {
+    local tResult
+
+    fComSetConfig -l -k script.testit.test-str-unset -v "test unset" 2>/dev/null
+    tResult=$(fComGetConfig -l -k script.testit.test-str-unset)
+    assertEquals "$LINENO" "test unset" "$tResult"
+
+    fComUnsetConfig -l -k script.testit.test-str-unset
+    assertTrue "$LINENO unset rc" "[ $? -eq 0 ]"
+
+    # Missing key is rejected
+    tResult=$(fComUnsetConfig -l 2>&1)
+    assertFalse "$LINENO no-key rc" "[ $? -eq 0 ]"
+    assertContains "$LINENO no-key msg" "$tResult" "missing key"
+    return 0
+
+    cat <<EOF >/dev/null
+=internal-pod
+
+=internal-head3 testComUnsetConfig
+
+Verify fComUnsetConfig removes a key and rejects calls without -k.
+
+=internal-cut
+EOF
+} # testComUnsetConfig
+
+# -------------------
+# This should be the last defined function
+fComRunTests() {
+    export gpUnitDebug=${gpUnitDebug:-0}
+    if [[ "${gpTest:-all}" = "all" ]]; then
+        # shellcheck disable=SC1091
+        . $cBin/shunit2.1
+        exit $?
+    fi
+    # shellcheck disable=SC1091
+    . /usr/local/bin/shunit2.1 -- $gpTest
+    exit $?
+
+    cat <<EOF >/dev/null
+=internal-pod
+
+=internal-head3 fComRunTests
+
+Run unit tests for the common functions.
+
+=internal-cut
+EOF
+} # fComRunTests
+
+# ========================================
+# Main
+
+export PWD Tmp cBin cCurDir cName cPID cTmp1 cTmp2 cTmpF cVer
+export gErr gpDebug gpFacility gpLog gpVerbose
+export gpTopDir gpConfGlobal gpConfLocal gpConfProj
+export gpAuto gpYesNo gpMaxLoop
+
+# Test globals
+export gpTest
+export gpUnitDebug
+export SHUNIT_COLOR
+
+# -------------------
+# Set current directory location in PWD and cCurDir, because with cron
+# jobs PWD is not set.
+if [[ -z "$PWD" ]]; then
+    PWD=$(pwd)
+fi
+cCurDir=$PWD
+
+# -------------------
+# Define the location of the script
+cBin=${0%/*}
+if [[ "$cBin" = "." ]]; then
+    cBin=$PWD
+fi
+cd $cBin
+cBin=$PWD
+cd $cCurDir
+
+# -----
+# Optional input: a comma separated list of test function names
+export gpTest="$*"
+fComRunTests $gpTest

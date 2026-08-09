@@ -82,12 +82,12 @@ mCheckProd = \
 	src/doc/manual/libre-bib.org \
 	src/etc/bib-style.xml \
 	src/etc/bib-template.xml \
-	src/etc/biblio.csv \ \
+	src/etc/biblio.csv \
 	src/etc/cite-new.xml \
 	src/etc/cite-update.xml \
 	src/etc/conf.env \
-	src/etc/conf.php \ \
-	src/etc/lo-schema.csv \ \
+	src/etc/conf.php \
+	src/etc/lo-schema.csv \
 	src/test/bootstrap.php \
 	src/test/sample/bib-cache/.admin.pass \
 	src/test/sample/bib-cache/.pass.tmp \
@@ -124,7 +124,7 @@ dist-clean : clean
 	-rm -rf dist
 
 # ========================================
-create-build-env : \
+create-build-env : clean \
     package/ver.mak \
     get-dep-pkg \
     get-util-prog \
@@ -140,8 +140,8 @@ mBldPkg = \
 
 get-dep-pkg :
 	sudo apt-get update
-	tPkgList=$($$(awk '/%requires/ {print $$2}' package/$(ProdOSDist).require); \
-	@for tPkg in $$tPkgList $(mBldPkg); do \
+	tPkgList=$$(awk '/%requires/ {print $$2}' package/$(ProdOSDist).require); \
+	for tPkg in $$tPkgList $(mBldPkg); do \
 		if ! dpkg -l $$tPkg >/dev/null 2>&1; then \
 			sudo apt-get install -y $$tPkg; \
 		fi; \
@@ -192,16 +192,16 @@ check-php-ini : $(mPhpIniFile)
 
 # ========================================
 
-create-prod-env : \
+create-prod-env : create-build-env \
     mk-doc \
     src/etc/lo-schema.csv \
     src/etc/biblio.csv \
     src/etc/conf.php \
     src/doc/example/conf.env \
     $(mCheckProd)
-	chmod -r a+r src
+	chmod -R a+r src
 	chmod -R a+rx src/bin
-	chmod a+rx test/*.php
+	chmod a+rx src/test/*.php
 	find src -type d -exec chmod a+rx {} \;
 
 # Use the rules
@@ -225,25 +225,40 @@ src/etc/conf.php : src/etc/conf.env
 	src/bin/gen-conf-php.sh <$? >$@
 	chmod a+rx $@
 
-src/doc/example/conf.env : $(cgDirApp)/etc/conf.env
+src/doc/example/conf.env : src/etc/conf.env
 	sed 's/^export /    #/' <$? >$@
 	chmod a+rx $@
 
 # ========================================
-test :
+test : create-prod-env
 	src/bin/bib -T all
 	src/bin/bib -T com
 	src/bin/phpunit src/test
 
 # ========================================
-build : 
+build : clean clean-test create-prod-env
 	-find dist -type l -exec rm {} \; &>/dev/null
 	rm -rf dist
 	mkdir -p dist/opt/libre-bib2
 	rsync -aP LICENSE src/* dist/opt/libre-bib2/
+	find dist -name .gitignore -exec rm {} \;
 	find dist -type d -exec chmod a+rx {} \;
 	find dist -type f -exec chmod a+r {} \;
 	find dist -type f -executable -exec chmod a+rx {} \;
+
+clean-test :
+	-cd src/test/sample; \
+	rm -rf backup etc status tmp; \
+	rm bib-cache/db-create.cmd; \
+	rm biblio-note.txt conf.env key.txt
+
+# ========================================
+install : build
+	sudo mkdir -s /opt/libre-bib2
+	sudo cp dist/* /opt/libre-bib2/
+	find /opt/libre-bib2 -type d -exec chmod a+rx {} \;
+	find /opt/libre-bib2 -type f -exec chmod a+r {} \;
+	find /opt/libre-bib2 -type f -executable -exec chmod a+rx {} \;
 
 # ========================================
 # Package
