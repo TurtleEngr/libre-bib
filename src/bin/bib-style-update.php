@@ -1,15 +1,45 @@
 #!/usr/bin/env php
 <?php
 
-# -----------------------------
-function fusage() {
-    global $argc;
-    global $argv;
+# bib-style-update.php - wrapper. The work is done by class BibStyleUpdate in
+# bib-style-update.inc, so that phpunit can test it without running this
+# main section.
 
-    system("pod2text $argv[0]");
-    exit(1);    # ---------->
+require_once __DIR__ . "/bib-style-update.inc";
 
-    /* ...
+# ****************************************
+# GetOps, Includes, Validate
+
+try {
+    $gpOpt = BibStyleUpdate::fGetOps($argv, $argc);
+
+    if ($gpOpt["help"])
+        BibStyleUpdate::fUsage($argv[0]);    # ---------->
+
+    if ($gpOpt["test"] != "")
+        exit(Util::uRunTest("BibStyleUpdateTest", $gpOpt["test"]));    # ---------->
+
+    $gApp = new BibStyleUpdate(Util::uLoadConf(), $gpOpt);
+    $gApp->fValidate();
+} catch(Exception $e) {
+    echo "Problem with setup: " . $e->getMessage() . "\n";
+    exit(3);    # ---------->
+}
+
+# ========================================
+# Write section
+
+try {
+    $gApp->fRun();
+} catch(Exception $e) {
+    echo "Problem: " . $e->getMessage() . "\n";
+    exit(4);    # ---------->
+}
+
+echo "Done. [bib-style-update.php:" . __LINE__ . "]\n";
+exit(0);    # ---------->
+
+/* ...
 
 =pod
 
@@ -35,6 +65,12 @@ See also ENVIRONMENT section.
 =item B<-h> - help
 
 This help.
+
+=item B<-T> "all" or a test name
+
+Run this script's phpunit test, in test/BibStyleUpdateTest.php. "all" runs the whole
+test class; any other value is passed to phpunit as a --filter, so it
+runs the one test method with that name.
 
 =back
 
@@ -65,142 +101,4 @@ This help.
 =cut
 
 ... */
-} # fUsage
-
-# -----------------------------
-function fCleanUp() {
-    echo "\n";
-    return;    # ---------->
-} # fCleanUp
-
-# -----------------------------
-function fGetOps() {
-    global $argc;
-    global $argv;
-    global $cgDebug;
-    global $gpHelp;
-    global $cgNoExec;
-
-    $gpHelp = false;
-    $tOpt = getopt("ch");
-    $gpHelp = isset($tOpt['h']);
-    if ($gpHelp or $argc < 2)
-        fUsage();
-
-    $tConf = $_ENV['cgDirApp'] . "/etc/conf.php";
-    require_once "$tConf";
-    require_once "$cgBin/util.php";
-    uFixBool();
-
-    return;    # ---------->
-} # fGetOps
-
-# -----------------------------
-function fValidate() {
-    global $cgDocFile;
-    global $cgDbTblBib;
-    global $cgBin;
-    global $cgDirApp;
-    global $cgDirEtc;
-
-    # DB not used
-    #uValidateCommon();
-
-    if ( ! file_exists("$cgDirEtc/bib-style.xml"))
-        throw new Exception("Missing: $cgDirEtc/bib-style.xml [bib-style-update.php:" . __LINE__ . "]");
-
-    if ( ! file_exists("$cgDirEtc/bib-template.xml"))
-        throw new Exception("Missing: $cgDirEtc/bib-template.xml [bib-style-update.php:" . __LINE__ . "]");
-
-    return;    # ---------->
-} # fValidate
-
-# -----------------------------
-function fReplaceElement($pXmlFile, $pName, $pNewFile, $pOutFile) {
-    # Replace one element in an unpacked odt XML file with the copy
-    # saved by bib-style-save.php, and write the result to pOutFile.
-
-    global $cgDebug;
-    global $cgDocFile;
-
-    echo "Start processing $pXmlFile [bib-style-update.php:" . __LINE__ . "]\n";
-
-    $tDoc = uLoadXml($pXmlFile);
-    $tNode = uFindElement($tDoc, $pName);
-
-    if ($tNode === null)
-        throw new Exception("\nError: A bibliography has not been added to $cgDocFile: no $pName in $pXmlFile. [bib-style-update.php:" . __LINE__ . "]");
-
-    $tXml = trim(file_get_contents($pNewFile));
-
-    # The saved copy carries no namespace declarations of its own: it is
-    # parsed against this document, which declares them on its root.
-    $tFrag = $tDoc->createDocumentFragment();
-    if ( ! @$tFrag->appendXML($tXml))
-        throw new Exception("\nError: Could not parse $pNewFile [bib-style-update.php:" . __LINE__ . "]");
-
-    $tNode->parentNode->replaceChild($tFrag, $tNode);
-
-    uSaveXml($tDoc, $pOutFile);
-    echo "Updated $pName from $pNewFile [bib-style-update.php:" . __LINE__ . "]\n";
-
-    return;    # ---------->
-} # fReplaceElement
-
-# -----------------------------
-function fProcessStyleFile() {
-    global $cgDirEtc;
-    global $cgDirTmp;
-
-    # This assumes there is only one "bibliography-configuration" tag
-    # in the styles.xml file.
-
-    fReplaceElement("$cgDirTmp/styles.xml", "bibliography-configuration",
-        "$cgDirEtc/bib-style.xml", "$cgDirTmp/styles.new.xml");
-
-    return;    # ---------->
-} # fProcessStyleFile
-
-# -----------------------------
-function fProcessContentFile() {
-    global $cgDirEtc;
-    global $cgDirTmp;
-
-    # This assumes there is only one "bibliography-source" tag in the
-    # content.xml file.
-
-    fReplaceElement("$cgDirTmp/content.xml", "bibliography-source",
-        "$cgDirEtc/bib-template.xml", "$cgDirTmp/content.new.xml");
-
-    return;    # ---------->
-} # fProcessContentFile
-
-# ========================================
-# Includes, GetOps, Validate, ReadOnly
-
-try {
-    fGetOps();
-    fValidate();
-} catch(Exception $e) {
-    echo "Problem with setup: " . $e->getMessage() . " [bib-style-update.php:" . __LINE__ . "]\n";
-    exit(3);    # ---------->
-}
-
-
-# ========================================
-# Write section
-try {
-    uUnpackFile($cgDocFile, "content styles");
-    fProcessStyleFile();
-    fProcessContentFile();
-    uPackFile($cgDocFile, "content styles");
-} catch(Exception $e) {
-    echo "Problem: " . $e->getMessage() . " [bib-style-update.php:"
-        . __LINE__ . "]\n";
-    exit(4);    # ---------->
-}
-
-
-echo "Done. [bib-style-update.php:" . __LINE__ . "]\n";
-exit(0);    # ---------->
 ?>

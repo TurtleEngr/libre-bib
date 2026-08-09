@@ -1,15 +1,44 @@
 #!/usr/bin/env php
 <?php
-# converted
 
-function fusage() {
-    global $argc;
-    global $argv;
+# bib-status.php - wrapper. The work is done by class BibStatus in
+# bib-status.inc, so that phpunit can test it without running this
+# main section.
 
-    system("pod2text $argv[0]");
-    exit(1);    # ---------->
+require_once __DIR__ . "/bib-status.inc";
 
-    /* ...
+# ****************************************
+# GetOps, Includes, Validate
+
+try {
+    $gpOpt = BibStatus::fGetOps($argv, $argc);
+
+    if ($gpOpt["help"])
+        BibStatus::fUsage($argv[0]);    # ---------->
+
+    if ($gpOpt["test"] != "")
+        exit(Util::uRunTest("BibStatusTest", $gpOpt["test"]));    # ---------->
+
+    $gApp = new BibStatus(Util::uLoadConf(), $gpOpt);
+    $gApp->fValidate();
+} catch(Exception $e) {
+    echo "Problem with setup: " . $e->getMessage() . "\n";
+    exit(3);    # ---------->
+}
+
+# ========================================
+# Write section
+
+try {
+    $gApp->fRun();
+} catch(Exception $e) {
+    echo "Problem with setup: " . $e->getMessage() . "\n";
+    exit(3);    # ---------->
+}
+
+exit(0);    # ---------->
+
+/* ...
 
 =pod
 
@@ -39,6 +68,12 @@ See also ENVIRONMENT section.
 =item B<-h> - help
 
 This help.
+
+=item B<-T> "all" or a test name
+
+Run this script's phpunit test, in test/BibStatusTest.php. "all" runs the whole
+test class; any other value is passed to phpunit as a --filter, so it
+runs the one test method with that name.
 
 =back
 
@@ -85,138 +120,4 @@ Most of variables in the conf.env are used by this script.
 =cut
 
 ... */
-} # fUsage
-
-# -----------------------------
-function fCleanUp() {
-    echo "\n";
-    return;    # ---------->
-} # fCleanUp
-
-# -----------------------------
-function fGetOps() {
-    global $argc;
-    global $argv;
-    global $gpHelp;
-
-    $gpHelp = false;
-    $tOpt = getopt("ch");
-    $gpHelp = isset($tOpt['h']);
-    if ($gpHelp or $argc < 2)
-        fUsage();
-
-    $tConf = $_ENV["cgDirApp"] . "/etc/conf.php";
-    require_once "$tConf";
-    require_once "$cgBin/util.php";
-    uFixBool();
-
-    return;    # ---------->
-} # fGetOps
-
-# -----------------------------
-function fValidate() {
-    global $cgDocFile;
-    global $cgDbTblBib;
-    global $cgBin;
-
-    uValidateCommon();
-
-    return;    # ---------->
-} # fValidate
-
-function fStatus() {
-    global $cgDirStatus;
-    global $cgDocFile;
-    global $cgLoFile;
-
-    if ( ! file_exists("$cgDirStatus/import-lo.date")) {
-        echo "Time to run: bib import-lo\n";
-    } else {
-        if (filemtime($cgLoFile) > filemtime("$cgDirStatus/import-lo.date")) {
-            echo "$cgLoFile is newer, run: bib import-lo\n";
-        }
-    }
-
-    if (file_exists("$cgDirStatus/import-lo.date") and
-        file_exists("$cgDirStatus)/backup-lo.date")) {
-        if (filemtime("$cgDirStatus/import-lo.date") >
-            filemime("$cgDirStatus)/backup-lo.date")) {
-            echo "lo table is newer, maybe backup? Run: bib backup-lo\n";
-        }
-    }
-
-    if (file_exists("$cgDirStatus)/bib-update.date")) {
-        if (filemtime($cgDocFile) > filemtime("$cgDirStatus)/bib-update.date")) {
-            echo "$cgDocFile is new, maybe run: bib bib-new and bib-update\n";
-        }
-    }
-
-    if (file_exists("$cgDirStatus/import-lo.date")) {
-        if (filemtime("$cgDirStatus/import-lo.date") > filemtime($cgDocFile)) {
-            echo "lo table is newer than $cgDocFile, maybe run: bib bib-new and bib-update\n";
-        }
-    }
-
-    return;    # ---------->
-} # fStatus
-
-function fDbStatus() {
-    global $cgDbTblBib;
-    global $cgDbTblLo;
-    global $cgDbName;
-    global $cgVerbose;
-
-    if ( ! $cgVerbose)
-        return 0;
-
-    echo "\nVerbose is on so listing DB information.\n";
-
-    $tStmt = uExecSql("show databases");
-    $tResult = $tStmt->fetchAll(PDO::FETCH_COLUMN);
-    echo "show databases\n\t", implode("\n\t", $tResult) . "\n";
-    echo "Your DB is: $cgDbName\n";
-
-    $tStmt = uExecSql("show tables");
-    $tResult = $tStmt->fetchAll(PDO::FETCH_COLUMN);
-    echo "show tables\n\t" . implode("\n\t", $tResult) . "\n";
-
-    if ( ! uTableExists($cgDbTblLo)) {
-        echo "$cgDbTblLo table is not defined. Create with: bib import-lo";
-    } else {
-        $tStmt = uExecSql("select column_name from information_schema.columns where table_name = '" . $cgDbTblLo . "'");
-        $tResult = $tStmt->fetchAll(PDO::FETCH_COLUMN);
-        echo "\nfields for table $cgDbTblLo\n\t" . implode(", ", $tResult) . "\n";
-
-        $tStmt = uExecSql("select count(*) from $cgDbTblLo");
-        $tResult = $tStmt->fetchAll(PDO::FETCH_COLUMN);
-        echo "\t" . $tResult[0] . " rows\n";
-    }
-
-    if ( ! uTableExists($cgDbTblBib)) {
-        echo "$cgDbTblBib table is not defined. Create with: bib import-lo";
-    } else {
-        $tStmt = uExecSql("select column_name from information_schema.columns where table_name = '" . $cgDbTblBib . "'");
-        $tResult = $tStmt->fetchAll(PDO::FETCH_COLUMN);
-        echo "\nfields for table $cgDbTblBib\n\t" . implode(", ", $tResult) . "\n";
-
-        $tStmt = uExecSql("select count(*) from $cgDbTblBib");
-        $tResult = $tStmt->fetchAll(PDO::FETCH_COLUMN);
-        echo "\t" . $tResult[0] . " rows\n";
-    }
-} # fDbStatus
-
-# ========================================
-# Includes, GetOps, Validate, ReadOnly
-
-try {
-    fGetOps();
-    fValidate();
-    fStatus();
-    fDbStatus();
-} catch(Exception $e) {
-    echo "Problem with setup: " . $e->getMessage() . " [bib-status.php:" . __LINE__ . "]\n";
-    exit(3);    # ---------->
-}
-
-exit(0);    # ---------->
 ?>

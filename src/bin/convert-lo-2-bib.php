@@ -1,15 +1,44 @@
 #!/usr/bin/env php
 <?php
 
-# -----------------------------
-function fusage() {
-    global $argc;
-    global $argv;
+# convert-lo-2-bib.php - wrapper. The work is done by class ConvertLo2Bib in
+# convert-lo-2-bib.inc, so that phpunit can test it without running this
+# main section.
 
-    system("pod2text $argv[0]");
-    exit(1);
+require_once __DIR__ . "/convert-lo-2-bib.inc";
 
-    /* ...
+# ****************************************
+# GetOps, Includes, Validate
+
+try {
+    $gpOpt = ConvertLo2Bib::fGetOps($argv, $argc);
+
+    if ($gpOpt["help"])
+        ConvertLo2Bib::fUsage($argv[0]);    # ---------->
+
+    if ($gpOpt["test"] != "")
+        exit(Util::uRunTest("ConvertLo2BibTest", $gpOpt["test"]));    # ---------->
+
+    $gApp = new ConvertLo2Bib(Util::uLoadConf(), $gpOpt);
+    $gApp->fValidate();
+} catch(Exception $e) {
+    echo "Problem with setup: " . $e->getMessage() . "\n";
+    exit(1);    # ---------->
+}
+
+# ========================================
+# Write section
+
+try {
+    $gApp->fRun();
+} catch(Exception $e) {
+    echo "Problem creating table: " . $e->getMessage() . "\n";
+    exit(2);    # ---------->
+}
+
+exit(0);    # ---------->
+
+/* ...
 
 =pod
 
@@ -37,6 +66,12 @@ See also ENVIRONMENT section.
 =item B<-h> - help
 
 This help.
+
+=item B<-T> "all" or a test name
+
+Run this script's phpunit test, in test/ConvertLo2BibTest.php. "all" runs the whole
+test class; any other value is passed to phpunit as a --filter, so it
+runs the one test method with that name.
 
 =back
 
@@ -74,195 +109,4 @@ Set these in conf.env
 =cut
 
 ... */
-} # fUsage
-
-# -----------------------------
-function fCleanUp() {
-    echo "\n";
-} # fCleanUp
-
-# -----------------------------
-function fGetOps() {
-    global $argc;
-    global $argv;
-    global $cgDebug;
-    global $gpHelp;
-    global $cgNoExec;
-
-    $gpHelp = false;
-    $tOpt = getopt("ch");
-    $gpHelp = isset($tOpt['h']);
-    if ($gpHelp or $argc < 2)
-        fUsage();
-
-    $tConf = $_ENV['cgDirApp'] . "/etc/conf.php";
-    require_once "$tConf";
-    require_once "$cgBin/util.php";
-    uFixBool();
-
-} # fGetOps
-
-# -----------------------------
-function fValidate() {
-    global $cgBin;
-    global $cgDbTblLo;
-
-    uValidateCommon();
-
-    if ( ! uTableExists($cgDbTblLo))
-        throw new Exception("\nError: Missing $cgDbTblLo Table. [convert-lo-2-bib.php:" . __LINE__ . "]");
-} # fValidate
-
-# -----------------------------
-function fCreateBibTable() {
-    global $cgDbTblLo;
-    global $cgDbTblBib;
-
-    if (uTableExists($cgDbTblBib))
-        uRenameTable($cgDbTblBib);
-
-    if (uTableExists($cgDbTblBib))
-        uExecSql("drop table $cgDbTblBib");
-
-    uExecSql("CREATE TABLE $cgDbTblBib SELECT * FROM $cgDbTblLo");
-    uExecSql("alter table $cgDbTblBib add primary key (Identifier)");
-} # fCreateBibTable
-
-# -----------------------------
-function fUpdateRec($pRec) {
-    global $cgDbTblBib;
-
-    $tSql = "update $cgDbTblBib set";
-    foreach (array_keys($pRec) as $tCol) {
-        if ($pRec[$tCol] == '')
-            continue;
-        switch ($tCol) {
-        case "Identifier":
-        case "Address":
-        case "Annote":
-        case "Edition":
-        case "Note":
-        case "Title":
-        case "Type":
-        case "Custom1":
-        case "Custom2":
-        case "Custom3":
-            # These are not changed
-            continue 2;
-        case "Author":
-            # Update only if Authors added
-            if ( ! preg_match("/; /", $pRec['Author']))
-                continue 2;
-        }
-        $tSql .= ' ' . $tCol . ' = "' . $pRec[$tCol] . '",';
-    }
-    $tSql = preg_replace('/",$/', '"', $tSql);
-    $tSql .= ' where Identifier = "' . $pRec['Identifier'] . '"';
-
-    uExecSql($tSql);
-} # fUpdateRec
-
-# -----------------------------
-function fUpdateBibTable() {
-    global $gDb;
-    global $cgDbTblBib;
-    global $cgDebug;
-
-    $tAltList =  array();
-
-    # Get col to be updated
-    $tSql = "select * from $cgDbTblBib";
-    $tRecH = $gDb->prepare($tSql);
-    $tRecH->execute();
-
-    $tCount = 0;
-    while ($tRec = $tRecH->fetch(PDO::FETCH_ASSOC)) {
-        ++$tCount;
-        if ($tCount % 50 == 0)
-            echo ".";
-
-        # Put a ', ' before each non-blank column, but process
-        # certain col differently.
-        foreach (array_keys($tRec) as $tCol) {
-            if ($tRec[$tCol] == '')
-                continue;
-            switch ($tCol) {
-            case "Identifier":
-            case "Address":
-            case "Annote":
-            case "Edition":
-            case "Note":
-            case "Title":
-            case "Type":
-            case "Custom1":
-            case "Custom2":
-            case "Custom3":
-                # These are not changed
-                break;
-            case "Booktitle":
-                if ($tRec['Title'] != '')
-                    $tRec[$tCol] .= ': ' . $tRec['Title'];
-                if ($tRec['Edition'] != '')
-                    $tRec[$tCol] .= ' (' . $tRec['Edition'] . ' ed.)';
-                $tRec[$tCol] = ' ' . $tRec[$tCol] . '.';
-                break;
-            case "Author":
-                if ($tRec['Custom2'] != '')
-                    $tRec[$tCol] .= ', and ' . $tRec['Custom2'];
-                $tRec[$tCol] = ' ' . $tRec[$tCol] . '.';
-                break;
-            case "Publisher":
-                if ($tRec[$tCol] != '')
-                    if ($tRec['Address'] != '')
-                        $tRec[$tCol] = ' ' . $tRec['Address'] . ': ' . $tRec[$tCol] . '.';
-                    else
-                        $tRec[$tCol] = ' ' . $tRec[$tCol] . '.';
-                break;
-            case "ISBN":
-                $tRec[$tCol] = ' ISBN:' . $tRec[$tCol] . '.';
-                break;
-            case "URL":
-                $tRec[$tCol] = ' URL:' . $tRec[$tCol];
-                if ($tRec['Custom1'] != '') {
-                    # Use only the first entry (space separator)
-                    $tAltList = explode(' ', trim($tRec['Custom1']));
-                    $tRec[$tCol] .= '  Alt:' . $tAltList[0];
-                }
-                break;
-            case "Custom4":
-                $tRec[$tCol] = ' Seen: ' . $tRec[$tCol] . '.';
-                break;
-            default:
-                if ($tRec[$tCol] != '')
-                    $tRec[$tCol] = ' ' . $tRec[$tCol] . '.';
-            }
-        }
-        if ($tRec['ISBN'] == '' and $tRec['Custom3'] != '')
-            $tRec['ISBN'] = ', ASIN:' . $tRec['Custom3'];
-        fUpdateRec($tRec);
-    } # while
-    echo "\nProcessed: $tCount [convert-lo-2-bib.php:" . __LINE__ . "]\n";
-} # fUpdateBibTable
-
-# ****************************************
-# Includes, GetOps, Validate, ReadOnly
-
-try {
-    fGetOps();
-    fValidate();
-} catch(Exception $e) {
-    echo "Problem with setup: " . $e->getMessage() . "\n";
-    exit(1);
-}
-
-# Write section
-try {
-    fCreateBibTable();
-    fUpdateBibTable();
-} catch(Exception $e) {
-    echo "Problem creating table: " . $e->getMessage() . "\n";
-    exit(2);
-}
-
-exit(0);
 ?>
