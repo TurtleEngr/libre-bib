@@ -61,7 +61,8 @@ ASIN: 109
 Id: doctorow-04
 Type: book
 Media: ebook
-Title: The Great Big Beautiful Tomorrow (Outspoken Authors Book 8)
+Title: The Great Big Beautiful Tomorrow
+Subtitle: (Outspoken Authors Book 8)
 Author: Doctorow, Cory
 Date: 2011
 Publisher: PM Press
