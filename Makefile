@@ -1,80 +1,112 @@
 # $Header$
 
-# --------------------
+# ========================================
 SHELL = /bin/bash
 
-# ========================================
-# Adjust these to match the php version
-
-mPkgDep = \
-	bash \
-	libreoffice \
-	libreoffice-sdbc-hsqldb \
-	make \
-	mariadb-client \
-	mariadb-server \
-	pandoc \
-	perl \
-	php \
-	php-cli \
-	php-common \
-	php-fpm \
-	php-json \
-	php-mbstring \
-	php-mysql \
-	php-opcache \
-	php-readline \
-	php-xml \
-	sed \
-	shellcheck
-
-mPhpUnit = phpunit-9.6.35.phar
-    # Version  8.x needs php 7.2.0
-    # Version  9.x needs php 7.3.0
-    # Version 10.x needs php 8.1.0
-    # Version 11.x needs php 8.2.0
-    # Version 12.x needs php 8.3.0
-
-mPhpIniFile = /etc/php/8.2/cli/php.ini
-            # /etc/php/7.4/cli/php.ini
-mPhpIni = \
-	'memory_limit = -1' \
-	'error_reporting = E_ALL' \
-	'log_errors_max_len = 0' \
-	'zend.assertions = 1' \
-	'assert.exception = 1' \
-	'xdebug.show_exception_trace = 0' \
-	'variables_order = "EGPCS"'
+include package/ver.mak
 
 # ========================================
-mUtilScriptDir = ~/ver/github/app/my-utility-scripts
 
-mBin = \
+mCheck = \
+	/sbin/mariadbd \
+	/usr/bin/libreoffice \
+	/usr/bin/make \
+	/usr/bin/mysql \
+	/usr/bin/pandoc \
+	/usr/bin/perl \
 	/usr/bin/php \
+	/usr/bin/pod2markdown \
+	/usr/bin/pod2pdf \
+	/usr/bin/sed \
 	/usr/bin/shellcheck \
 	/usr/bin/tidy \
+	/usr/bin/wget \
+	bin/$(mPhpUnit) \
 	bin/.phptidy-config.php \
+	bin/bash-com.inc \
+	bin/bash-com.test \
 	bin/bash-fmt \
 	bin/incver.sh \
 	bin/org2html.sh \
 	bin/phptidy.php \
+	bin/phpunit \
 	bin/pre-commit \
 	bin/rm-trailing-sp \
 	bin/shfmt \
+	bin/shunit2.1 \
 	bin/sort-para.sh \
+	$(mDirLoConf)/biblio.dbf
+
+mCheckProd = \
 	src/bin/bash-com.inc \
 	src/bin/bash-com.test \
+	src/bin/bib \
+	src/bin/bib-cmd.mak \
+	src/bin/bib-ref-update.php \
+	src/bin/bib-status.php \
+	src/bin/bib-style-update.php \
+	src/bin/convert-lo-2-bib.php \
+	src/bin/db-create.sh \
+	src/bin/export-lo-2-tcsv.php \
+	src/bin/export-lo-2-txt.php \
+	src/bin/fixup.sed \
+	src/bin/gen-conf-php.sh \
+	src/bin/import-tcsv-2-lo-db.php \
+	src/bin/import-txt-2-lo.php \
+	src/bin/phpunit \
+	src/bin/phpunit-10.5.64.phar \
+	src/bin/phpunit-11.5.56.phar \
+	src/bin/phpunit-12.5.33.phar \
+	src/bin/phpunit-13.2.6.phar \
+	src/bin/phpunit-8.5.53.phar \
+	src/bin/phpunit-9.6.35.phar \
+	src/bin/rm-old-files.sh \
+	src/bin/rm-old-tables.sh \
+	src/bin/sanity-check.sh \
 	src/bin/shunit2.1 \
-	src/bin/$(mPhpUnit)
+	src/bin/sort-para.sh \
+	src/bin/util.php \
+	src/bin/valid-conf.sh \
+	src/doc/example/biblio-note.txt \
+	src/doc/example/biblio.txt \
+	src/doc/example/conf.env \
+	src/doc/example/conf.env \
+	src/doc/example/example-outline.css \
+	src/doc/example/example-outline.html \
+	src/doc/example/example-outline.odt \
+	src/doc/example/example-outline.org \
+	src/doc/example/example.odt \
+	src/doc/example/key.txt \
+	src/doc/manual/doc.css \
+	src/doc/manual/libre-bib.html \
+	src/doc/manual/libre-bib.md \
+	src/doc/manual/libre-bib.org \
+	src/etc/bib-style.xml \
+	src/etc/bib-template.xml \
+	src/etc/biblio.csv \ \
+	src/etc/cite-new.xml \
+	src/etc/cite-update.xml \
+	src/etc/conf.env \
+	src/etc/conf.php \ \
+	src/etc/lo-schema.csv \ \
+	src/test/bootstrap.php \
+	src/test/sample/bib-cache/.admin.pass \
+	src/test/sample/bib-cache/.pass.tmp \
+	src/test/sample/bib-cache/.root.pass \
+	src/test/sample/bootstrap.sh \
+	src/test/sample/setup-sample-dir.sh \
+	src/test/sample/test-doc.odt \
+	src/test/sample/test-doc.odt.orig
 
 # ========================================
 usage :
 	@echo 'clean - remove tmp files'
 	@echo 'dist-clean - cleanup the build area'
 	@echo 'create-build-env - set up the build env'
+	@echo 'create-prod-env - generate files'
 	@echo 'test - run all tests'
 	@echo 'build - creates dist/'
-	@echo 'install - copy dist/ to /opt/libre-bib2/'
+	@echo 'install - optional, copy dist/ to /opt/libre-bib2/'
 	@echo 'package'
 	@echo 'release'
 
@@ -87,20 +119,24 @@ dist-clean : clean
 	-rm -rf dist
 
 # ========================================
-create-build-env : get-dep-pkg update-my-utility-scripts $(mBin) .git/hooks/pre-commit check-php-ini
-	bin/rm-trailing-sp -t bin/org2html.sh
+create-build-env : \
+    package/ver.mak \
+    get-dep-pkg \
+    get-util-prog \
+    check-php-ini \
+    package/ver.mak \
+    .git/hooks/pre-commit \
+    $(mCheck)
 
-check-php-ini : $(mPhpIniFile)
-	@for tLine in $(mPhpIni); do \
-		if ! grep -q "^$$tLine" $(mPhpIniFile); then \
-			echo "Error: $$tLine not found in $(mPhpIniFile)"; \
-			exit 1; \
-		fi; \
-	done
+mBldPkg = \
+	pod2pdf \
+	tidy \
+	wget
 
 get-dep-pkg :
 	sudo apt-get update
-	@for tPkg in $(mPkgDep); do \
+	tPkgList=$($$(awk '/%requires/ {print $$2}' package/$(ProdOSDist).require); \
+	@for tPkg in $$tPkgList $(mBldPkg); do \
 		if ! dpkg -l $$tPkg >/dev/null 2>&1; then \
 			sudo apt-get install -y $$tPkg; \
 		fi; \
@@ -110,6 +146,90 @@ get-dep-pkg :
 		fi; \
 	done
 
+mUtilProgDir = ~/ver/github/app/my-utility-scripts
+mUtilProg = \
+	.phptidy-config.php \
+	bash-fmt \
+	incver.sh \
+	phptidy.php \
+	pre-commit \
+	rm-trailing-sp \
+	shfmt
+
+get-util-prog : $(mUtilProgDir) $(mUtilProg)
+	cd $(mUtilProgDir); \
+	git checkout develop; \
+	git pull origin develop
+
+$(mUtilProgDir) :
+	mkdir -p ~/ver/github/app
+	cd ~/ver/github/app; \
+	git clone git@github.com:TurtleEngr/my-utility-scripts.git
+
+mPhpIniFile = /etc/php/8.2/cli/php.ini
+            # /etc/php/7.4/cli/php.ini
+mPhpIni = \
+	'memory_limit = -1' \
+	'error_reporting = E_ALL' \
+	'log_errors_max_len = 0' \
+	'zend.assertions = 1' \
+	'assert.exception = 1' \
+	'xdebug.show_exception_trace = 0' \
+	'variables_order = "EGPCS"'
+
+check-php-ini : $(mPhpIniFile)
+	@for tLine in $(mPhpIni); do \
+		if ! grep -q "^$$tLine" $(mPhpIniFile); then \
+			echo "Error: $$tLine not found in $(mPhpIniFile)"; \
+			exit 1; \
+		fi; \
+	done
+
+# ========================================
+
+create-prod-env : \
+    mk-doc \
+    src/etc/lo-schema.csv \
+    src/etc/biblio.csv \
+    src/etc/conf.php \
+    src/doc/example/conf.env \
+    $(mCheckProd)
+	chmod -r a+r src
+	chmod -R a+rx src/bin
+	chmod a+rx test/*.php
+	find src -type d -exec chmod a+rx {} \;
+
+# Use the rules
+mk-doc : \
+    src/doc/manual/libre-bib.html \
+    src/doc/manual/libre-bib.md \
+    src/doc/example/example-outline.html
+
+src/etc/lo-schema.csv : src/etc/biblio.csv
+	head -n 1 $? | sed 's/,C,254//g; s/,M//g' >$@
+
+src/etc/biblio.csv : $(mDirLoConf)/biblio.dbf
+	libreoffice --headless --convert-to csv $?
+	mv biblio.csv $@
+
+# libreoffice
+mDirLoConf = ~/.config/libreoffice/4/user/database/biblio
+
+# libreoffice-flatpak
+# mDirLoConf = ~/.var/app/org.libreoffice.LibreOffice/config/libreoffice/4/user/database/biblio"
+
+$(mDirLoConf)/biblio.dbf :
+	@echo "Error: It looks like Libreoffice is not installed"
+	exit 1
+
+src/etc/conf.php : src/etc/conf.env
+	src/bin/gen-conf-php.sh <$? >$@
+	chmod a+rx $@
+
+src/doc/example/conf.env : $(cgDirApp)/etc/conf.env
+	sed 's/^export /    #/' <$? >$@
+	chmod a+rx $@
+
 # ========================================
 test :
 	src/bin/bib -T all
@@ -117,8 +237,34 @@ test :
 	src/bin/phpunit src/test
 
 # ========================================
-build :
+build : 
+	-find dist -type l -exec rm {} \; &>/dev/null
+	rm -rf dist
+	mkdir -p dist/opt/libre-bib2
+	rsync -aP LICENSE src/* dist/opt/libre-bib2/
+	find dist -type d -exec chmod a+rx {} \;
+	find dist -type f -exec chmod a+r {} \;
+	find dist -type f -executable -exec chmod a+rx {} \;
 
+# ========================================
+# Package
+
+package : clean build mk-pkg
+
+mk-pkg : package/ver.sh package/epm.list
+	-mkdir -p pkg
+	cd package; . ./ver.env; epm -v -f native -m $$ProdOSDist-$$ProdArch --output-dir ../pkg $(ProdName) ver.epm
+	cd package; . ./ver.env; epm -v -f portable -m $$ProdOSDist-$$ProdArch --output-dir ../pkg $(ProdName) ver.epm
+
+package/epm.list : dist/opt/libre-bib2
+	cd package; mkepmlist -u root -g root --prefix / ../dist | patch-epm-list -f ./epm.patch >epm.list
+
+package/ver.mak : package/ver.sh
+	cd package; \
+	./ver.sh -e 'mak env epm'
+
+package/ver.sh : src/VERSION
+	touch $@
 
 # ========================================
 # Complex Targets
@@ -162,64 +308,81 @@ mBeekeeper=Beekeeper-Studio-$(mBeekeeperVer).AppImage
 	sudo mv -f tmp/$(mBeekeeper) $@
 	sudo chmod a+rx $@
 
-# ========================================
-# Single Targets
+# --------------------
+# phpunit
 
-update-my-utility-scripts : $(mUtilScriptDir)
-	cd $(mUtilScriptDir); git pull origin develop
+mPhpUnit = phpunit-9.6.35.phar
+    # Version  8.x needs php 7.2.0
+    # Version  9.x needs php 7.3.0
+    # Version 10.x needs php 8.1.0
+    # Version 11.x needs php 8.2.0
+    # Version 12.x needs php 8.3.0
 
-$(mUtilScriptDir) :
-	cd ~/ver/github/app/; \
-	git clone git@github.com:TurtleEngr/my-utility-scripts.git
-
-bin/incver.sh : $(mUtilScriptDir)/bin/incver.sh
-	cp $? $@
-
-bin/org2html.sh : $(mUtilScriptDir)/bin/org2html.sh
-	cp $? $@
-
-bin/phptidy.php : $(mUtilScriptDir)/bin/phptidy.php
-	cp $? $@
-
-bin/.phptidy-config.php : $(mUtilScriptDir)/bin/.phptidy-config.php
-	cp $? $@
-
-bin/pre-commit : $(mUtilScriptDir)/bin/pre-commit
-	cp $? $@
-
-bin/rm-trailing-sp : $(mUtilScriptDir)/bin/rm-trailing-sp
-	cp $? $@
-
-bin/bash-fmt : $(mUtilScriptDir)/bin/bash-fmt
-	cp $? $@
-
-bin/shfmt : $(mUtilScriptDir)/bin/shfmt
-	cp $? $@
-
-src/bin/shunit2.1 : $(mUtilScriptDir)/bin/shunit2.1
-	cp $? $@
-
-src/bin/bash-com.inc : $(mUtilScriptDir)/bin/bash-com.inc 
-	cp $? $@
-
-src/bin/bash-com.test : $(mUtilScriptDir)/bin/bash-com.test
-	cp $? $@
-
-bin/sort-para.sh : $(mUtilScriptDir)/bin/sort-para.sh
-	cp $? $@
-
-.git/hooks/pre-commit : $(mUtilScriptDir)/bin/pre-commit
-	cp $? $@
-
-/usr/bin/shellcheck :
-	sudo apt-get install shellcheck
-
-/usr/bin/tidy :
-	sudo apt-get install tidy
-
-/usr/bin/php :
-	sudo apt-get install php php-common
-
-phpunit src/bin/$(mPhpUnit) :
+src/bin/$(mPhpUnit) :
 	rsync -P moria.whyayh.com:/rel/archive/software/ThirdParty/phpunit/*.phar src/bin/
 	cd src/bin; ln -sf $(mPhpUnit) phpunit
+
+# ========================================
+# Single Targets $(mUtilProg)
+
+# --------------------
+# Build Env only
+
+bin/bash-fmt : $(mUtilProgDir)/bin/bash-fmt
+	cp $? $@
+
+bin/incver.sh : $(mUtilProgDir)/bin/incver.sh
+	cp $? $@
+
+bin/phptidy.php : $(mUtilProgDir)/bin/phptidy.php
+	cp $? $@
+
+bin/.phptidy-config.php : $(mUtilProgDir)/bin/.phptidy-config.php
+	cp $? $@
+
+bin/pre-commit : $(mUtilProgDir)/bin/pre-commit
+	cp $? $@
+
+.git/hooks/pre-commit : $(mUtilProgDir)/bin/pre-commit
+	cp $? $@
+
+bin/rm-trailing-sp : $(mUtilProgDir)/bin/rm-trailing-sp
+	cp $? $@
+
+bin/shfmt : $(mUtilProgDir)/bin/shfmt
+	cp $? $@
+
+# --------------------
+# Build Env and Product
+
+src/bin/bash-com.inc : $(mUtilProgDir)/bin/bash-com.inc 
+	cp $? $@
+	cp $? bin
+
+src/bin/bash-com.test : $(mUtilProgDir)/bin/bash-com.test
+	cp $? $@
+	cp $? bin
+
+src/bin/org2html.sh : $(mUtilProgDir)/bin/org2html.sh
+	cp $? $@
+	cp $? bin
+
+src/bin/shunit2.1 : $(mUtilProgDir)/bin/shunit2.1
+	cp $? $@
+	cp $? bin
+
+src/bin/sort-para.sh : $(mUtilProgDir)/bin/sort-para.sh
+	cp $? $@
+	cp $? bin
+
+# ========================================
+# Rules
+
+%.md : %.html
+	pandoc -f html -t markdown < $<  > $@
+
+%.odt : %.html
+	libreoffice --headless --convert-to odt $<
+
+%.html : %.org
+	bin/org2html.sh -s 2 $< $@

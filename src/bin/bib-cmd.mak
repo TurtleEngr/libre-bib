@@ -250,37 +250,3 @@ $(cgDirApp)/etc/conf.php : $(cgDirApp)/etc/conf.env
 $(cgDirApp)/doc/example/conf.env : $(cgDirApp)/etc/conf.env
 	sed 's/^export /    #/' <$? >$@
 	chmod a+rx $@
-
-# ----------
-build : rebuild $(cgDirApp)/etc/lo-schema.csv $(cgDirApp)/etc/lib-schema.tsv
-
-$(cgDirApp)/etc/lo-schema.csv : $(cgDirApp)/doc/ref/biblio.csv
-	head -n 1 $? | sed 's/,C,254//g; s/,M//g' >$@
-
-$(cgDirApp)/doc/ref/biblio.csv: $(cgDirApp)/doc/ref/biblio.dbf
-	libreoffice --headless --convert-to csv $?
-	mv biblio.csv $@
-
-$(cgDirLoConf)/biblio.dbf :
-	@echo "Error: It looks like Libreoffice is not installed"
-	exit 11
-
-$(cgDirApp)/doc/ref/biblio.dbf : $(cgDirLibreofficeConf)/biblio.dbf
-	cp $(cgDirLibreofficeConf)/biblio.db* $(cgDirApp)/doc/ref/
-
-$(cgDirApp)/etc/lib-schema.tsv : $(cgDirApp)/doc/ref/librarything.tsv
-	head -n 1 <$? | sed 's/ /_/g' >$@
-
-# ========================================
-# Tests
-
-# ----------
-verify-lo-schema :
-	cp $(cgDirLibreofficeConf)/biblio.db* $(cgDirTmp)/
-	cd $(cgDirTmp); libreoffice --headless --convert-to csv biblio.dbf
-	cd $(cgDirTmp); head -n 1 biblio.cvs | sed 's/,C,254//g; s/,M//g' >lo-schema.csv
-	if ! diff $(cgDirApp)/etc/lo-schema.csv $(cgDirTmp)/lo-schema.csv; then \
-	    echo 'Unexpected differences between'; \
-	    echo '$(cgDirApp)/etc/lo-schema.csv and'; \
-	    echo '$(cgDirTmp)/lo-schema.csv'; \
-	fi

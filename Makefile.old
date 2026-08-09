@@ -429,4 +429,3 @@ $(mRoot)/bin/phptidy.php : bin/phptidy.php
 
 $(mRoot)/bin : bin/sort-para.sh
 	'rsync' -a $? $@
-
