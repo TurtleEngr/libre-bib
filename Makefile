@@ -29,7 +29,6 @@ mCheck = \
 	bin/incver.sh \
 	bin/org2html.sh \
 	bin/phptidy.php \
-	bin/phpunit \
 	bin/pre-commit \
 	bin/rm-trailing-sp \
 	bin/shfmt \
@@ -98,6 +97,12 @@ mCheckProd = \
 	src/test/sample/test-doc.odt \
 	src/test/sample/test-doc.odt.orig
 
+# libreoffice
+mDirLoConf = ~/.config/libreoffice/4/user/database/biblio
+
+# libreoffice-flatpak
+# mDirLoConf = ~/.var/app/org.libreoffice.LibreOffice/config/libreoffice/4/user/database/biblio"
+
 # ========================================
 usage :
 	@echo 'clean - remove tmp files'
@@ -148,13 +153,13 @@ get-dep-pkg :
 
 mUtilProgDir = ~/ver/github/app/my-utility-scripts
 mUtilProg = \
-	.phptidy-config.php \
-	bash-fmt \
-	incver.sh \
-	phptidy.php \
-	pre-commit \
-	rm-trailing-sp \
-	shfmt
+	bin/.phptidy-config.php \
+	bin/bash-fmt \
+	bin/incver.sh \
+	bin/phptidy.php \
+	bin/pre-commit \
+	bin/rm-trailing-sp \
+	bin/shfmt
 
 get-util-prog : $(mUtilProgDir) $(mUtilProg)
 	cd $(mUtilProgDir); \
@@ -211,12 +216,6 @@ src/etc/lo-schema.csv : src/etc/biblio.csv
 src/etc/biblio.csv : $(mDirLoConf)/biblio.dbf
 	libreoffice --headless --convert-to csv $?
 	mv biblio.csv $@
-
-# libreoffice
-mDirLoConf = ~/.config/libreoffice/4/user/database/biblio
-
-# libreoffice-flatpak
-# mDirLoConf = ~/.var/app/org.libreoffice.LibreOffice/config/libreoffice/4/user/database/biblio"
 
 $(mDirLoConf)/biblio.dbf :
 	@echo "Error: It looks like Libreoffice is not installed"
@@ -320,7 +319,10 @@ mPhpUnit = phpunit-9.6.35.phar
 
 src/bin/$(mPhpUnit) :
 	rsync -P moria.whyayh.com:/rel/archive/software/ThirdParty/phpunit/*.phar src/bin/
-	cd src/bin; ln -sf $(mPhpUnit) phpunit
+
+src/bin/phpunit : src/bin/$(mPhpUnit)
+	cd src/bin; \
+	ln -sf $(mPhpUnit) phpunit
 
 # ========================================
 # Single Targets $(mUtilProg)
@@ -355,25 +357,20 @@ bin/shfmt : $(mUtilProgDir)/bin/shfmt
 # --------------------
 # Build Env and Product
 
-src/bin/bash-com.inc : $(mUtilProgDir)/bin/bash-com.inc 
+src/bin/bash-com.inc bin/bash-com.inc : $(mUtilProgDir)/bin/bash-com.inc 
 	cp $? $@
-	cp $? bin
 
-src/bin/bash-com.test : $(mUtilProgDir)/bin/bash-com.test
+src/bin/bash-com.test bin/bash-com.test : $(mUtilProgDir)/bin/bash-com.test
 	cp $? $@
-	cp $? bin
 
-src/bin/org2html.sh : $(mUtilProgDir)/bin/org2html.sh
+src/bin/org2html.sh bin/org2html.sh : $(mUtilProgDir)/bin/org2html.sh
 	cp $? $@
-	cp $? bin
 
-src/bin/shunit2.1 : $(mUtilProgDir)/bin/shunit2.1
+src/bin/shunit2.1 bin/shunit2.1 : $(mUtilProgDir)/bin/shunit2.1
 	cp $? $@
-	cp $? bin
 
-src/bin/sort-para.sh : $(mUtilProgDir)/bin/sort-para.sh
+src/bin/sort-para.sh bin/sort-para.sh : $(mUtilProgDir)/bin/sort-para.sh
 	cp $? $@
-	cp $? bin
 
 # ========================================
 # Rules
