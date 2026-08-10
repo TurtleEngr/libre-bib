@@ -139,14 +139,17 @@ usage :
 	@echo 'release'
 
 # ========================================
+.PHONY : clean
 clean :
 	-find . -type f -name '*~' -exec rm {} \;
 	-find . -type f -name pod2htmd.tmp -exec rm {} \;
 
+.PHONY : dist-clean
 dist-clean : clean
 	-rm -rf dist
 
 # ========================================
+.PHONY : create-build-env
 create-build-env : clean \
     package/ver.mak \
     get-dep-pkg \
@@ -155,12 +158,14 @@ create-build-env : clean \
     package/ver.mak \
     .git/hooks/pre-commit \
     $(mCheck)
+	@echo "Next: make create-prod-env"
 
 mBldPkg = \
 	pod2pdf \
 	tidy \
 	wget
 
+.PHONY : get-dep-pkg
 get-dep-pkg :
 	sudo apt-get update
 	tPkgList=$$(awk '/%requires/ {print $$2}' package/$(ProdOSDist).require); \
@@ -184,6 +189,7 @@ mUtilProg = \
 	bin/rm-trailing-sp \
 	bin/shfmt
 
+.PHONY : get-util-prog
 get-util-prog : $(mUtilProgDir) $(mUtilProg)
 	cd $(mUtilProgDir); \
 	git checkout develop; \
@@ -205,6 +211,7 @@ mPhpIni = \
 	'xdebug.show_exception_trace = 0' \
 	'variables_order = "EGPCS"'
 
+.PHONY : check-php-ini
 check-php-ini : $(mPhpIniFile)
 	@for tLine in $(mPhpIni); do \
 		if ! grep -q "^$$tLine" $(mPhpIniFile); then \
@@ -215,6 +222,7 @@ check-php-ini : $(mPhpIniFile)
 
 # ========================================
 
+.PHONY : create-prod-env
 create-prod-env : create-build-env \
     mk-doc \
     src/etc/lo-schema.csv \
@@ -226,8 +234,10 @@ create-prod-env : create-build-env \
 	chmod -R a+rx src/bin
 	chmod a+rx src/test/*.php
 	find src -type d -exec chmod a+rx {} \;
+	@echo "Next: make test or build"
 
 # Use the rules
+.PHONY : mk-doc
 mk-doc : \
     src/doc/manual/libre-bib.html \
     src/doc/manual/libre-bib.md \
@@ -252,13 +262,19 @@ src/doc/example/conf.env : src/etc/conf.env
 	sed 's/^export /    #/' <$? >$@
 	chmod a+rx $@
 
+src/doc/example/example-outline.odt : src/doc/example/example-outline.org
+	@echo "Manually create"
+
 # ========================================
+.PHONY : test
 test : create-prod-env
 	src/bin/bib -T all
 	src/bin/bib -T com
 	src/bin/phpunit src/test
+	@echo "Next: make build"
 
 # ========================================
+.PHONY : build
 build : clean clean-test create-prod-env
 	-find dist -type l -exec rm {} \; &>/dev/null
 	rm -rf dist
@@ -268,7 +284,9 @@ build : clean clean-test create-prod-env
 	find dist -type d -exec chmod a+rx {} \;
 	find dist -type f -exec chmod a+r {} \;
 	find dist -type f -executable -exec chmod a+rx {} \;
+	@echo "Next: make install or package"
 
+.PHONY : clean-test
 clean-test :
 	-cd src/test/sample; \
 	rm -rf backup etc status tmp; \
@@ -276,6 +294,7 @@ clean-test :
 	rm biblio-note.txt conf.env key.txt
 
 # ========================================
+.PHONY : install
 install : build
 	sudo mkdir -s /opt/libre-bib2
 	sudo cp dist/* /opt/libre-bib2/
@@ -286,8 +305,11 @@ install : build
 # ========================================
 # Package
 
+.PHONY : package
 package : clean build mk-pkg
+	@echo "Next: make release"
 
+.PHONY : mk-pkg
 mk-pkg : package/ver.sh package/epm.list
 	-mkdir -p pkg
 	cd package; . ./ver.env; epm -v -f native -m $$ProdOSDist-$$ProdArch --output-dir ../pkg $(ProdName) ver.epm
@@ -302,6 +324,11 @@ package/ver.mak : package/ver.sh
 
 package/ver.sh : src/VERSION
 	touch $@
+
+# ========================================
+
+release :
+	@echo "TBD"
 
 # ========================================
 # Complex Targets
