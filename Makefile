@@ -357,6 +357,7 @@ package/epm.list : dist/opt/libre-bib
 	cd package; mkepmlist -u root -g root --prefix / ../dist | patch-epm-list -f ./epm.patch >epm.list
 
 package/ver.mak : package/ver.sh
+	sed -i "s/export ProdVer=.*/export ProdVer=\"$$(cat src/VERSION)\"/" package/ver.sh
 	cd package; \
 	mkver.pl -e 'mak env epm'
 
