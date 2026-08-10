@@ -1,4 +1,4 @@
-# $Header$
+# Makefile - maintain libre-bib2
 
 # ========================================
 SHELL = /bin/bash
@@ -121,10 +121,10 @@ mCheckProd = \
 	src/test/sample/test-doc.odt.orig
 
 # libreoffice
-mDirLoConf = ~/.config/libreoffice/4/user/database/biblio
+#mDirLoConf = ~/.config/libreoffice/4/user/database/biblio
 
 # libreoffice-flatpak
-# mDirLoConf = ~/.var/app/org.libreoffice.LibreOffice/config/libreoffice/4/user/database/biblio"
+mDirLoConf = ~/.var/app/org.libreoffice.LibreOffice/config/libreoffice/4/user/database/biblio"
 
 # ========================================
 usage :
@@ -133,8 +133,11 @@ usage :
 	@echo 'create-build-env - set up the build env'
 	@echo 'create-prod-env - generate files'
 	@echo 'test - run all tests'
+	@echo 'update - get latest from github'
+	@echo 'dev-ver - tag a development version'
 	@echo 'build - creates dist/'
 	@echo 'install - optional, copy dist/ to /opt/libre-bib2/'
+	@echo 'rel-ver - do this before packaging a stable version'
 	@echo 'package'
 	@echo 'release'
 
@@ -155,7 +158,6 @@ create-build-env : clean \
     get-dep-pkg \
     get-util-prog \
     check-php-ini \
-    package/ver.mak \
     .git/hooks/pre-commit \
     $(mCheck)
 	@echo "Next: make create-prod-env"
@@ -305,6 +307,34 @@ install : /opt/libre-bib2/VERSION
 	sudo find /opt/libre-bib2 -type f -executable -exec chmod a+rx {} \;
 
 # ========================================
+# Tag versions
+
+.PHONY : update
+update :
+	git checkout main
+	git pull origin main
+	git checkout develop
+	git pull origin develop
+
+.PHONY : save
+dev-ver :
+	git checkout develop
+	bin/incver.sh -p -f src/VERSION 
+	git checkin -am "Updated VERSION"
+	git tag -m "Development $$(cat src/VERSION)" $$(echo dev-$$(cat src/VERSION | tr '.' '-'))
+	git push --tags origin develop
+
+.PHONY : stable
+rel-ver  : update
+	bin/incver.sh -m -f src/VERSION
+	make dev-ver
+	git checkout main
+	git pull origin main
+	git merge develop
+	git tag -m "Release $$(cat src/VERSION)" $$(echo stable-$$(cat src/VERSION | tr '.' '-'))
+	git push --tags origin main
+
+# ========================================
 # Package
 
 .PHONY : package
@@ -322,15 +352,21 @@ package/epm.list : dist/opt/libre-bib2
 
 package/ver.mak : package/ver.sh
 	cd package; \
-	./ver.sh -e 'mak env epm'
+	mkver.pl -e 'mak env epm'
 
 package/ver.sh : src/VERSION
 	touch $@
 
 # ========================================
-
-release :
+.PHONY : release-dev
+release-dev :
 	@echo "TBD"
+	@echo "cp pkg to $(ProdDevDir)/$(ProdOS)"
+
+.PHONY : release-prod
+release-prod :
+	@echo "TBD"
+	@echo "cp pkg to $(ProdRelDir)/$(ProdOS)"
 
 # ========================================
 # Complex Targets
@@ -377,15 +413,16 @@ mBeekeeper=Beekeeper-Studio-$(mBeekeeperVer).AppImage
 # --------------------
 # phpunit
 
-mPhpUnit = phpunit-9.6.35.phar
-    # Version  8.x needs php 7.2.0
-    # Version  9.x needs php 7.3.0
-    # Version 10.x needs php 8.1.0
-    # Version 11.x needs php 8.2.0
-    # Version 12.x needs php 8.3.0
+mPhpUnit = phpunit-11.5.56.phar
+    # Version  8.x needs php 7.2.0 phpunit-8.5.53.phar
+    # Version  9.x needs php 7.3.0 phpunit-9.6.35.phar
+    # Version 10.x needs php 8.1.0 phpunit-10.5.64.phar
+    # Version 11.x needs php 8.2.0 phpunit-11.5.56.phar
+    # Version 12.x needs php 8.3.0 phpunit-12.5.33.phar
+    # Version 13.x needs php 8.4.0 phpunit-13.2.6.phar
 
 src/bin/$(mPhpUnit) :
-	rsync -P moria.whyayh.com:/rel/archive/software/ThirdParty/phpunit/*.phar src/bin/
+	rsync -P $(ProdRelServer):/rel/archive/software/ThirdParty/phpunit/*.phar src/bin/
 
 src/bin/phpunit : src/bin/$(mPhpUnit)
 	cd src/bin; \
