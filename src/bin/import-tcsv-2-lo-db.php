@@ -1,15 +1,45 @@
 #!/usr/bin/env php
 <?php
 
-# -----------------------------
-function fusage() {
-    global $argc;
-    global $argv;
+# import-tcsv-2-lo-db.php - wrapper. The work is done by class ImportTcsv2LoDb in
+# import-tcsv-2-lo-db.inc, so that phpunit can test it without running this
+# main section.
 
-    system("pod2text $argv[0]");
-    exit(1);     # ---------->
+require_once __DIR__ . "/import-tcsv-2-lo-db.inc";
 
-    /* ...
+# ****************************************
+# GetOps, Includes, Validate
+
+try {
+    $gpOpt = ImportTcsv2LoDb::fGetOps($argv, $argc);
+
+    if ($gpOpt["help"])
+        ImportTcsv2LoDb::fUsage($argv[0]);    # ---------->
+
+    if ($gpOpt["test"] != "")
+        exit(Util::uRunTest("ImportTcsv2LoDbTest", $gpOpt["test"]));    # ---------->
+
+    $gApp = new ImportTcsv2LoDb(Util::uLoadConf(), $gpOpt);
+    $gApp->fValidate();
+} catch(Exception $e) {
+    echo "Problem with setup: " . $e->getMessage() . "\n";
+    exit(2);    # ---------->
+}
+
+# ========================================
+# Write section
+
+try {
+    $gApp->fRun();
+} catch(Exception $e) {
+    echo "Problem creating table: " . $e->getMessage() . "\n";
+    echo "Concider restoring " . $gApp->mDbLo . " from " . $gApp->mBackupName . "\n";
+    exit(3);    # ---------->
+}
+
+exit(0);    # ---------->
+
+/* ...
 
 =pod
 
@@ -39,6 +69,12 @@ Separator. c - comma; t - tab. Default: c
 =item B<-h> - help
 
 This help.
+
+=item B<-T> "all" or a test name
+
+Run this script's phpunit test, in test/ImportTcsv2LoDbTest.php. "all" runs the whole
+test class; any other value is passed to phpunit as a --filter, so it
+runs the one test method with that name.
 
 =back
 
@@ -106,155 +142,4 @@ Set these in conf.env
 =cut
 
 ... */
-} # fUsage
-
-# -----------------------------
-function fCleanUp() {
-    echo "\n";
-} # fCleanUp
-
-# -----------------------------
-function fGetOps() {
-    global $argc;
-    global $argv;
-    global $cgDebug;
-    global $gpHelp;
-
-    $gpHelp = false;
-    $gpSep = 'c';
-
-    $tOpt = getopt("cs:h");
-
-    if (isset($tOpt['s']))
-        $gpSep = $tOpt['s'];
-
-    $gpHelp = isset($tOpt['h']);
-
-    if ($gpHelp or $argc < 2)
-        fUsage();
-
-    $tConf = $_ENV['cgDirApp'] . "/etc/conf.php";
-    require_once "$tConf";
-    require_once "$cgBin/util.php";
-    uFixBool();
-
-} # fGetOps
-
-# -----------------------------
-function fValidate() {
-    global $gSep;
-    global $gpSep;
-    global $gFiileH;
-    global $cgDebug;
-    global $cgBackupFile;
-
-    uValidateCommon();
-
-    if ("$gpSep" == "")
-        throw new Exception("\nError: Missing -s option. [import-tcsv-2-lo-db.php:" . __LINE__ . "]");
-    switch ($gpSep) {
-    case "c":
-        $gSep = ",";
-        break;
-    case "t":
-        $gSep = "\t";
-        break;
-    default:
-        throw new Exception("\nError: Bad -s. Should be 'c' or 's'. [import-tcsv-2-lo-db.php:" . __LINE__ . "]");
-    }
-
-    if (($gFiileH = fopen($cgBackupFile, "r")) == FALSE)
-        throw new Exception("Cannot open $cgBackupFile. [import-tcsv-2-lo-db.php:" . __LINE__ . "]");
-} # fValidate
-
-# -----------------------------
-function fCreateTable() {
-    global $cgDbLo;
-    global $gBackupName;
-    global $gFieldList;
-    global $gFiileH;
-
-    $gBackupName = "";
-    if (uTableExists($cgDbLo))
-        $gBackupName = uRenameTable($cgDbLo);
-
-    #  Get the fields from the first row
-    $tTmpList = fgetcsv($gFiileH, 15000, $gSep);
-
-    $gFieldList = array();
-    foreach ($tTmpList as $tField) {
-        $tField = preg_replace('/\s+/', '_', $tField);
-        array_push($gFieldList, $tField);
-    }
-
-    # Create the table from header record
-    $tSql = "CREATE TABLE IF NOT EXISTS $cgDbLo (";
-    foreach ($gFieldList as $tField)
-        $tSql .= "`$tField` VARCHAR(255),";
-    $tSql = rtrim($tSql, ",") . ")";
-    uExecSql("$tSql");
-    uExecSql("alter table $cgDbLo add primary key (Identifier)");
-} # fCreateTable
-
-# -----------------------------
-function fInsertRec() {
-    global $gDb;
-    global $gSep;
-    global $gFieldList;
-    global $gFiileH;
-    global $cgDbLo;
-    global $cgDebug;
-
-    # Use this to trim all fields in array to be < 254 char
-    $fTrimLen = function($pElement) {
-        return substr( $pElement, 0, 254 );     # ---------->
-    };
-
-    # Insert data into the table
-    $tRec = 0;
-    while (($tData = fgetcsv($gFiileH, 15000, $gSep)) !== FALSE) {
-        ++$tRec;
-        echo ".";
-        $tData = array_map($fTrimLen, $tData);
-        $tValueStr = implode('","', $tData);
-        $tValueStr = utf8_encode($tValueStr);
-
-        $tSql = "INSERT INTO $cgDbLo (`" . implode("`, `", $gFieldList) . "`) VALUES (\"$tValueStr\")";
-
-        $tCount = $gDb->exec($tSql);
-        if ($tCount != 1) {
-            echo "\nRecord: $tRec \n";
-            $tmp = $gDb->errorInfo();
-            echo "$tmp[2]\n";
-            if ($cgDebug) {
-                echo "$tSql \n";
-                # var_dump($tValueStr);
-                throw new Exception("Insert error. [import-tcsv-2-lo-db.php:" . __LINE__ . "]");
-            }
-        }
-    } # while
-    echo "\nProcessed: $tRec \n";
-} # fInsertRec
-
-# ****************************************
-# Includes, GetOps, Validate, ReadOnly
-
-try {
-    fGetOps();
-    fValidate();
-} catch(Exception $e) {
-    echo "Problem with setup: " . $e->getMessage() . "\n";
-    exit(2);     # ---------->
-}
-
-# Write section
-try {
-    fCreateTable();
-    fInsertRec();
-} catch(Exception $e) {
-    echo "Problem creating table: " . $e->getMessage() . "\n";
-    echo "Concider restoring $cgDbLo from $gBackupName\n";
-    exit(3);     # ---------->
-}
-
 ?>

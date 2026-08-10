@@ -19,11 +19,13 @@
 global $cgDirTest;
 global $cgDirBin;
 global $cgDirSample;
+global $cgDirExample;
 global $cgDirTmpTest;
 
 $cgDirTest = __DIR__;
 $cgDirBin = dirname(__DIR__) . "/bin";
 $cgDirSample = __DIR__ . "/sample";
+$cgDirExample = dirname(__DIR__) . "/doc/example";
 $cgDirTmpTest = sys_get_temp_dir() . "/libre-bib2-test";
 
 if ( ! is_dir($cgDirTmpTest))
@@ -33,46 +35,21 @@ require_once "$cgDirBin/util.php";
 
 # --------------------
 function uTestLoadScript($pName) {
-    # Make the functions in a CLI script available to phpunit, without
-    # running the script's main section.
-    #
-    # If bin/$pName.inc exists (the "wrapper" convention in style.org)
-    # it is simply included.
-    #
-    # Until a script has been split into wrapper + .inc, the functions
-    # are copied out of bin/$pName.php: everything above the first
-    # "# ******" separator line, which is where the main section starts.
-    # Nothing in bin/ is modified.
+    # Make a CLI script's class available to phpunit, without running
+    # the script's main section. Every script in bin/ is now a wrapper
+    # (bin/$pName.php) plus a class (bin/$pName.inc); only the .inc is
+    # loaded here.
     #
     # Returns the path of the file that was included.
 
     global $cgDirBin;
-    global $cgDirTmpTest;
 
     $tInc = "$cgDirBin/$pName.inc";
-    if (file_exists($tInc)) {
-        require_once "$tInc";
-        return $tInc;    # ---------->
-    }
+    if ( ! file_exists($tInc))
+        throw new Exception("Missing: $tInc [bootstrap.php:" . __LINE__ . "]");
 
-    $tScript = "$cgDirBin/$pName.php";
-    if ( ! file_exists($tScript))
-        throw new Exception("Missing: $tScript [bootstrap.php:" . __LINE__ . "]");
-
-    $tText = file_get_contents($tScript);
-
-    # Drop "#!/usr/bin/env php" so the include does not echo it.
-    $tText = preg_replace('/\A#![^\n]*\n/', "", $tText, 1);
-
-    # Cut off the main section.
-    $tPart = preg_split('/^#\s*\*{10,}.*$/m', $tText, 2);
-    if (count($tPart) < 2)
-        throw new Exception("No '# ******' separator found in $tScript [bootstrap.php:" . __LINE__ . "]");
-
-    $tCopy = "$cgDirTmpTest/$pName.inc";
-    file_put_contents($tCopy, $tPart[0]);
-    require_once $tCopy;
-    return $tCopy;    # ---------->
+    require_once "$tInc";
+    return $tInc;    # ---------->
 } # uTestLoadScript
 
 # --------------------
@@ -102,13 +79,44 @@ function uTestResetGlobals() {
     $GLOBALS["cgLoFile"] = "";
     $GLOBALS["cgDocFile"] = "";
 
-    $GLOBALS["gDb"] = null;
+    # A Db with no PDO handle: with cgNoExec on, no method needs one.
+    $GLOBALS["gConf"] = uTestConf();
+    $GLOBALS["gDb"] = new Db(null, $GLOBALS["gConf"]);
+    $GLOBALS["gUtil"] = new Util($GLOBALS["gConf"]);
     $GLOBALS["gFileH"] = null;
     $GLOBALS["gPassword"] = "";
     $GLOBALS["gNumLine"] = 0;
     $GLOBALS["gNumRec"] = 0;
     $GLOBALS["gBackupName"] = "";
 } # uTestResetGlobals
+
+# --------------------
+function uTestConf() {
+    # The conf array that the classes take in their constructors. Same
+    # values as uTestResetGlobals() puts in the globals.
+
+    global $cgDirTmpTest;
+
+    return array(
+        "cgBin"=>dirname(__DIR__) . "/bin",
+        "cgDirApp"=>dirname(__DIR__),
+        "cgDebug"=>0,
+        "cgNoExec"=>1,
+        "cgVerbose"=>0,
+        "cgDirEtc"=>dirname(__DIR__) . "/etc",
+        "cgDirTmp"=>$cgDirTmpTest,
+        "cgDbHost"=>"127.0.0.1",
+        "cgDbName"=>"biblio_test",
+        "cgDbPassCache"=>"$cgDirTmpTest/no-such-pass-cache",
+        "cgDbPortLocal"=>"3306",
+        "cgDbTblBib"=>"bib",
+        "cgDbTblLo"=>"lo",
+        "cgDbUser"=>"test",
+        "cgLoFile"=>"",
+        "cgDocFile"=>"",
+        "cgBackupFile"=>""
+    );    # ---------->
+} # uTestConf
 
 # --------------------
 function uTestCapture($pFunc) {
@@ -124,3 +132,37 @@ function uTestCapture($pFunc) {
     }
     return $tOut;    # ---------->
 } # uTestCapture
+
+# ========================================
+# A Db that answers one canned row, so the code paths that read a
+# record can be tested without a live DB. uPrepare() is the only
+# method the lookups use.
+
+class uTestStmt {
+    public $mRow;
+
+    public function __construct($pRow) {
+        $this->mRow = $pRow;
+    } # __construct
+
+    public function execute($pArgs = array()) {
+        return true;    # ---------->
+    } # execute
+
+    public function fetch($pMode = null) {
+        return $this->mRow;    # ---------->
+    } # fetch
+} # uTestStmt
+
+class uTestDb extends Db {
+    public $mRow;
+
+    public function __construct($pConf, $pRow) {
+        parent::__construct(null, $pConf);
+        $this->mRow = $pRow;
+    } # __construct
+
+    public function uPrepare($pSql, $pFile, $pFunc, $pLine) {
+        return new uTestStmt($this->mRow);    # ---------->
+    } # uPrepare
+} # uTestDb

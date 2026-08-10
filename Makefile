@@ -41,16 +41,26 @@ mCheckProd = \
 	src/bin/bash-com.test \
 	src/bin/bib \
 	src/bin/bib-cmd.mak \
+	src/bin/bib-ref-new.inc \
+	src/bin/bib-ref-update.inc \
 	src/bin/bib-ref-update.php \
+	src/bin/bib-status.inc \
 	src/bin/bib-status.php \
+	src/bin/bib-style-save.inc \
+	src/bin/bib-style-update.inc \
 	src/bin/bib-style-update.php \
+	src/bin/convert-lo-2-bib.inc \
 	src/bin/convert-lo-2-bib.php \
 	src/bin/db-create.sh \
+	src/bin/export-lo-2-tcsv.inc \
 	src/bin/export-lo-2-tcsv.php \
+	src/bin/export-lo-2-txt.inc \
 	src/bin/export-lo-2-txt.php \
 	src/bin/fixup.sed \
 	src/bin/gen-conf-php.sh \
+	src/bin/import-tcsv-2-lo-db.inc \
 	src/bin/import-tcsv-2-lo-db.php \
+	src/bin/import-txt-2-lo.inc \
 	src/bin/import-txt-2-lo.php \
 	src/bin/phpunit \
 	src/bin/phpunit-10.5.64.phar \
@@ -88,7 +98,20 @@ mCheckProd = \
 	src/etc/conf.env \
 	src/etc/conf.php \
 	src/etc/lo-schema.csv \
+	src/test/BibRefNewTest.php \
+	src/test/CallsTest.php \
+	src/test/BibRefUpdateTest.php \
+	src/test/BibStatusTest.php \
+	src/test/BibStyleSaveTest.php \
+	src/test/BibStyleUpdateTest.php \
+	src/test/ConvertLo2BibTest.php \
+	src/test/ExportLo2TcsvTest.php \
+	src/test/ExportLo2TxtTest.php \
+	src/test/ImportTcsv2LoDbTest.php \
+	src/test/ImportTxt2LoTest.php \
+	src/test/UtilTest.php \
 	src/test/bootstrap.php \
+	src/test/phpunit.xml \
 	src/test/sample/bib-cache/.admin.pass \
 	src/test/sample/bib-cache/.pass.tmp \
 	src/test/sample/bib-cache/.root.pass \

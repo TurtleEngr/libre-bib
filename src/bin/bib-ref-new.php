@@ -1,17 +1,26 @@
 #!/usr/bin/env php
 <?php
 
-# bib-ref-new.php - wrapper. The functions are in bib-ref-new.inc so
-# that phpunit can test them without running this main section.
+# bib-ref-new.php - wrapper. The work is done by class BibRefNew in
+# bib-ref-new.inc, so that phpunit can test it without running this
+# main section.
 
 require_once __DIR__ . "/bib-ref-new.inc";
 
 # ****************************************
-# Includes, GetOps, Validate
+# GetOps, Includes, Validate
 
 try {
-    fGetOps();
-    fValidate();
+    $gpOpt = BibRefNew::fGetOps($argv, $argc);
+
+    if ($gpOpt["help"])
+        BibRefNew::fUsage($argv[0]);    # ---------->
+
+    if ($gpOpt["test"] != "")
+        exit(Util::uRunTest("BibRefNewTest", $gpOpt["test"]));    # ---------->
+
+    $gApp = new BibRefNew(Util::uLoadConf(), $gpOpt);
+    $gApp->fValidate();
 } catch(Exception $e) {
     echo "Problem with setup: " . $e->getMessage() . " [bib-ref-new.php:" . __LINE__ . "]\n";
     exit(3);    # ---------->
@@ -21,9 +30,7 @@ try {
 # Write section
 
 try {
-    uUnpackFile($cgDocFile, "content");
-    fProcessFile();
-    uPackFile($cgDocFile, "content");
+    $gApp->fRun();
 } catch(Exception $e) {
     echo "Problem updating the document: " . $e->getMessage() . " [bib-ref-new.php:"
         . __LINE__ . "]\n";
@@ -82,6 +89,12 @@ Update cgDocFile.
 =item B<-h> - help
 
 This help.
+
+=item B<-T> "all" or a test name
+
+Run this script's phpunit test, in test/BibRefNewTest.php. "all" runs
+the whole test class; any other value is passed to phpunit as a
+--filter, so it runs the one test method with that name.
 
 =back
 

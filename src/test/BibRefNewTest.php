@@ -1,10 +1,10 @@
 <?php
 
 # ========================================
-# BibRefNewTest.php - tests for src/bin/bib-ref-new.inc
+# BibRefNewTest.php - tests for class BibRefNew, in src/bin/bib-ref-new.inc
 #
-# No DB is needed: fBibLookup() caches its lookups in $gBibCache, so
-# seeding that cache stops it from ever reaching for $gDb.
+# No DB is needed: $this->tApp->fBibLookup() caches its lookups in mBibCache, so
+# seeding that cache stops it from ever reaching for mDb.
 #
 # Run:  src/bin/phpunit src/test
 #   or: src/bin/bib -T php
@@ -14,27 +14,19 @@ require_once __DIR__ . "/bootstrap.php";
 
 use PHPUnit\Framework\TestCase;
 
-/**
- * Every CLI script in bin/ declares fUsage, fCleanUp, fGetOps and
- * fValidate, so no two of them can be loaded into one php process.
- * This class runs in its own process to stay clear of ImportTxt2LoTest.
- * Doc-comment metadata is used, not php attributes, so this still works
- * with the older phpunit phars in bin/.
- *
- * @runClassInSeparateProcess
- * @preserveGlobalState disabled
- */
 class BibRefNewTest extends TestCase {
 
+    # The script under test. Now that every script is a class, two of
+    # them can share one php process, so no process isolation is needed.
+    private $tApp;
+
     protected function setUp(): void {
-        # Not setUpBeforeClass(): with the isolation above, phpunit runs
-        # setUpBeforeClass() in the parent process as well as in each
-        # child, and the parent is the one that must stay clean.
         uTestLoadScript("bib-ref-new");
         uTestResetGlobals();
-        $GLOBALS["cgDirEtc"] = dirname(__DIR__) . "/etc";
-        $GLOBALS["gBibCache"] = array();
-        $GLOBALS["gNumCite"] = 0;
+
+        $tConf = uTestConf();
+        $tConf["cgDirEtc"] = dirname(__DIR__) . "/etc";
+        $this->tApp = new BibRefNew($tConf);
     } # setUp
 
     # ----------------------------------------
@@ -59,24 +51,25 @@ class BibRefNewTest extends TestCase {
     } # tMakeDoc
 
     private function tRunCites($pDoc) {
-        # Run fProcessCite() over every text node, the way fProcessFile()
-        # does, and return the resulting XML.
+        # Run fProcessBlock() over every paragraph/heading, the way
+        # $this->tApp->fProcessFile() does, and return the resulting XML.
 
         $tXpath = new DOMXPath($pDoc);
-        $tNodeList = array();
-        foreach ($tXpath->query("//text()") as $tNode)
-            $tNodeList[] = $tNode;
+        $tBlockList = array();
+        foreach ($tXpath->query("//*[local-name()='p' or local-name()='h']") as $tBlock)
+            $tBlockList[] = $tBlock;
 
-        uTestCapture(function () use ($tNodeList) {
-            foreach ($tNodeList as $tNode)
-                fProcessCite($tNode);
+        $tApp = $this->tApp;
+        uTestCapture(function () use ($tApp, $pDoc, $tBlockList) {
+            foreach ($tBlockList as $tBlock)
+                $tApp->fProcessBlock($pDoc, $tBlock);
         });
 
         return $pDoc->saveXML();    # ---------->
     } # tRunCites
 
     private function tSeedCite($pId, $pData = ' text:author="Someone"') {
-        $GLOBALS["gBibCache"][$pId] = array(
+        $this->tApp->mBibCache[$pId] = array(
             'id'=>$pId,
             'type'=>"book",
             'data'=>$pData,
@@ -86,15 +79,35 @@ class BibRefNewTest extends TestCase {
 
     # ----------------------------------------
 
-    public function testFunctionsAreDefined() {
-        foreach (array("fUsage", "fCleanUp", "fGetOps", "fValidate",
-                "fXmlValue", "fUseTemplate", "fBibLookup", "fProcessCite",
-                "fProcessFile") as $tName)
-            $this->assertTrue(function_exists($tName), "Missing function: $tName");
-    } # testFunctionsAreDefined
+    public function testMethodsAreDefined() {
+        foreach (array("fUsage", "fCleanUp", "fGetOps", "fValidate", "fRun",
+                "fXmlValue", "fUseTemplate", "fBibLookup", "fFindCiteList",
+                "fCollectTextNodeList", "fOuterNode", "fReplaceCite",
+                "fProcessBlock", "fProcessFile") as $tName)
+            $this->assertTrue(method_exists("BibRefNew", $tName), "Missing method: $tName");
+    } # testMethodsAreDefined
+
+    # ----------------------------------------
+    # fGetOps
+
+    public function testGetOpsDefaultsToHelpWithNoArgs() {
+        $tOpt = BibRefNew::fGetOps(array("bib-ref-new.php"), 1);
+
+        $this->assertTrue($tOpt["help"]);
+        $this->assertSame("", $tOpt["test"]);
+    } # testGetOpsDefaultsToHelpWithNoArgs
+
+    public function testGetOpsReturnsEveryOption() {
+        $tOpt = BibRefNew::fGetOps(array("bib-ref-new.php", "-c"), 2);
+
+        $this->assertArrayHasKey("help", $tOpt);
+        $this->assertArrayHasKey("change", $tOpt);
+        $this->assertArrayHasKey("test", $tOpt);
+    } # testGetOpsReturnsEveryOption
 
     public function testCleanUp() {
-        $tOut = uTestCapture(function () { fCleanUp(); });
+        $tApp = $this->tApp;
+        $tOut = uTestCapture(function () use ($tApp) { $tApp->fCleanUp(); });
         $this->assertSame("\n", $tOut);
     } # testCleanUp
 
@@ -102,20 +115,51 @@ class BibRefNewTest extends TestCase {
     # fXmlValue
 
     public function testXmlValueEscapes() {
-        $this->assertSame("Smith &amp; Sons", fXmlValue("Smith & Sons"));
-        $this->assertSame("say &quot;hi&quot;", fXmlValue('say "hi"'));
-        $this->assertSame("a &lt;b&gt; c", fXmlValue("a <b> c"));
+        $this->assertSame("Smith &amp; Sons", BibRefNew::fXmlValue("Smith & Sons"));
+        $this->assertSame("say &quot;hi&quot;", BibRefNew::fXmlValue('say "hi"'));
+        $this->assertSame("a &lt;b&gt; c", BibRefNew::fXmlValue("a <b> c"));
     } # testXmlValueEscapes
 
     public function testXmlValueLeavesPlainTextAlone() {
-        $this->assertSame("Artymiak, Jacek", fXmlValue("Artymiak, Jacek"));
+        $this->assertSame("Artymiak, Jacek", BibRefNew::fXmlValue("Artymiak, Jacek"));
     } # testXmlValueLeavesPlainTextAlone
+
+    # ----------------------------------------
+    # fBibLookup - the DB path, with a canned row
+
+    public function testBibLookupBuildsACiteFromARow() {
+        # This is the path that threw "Call to undefined function
+        # uBibType2Xml()": the call is only reached when the lookup
+        # finds a row, so no test without a DB row ever ran it.
+        $this->tApp->mDb = new uTestDb(uTestConf(), array(
+            "Identifier"=>"artymiak-11",
+            "Type"=>1,
+            "Author"=>"Artymiak, Jacek",
+            "Title"=>"LibreOffice Calc Functions"
+        ));
+
+        $tCite = $this->tApp->fBibLookup("artymiak-11");
+
+        $this->assertSame("artymiak-11", $tCite["id"]);
+        $this->assertSame(Map::uBibType2Xml(1), $tCite["type"]);
+        $this->assertStringContainsString("Artymiak", $tCite["data"]);
+    } # testBibLookupBuildsACiteFromARow
+
+    public function testBibLookupCachesTheRow() {
+        $this->tApp->mDb = new uTestDb(uTestConf(), array(
+            "Identifier"=>"artymiak-11", "Type"=>1, "Author"=>"Artymiak, Jacek"
+        ));
+
+        $this->tApp->fBibLookup("artymiak-11");
+
+        $this->assertArrayHasKey("artymiak-11", $this->tApp->mBibCache);
+    } # testBibLookupCachesTheRow
 
     # ----------------------------------------
     # fUseTemplate
 
     public function testUseTemplateFillsEveryField() {
-        $tXml = fUseTemplate(array(
+        $tXml = $this->tApp->fUseTemplate(array(
             'id'=>"GAS00",
             'type'=>"book",
             'data'=>' text:author="Gaskell, Philip"',
@@ -135,12 +179,12 @@ class BibRefNewTest extends TestCase {
     public function testUseTemplateHasNoTrailingNewline() {
         # A trailing newline in etc/cite-new.xml would land in the
         # document as text.
-        $tXml = fUseTemplate(array('id'=>"A", 'type'=>"book", 'data'=>"", 'loc'=>""));
+        $tXml = $this->tApp->fUseTemplate(array('id'=>"A", 'type'=>"book", 'data'=>"", 'loc'=>""));
         $this->assertSame(rtrim($tXml), $tXml);
     } # testUseTemplateHasNoTrailingNewline
 
     public function testUseTemplateEscapesTheId() {
-        $tXml = fUseTemplate(array(
+        $tXml = $this->tApp->fUseTemplate(array(
             'id'=>"A&B", 'type'=>"book", 'data'=>"", 'loc'=>""));
         $this->assertStringContainsString('text:identifier="A&amp;B"', $tXml);
         $this->assertStringNotContainsString('"A&B"', $tXml);
@@ -152,12 +196,12 @@ class BibRefNewTest extends TestCase {
     public function testBibLookupSkipsDocumentationIds() {
         # These never reach the DB, so $gDb stays null.
         foreach (array("REF", "example-01", "example-02", "example-youtube-95") as $tId)
-            $this->assertFalse(fBibLookup($tId), "$tId should be skipped");
+            $this->assertFalse($this->tApp->fBibLookup($tId), "$tId should be skipped");
     } # testBibLookupSkipsDocumentationIds
 
     public function testBibLookupUsesTheCache() {
         $this->tSeedCite("GAS00");
-        $tCite = fBibLookup("GAS00");
+        $tCite = $this->tApp->fBibLookup("GAS00");
 
         $this->assertIsArray($tCite);
         $this->assertSame("GAS00", $tCite['id']);
@@ -175,7 +219,7 @@ class BibRefNewTest extends TestCase {
         $this->assertStringContainsString("Some text.", $tXml);
         $this->assertStringContainsString('text:identifier="eisenstein-12"', $tXml);
         $this->assertStringNotContainsString("{eisenstein-12}", $tXml);
-        $this->assertSame(1, $GLOBALS["gNumCite"]);
+        $this->assertSame(1, $this->tApp->mNumCite);
     } # testProcessCiteInlineInAParagraph
 
     public function testProcessCiteKeepsTheLocation() {
@@ -221,16 +265,16 @@ class BibRefNewTest extends TestCase {
         $this->assertStringContainsString('text:identifier="bbb-02"', $tXml);
         $this->assertStringContainsString(" and b", $tXml);
         $this->assertStringContainsString(".", $tXml);
-        $this->assertSame(2, $GLOBALS["gNumCite"]);
+        $this->assertSame(2, $this->tApp->mNumCite);
     } # testProcessCiteHandlesTwoCitesInOneNode
 
     public function testProcessCiteLeavesUnknownIdAlone() {
-        $GLOBALS["gBibCache"]["no-such-99"] = false;
+        $this->tApp->mBibCache["no-such-99"] = false;
         $tDoc = $this->tMakeDoc('<text:p>text{no-such-99}</text:p>');
         $tXml = $this->tRunCites($tDoc);
 
         $this->assertStringContainsString("{no-such-99}", $tXml);
-        $this->assertSame(0, $GLOBALS["gNumCite"]);
+        $this->assertSame(0, $this->tApp->mNumCite);
     } # testProcessCiteLeavesUnknownIdAlone
 
     public function testProcessCiteLeavesDocumentationRefAlone() {
@@ -239,7 +283,7 @@ class BibRefNewTest extends TestCase {
         $tXml = $this->tRunCites($tDoc);
 
         $this->assertStringContainsString("{REF}", $tXml);
-        $this->assertSame(0, $GLOBALS["gNumCite"]);
+        $this->assertSame(0, $this->tApp->mNumCite);
     } # testProcessCiteLeavesDocumentationRefAlone
 
     public function testProcessCiteIgnoresAnAlreadyConvertedCite() {
@@ -255,7 +299,7 @@ class BibRefNewTest extends TestCase {
         $tDoc = $this->tMakeDoc($tBody);
         $tXml = $this->tRunCites($tDoc);
 
-        $this->assertSame(0, $GLOBALS["gNumCite"]);
+        $this->assertSame(0, $this->tApp->mNumCite);
         $this->assertSame(1, substr_count($tXml, "<text:bibliography-mark"));
     } # testProcessCiteIgnoresAnAlreadyConvertedCite
 
@@ -265,7 +309,7 @@ class BibRefNewTest extends TestCase {
 
         $this->assertStringContainsString("{}", $tXml);
         $this->assertStringContainsString("{:p22}", $tXml);
-        $this->assertSame(0, $GLOBALS["gNumCite"]);
+        $this->assertSame(0, $this->tApp->mNumCite);
     } # testProcessCiteIgnoresEmptyBraces
 
     public function testProcessCiteOutputStaysValidXmlWithOddDbValues() {
@@ -284,18 +328,19 @@ class BibRefNewTest extends TestCase {
     # fProcessFile
 
     public function testProcessFileWritesContentNewXml() {
-        global $cgDirTmp;
+        $tDirTmp = $this->tApp->mDirTmp;
 
         $this->tSeedCite("eisenstein-10");
         $tIn = $this->tMakeDoc(
             '<text:p>Citations can also be used inline.{eisenstein-10}</text:p>');
-        file_put_contents("$cgDirTmp/content.xml", $tIn->saveXML());
-        @unlink("$cgDirTmp/content.new.xml");
+        file_put_contents("$tDirTmp/content.xml", $tIn->saveXML());
+        @unlink("$tDirTmp/content.new.xml");
 
-        $tOut = uTestCapture(function () { fProcessFile(); });
+        $tApp = $this->tApp;
+        $tOut = uTestCapture(function () use ($tApp) { $tApp->fProcessFile(); });
 
-        $this->assertFileExists("$cgDirTmp/content.new.xml");
-        $tXml = file_get_contents("$cgDirTmp/content.new.xml");
+        $this->assertFileExists("$tDirTmp/content.new.xml");
+        $tXml = file_get_contents("$tDirTmp/content.new.xml");
         $this->assertStringContainsString('text:identifier="eisenstein-10"', $tXml);
         $this->assertStringNotContainsString("{eisenstein-10}", $tXml);
         $this->assertStringContainsString("Replaced 1 citations.", $tOut);
@@ -305,12 +350,13 @@ class BibRefNewTest extends TestCase {
     } # testProcessFileWritesContentNewXml
 
     public function testProcessFileThrowsOnBadXml() {
-        global $cgDirTmp;
+        $tDirTmp = $this->tApp->mDirTmp;
 
-        file_put_contents("$cgDirTmp/content.xml", "<a><b></a>");
+        file_put_contents("$tDirTmp/content.xml", "<a><b></a>");
 
         $this->expectException(Exception::class);
-        uTestCapture(function () { fProcessFile(); });
+        $tApp = $this->tApp;
+        uTestCapture(function () use ($tApp) { $tApp->fProcessFile(); });
     } # testProcessFileThrowsOnBadXml
 
 } # BibRefNewTest

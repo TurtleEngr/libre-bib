@@ -10,7 +10,6 @@
 </head>
 <body>
   <hr />
-  <hr />
   <h1 id="example-outline---create-docs">Example Outline - Create Docs</h1>
   <p>This is an example of using emacs org-mode to create documents.</p>
   <p>It is a good starting point for large documents. It can be easily
@@ -70,7 +69,8 @@
   <h2 id="the-full-process">The full process</h2>
   <h3 id="org-doc-file">Org Doc File</h3>
   <ul>
-    <li>edit things with: emacs FILE.org (adding {REF} tags as desired)</li>
+    <li>edit things with: emacs FILE.org (adding <cite>{REF}</cite> tags as
+    desired)</li>
     <li>Create HTML file: bib FILE.html</li>
     <li>Create write file: bib FILE.odt</li>
     <li>Now only edit FILE.odt</li>
@@ -86,10 +86,12 @@
   <h3 id="libreoffice-write-1">Libreoffice Write</h3>
   <ul>
     <li>Run libreoffice and attach to the bib DB (see libre-bib manual)</li>
-    <li>Use the EndNote character style to format the {REF} tags (But do not
-    manually apply that style!)</li>
-    <li>Use bib to update all new {REF}s from the DB: bib bib-new</li>
-    <li>If the DB has changed, update the {REF}s: bib bib-update</li>
+    <li>Use the EndNote character style to format the <cite>{REF}</cite> tags
+    (But do not manually apply that style!)</li>
+    <li>Use bib to update all new <cite>{REF}</cite>s from the DB: bib
+    bib-new</li>
+    <li>If the DB has changed, update the <cite>{REF}</cite>s: bib
+    bib-update</li>
     <li>Create the Bibliography at the end of doc</li>
     <li>Edit the Biblio style for each of REF types used.</li>
   </ul>
@@ -126,11 +128,12 @@
     </tbody>
   </table>
   <h3 id="block-quotes">Block quotes</h3>
-  <p>Simply use the blockquote tag. And add the {REF} after the quote.</p>
+  <p>Simply use the blockquote tag. And add the <cite>{REF}</cite> after the
+  quote.</p>
   <blockquote>
-    <p>ssara df sda fdsa sf dsa fads{eisenstein-12}</p>
+    <p>ssara df sda fdsa sf dsa fads<cite>{eisenstein-12}</cite></p>
   </blockquote>
   <h3 id="cites-inline">Cites inline</h3>
-  <p>Citations can also be used inline.{eisenstein-10}</p>
+  <p>Citations can also be used inline.<cite>{eisenstein-10}</cite></p>
 </body>
 </html>

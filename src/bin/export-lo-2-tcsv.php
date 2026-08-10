@@ -1,15 +1,44 @@
 #!/usr/bin/env php
 <?php
 
-# -----------------------------
-function fusage() {
-    global $argc;
-    global $argv;
+# export-lo-2-tcsv.php - wrapper. The work is done by class ExportLo2Tcsv in
+# export-lo-2-tcsv.inc, so that phpunit can test it without running this
+# main section.
 
-    system("pod2text $argv[0]");
-    exit(1);     # ---------->
+require_once __DIR__ . "/export-lo-2-tcsv.inc";
 
-    /* ...
+# ****************************************
+# GetOps, Includes, Validate
+
+try {
+    $gpOpt = ExportLo2Tcsv::fGetOps($argv, $argc);
+
+    if ($gpOpt["help"])
+        ExportLo2Tcsv::fUsage($argv[0]);    # ---------->
+
+    if ($gpOpt["test"] != "")
+        exit(Util::uRunTest("ExportLo2TcsvTest", $gpOpt["test"]));    # ---------->
+
+    $gApp = new ExportLo2Tcsv(Util::uLoadConf(), $gpOpt);
+    $gApp->fValidate();
+} catch(Exception $e) {
+    echo "Problem with setup: " . $e->getMessage() . "\n";
+    exit(2);    # ---------->
+}
+
+# ========================================
+# Write section
+
+try {
+    $gApp->fRun();
+} catch(Exception $e) {
+    echo "Problem creating table: " . $e->getMessage() . "\n";
+    exit(3);    # ---------->
+}
+
+exit(0);    # ---------->
+
+/* ...
 
 =pod
 
@@ -40,6 +69,12 @@ Separator. c - comma; t - tab. Default: c
 =item B<-h> - help
 
 This help.
+
+=item B<-T> "all" or a test name
+
+Run this script's phpunit test, in test/ExportLo2TcsvTest.php. "all" runs the whole
+test class; any other value is passed to phpunit as a --filter, so it
+runs the one test method with that name.
 
 =back
 
@@ -75,119 +110,4 @@ This help.
 =cut
 
 ... */
-} # fUsage
-
-# -----------------------------
-function fCleanUp() {
-    echo "\n";
-} # fCleanUp
-
-# -----------------------------
-function fGetOps() {
-    global $argc;
-    global $argv;
-    global $gSep;
-    global $cgDebug;
-    global $cgBackupFile;
-    global $gpHelp;
-    global $cgNoExec;
-    global $gpSep;
-    global $cgDbTblLo;
-    global $cgVerbose;
-
-    $gpHelp = false;
-    $gpSep = 'c';
-    $gSep = ",";
-    $tOpt = getopt("cs:h");
-
-    if (isset($tOpt['s']))
-        $gpSep = $tOpt['s'];
-
-    $gpHelp = isset($tOpt['h']);
-    if ($gpHelp or $argc < 2)
-        fUsage();
-
-    $tConf = $_ENV['cgDirApp'] . "/etc/conf.php";
-    require_once "$tConf";
-    require_once "$cgBin/util.php";
-    uFixBool();
-} # fGetOps
-
-# -----------------------------
-function fValidate() {
-    global $gSep;
-    global $gpSep;
-    global $cgDbTblLo;
-
-    uValidateCommon();
-
-    if ("$gpSep" == "")
-        throw new Exception("\nError: Missing -s option. [export-lo-2-tcsv.php:" . __LINE__ . "]");
-    switch ($gpSep) {
-    case "c":
-        $gSep = ",";
-        break;
-    case "t":
-        $gSep = "\t";
-        break;
-    default:
-        throw new Exception("\nError: Bad -s. Should be 'c' or 's'. [export-lo-2-tcsv.php:" . __LINE__ . "]");
-    }
-
-    if ( ! uTableExists($cgDbTblLo))
-        throw new Exception("\nError: -t Table $cgDbTblLo does not exist. [export-lo-2-tcsv.php:" . __LINE__ . "]");
-} # fValidate
-
-# -----------------------------
-function fExportTable() {
-    global $gDb;
-    global $cgDebug;
-    global $cgBackupFile;
-    global $gSep;
-    global $cgDbTblLo;
-    global $cgDirApp;
-
-    # Get header "official" header from src/biblio.dbf
-    shell_exec("/bin/bash -c 'head -n 1 $cgDirApp/etc/lo-schema.csv >$cgBackupFile'");
-
-    if (($tFileH = fopen($cgBackupFile, "a")) == FALSE)
-        throw new Exception("Cannot write to $cgBackupFile. [export-lo-2-tcsv.php:" . __LINE__ . "]");
-
-    # Get all columns
-    $tSql = "select * from bib";
-    $tRecH = $gDb->prepare($tSql);
-    $tRecH->execute();
-
-    # Get each record and output the csv line
-    $tCount = 0;
-    while ($tRec = $tRecH->fetch(PDO::FETCH_ASSOC)) {
-        echo ".";
-        ++$tCount;
-        if ( ! fputcsv($tFileH, array_values($tRec), $gSep))
-            throw new Exception("Error writing: record $tCount. [export-lo-2-tcsv.php:" . __LINE__ . "]");
-    } # while
-    echo "\nProcessed: $tCount \n";
-    fclose($tFileH);
-} # fExportTable
-
-# ****************************************
-# Includes, GetOps, Validate, ReadOnly
-
-try {
-    fGetOps();
-    fValidate();
-} catch(Exception $e) {
-    echo "Problem with setup: " . $e->getMessage() . "\n";
-    exit(2);     # ---------->
-}
-
-# Write section
-try {
-    fExportTable();
-} catch(Exception $e) {
-    echo "Problem creating table: " . $e->getMessage() . "\n";
-    exit(3);     # ---------->
-}
-
-exit(0);     # ---------->
 ?>
