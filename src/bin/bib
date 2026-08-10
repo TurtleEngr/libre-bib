@@ -15,7 +15,7 @@ Cmds:
     edit-lo, edit-conf
     import-lo, export-lo, backup-lo, restore-lo, update-bib
     ref-new, ref-update, style-save, style-update
-    status-bib, setup-bib, connect, clean, clean-all, version, help
+    status-bib, setup-bib, setup-db, connect, clean, clean-all, version, help
 
 If nothing happenss, run 'bib status' to see if the commsnd has
 already been run. To force a command to run remove the corresponging
@@ -61,9 +61,7 @@ fi
 
 . ./conf.env
 
-if [[ ! -d $cgDirStatus ]]; then
-    make -f $cgBin/bib-cmd.mak -s setup-dir
-fi
+make -f $cgBin/bib-cmd.mak -s setup-dir
 
 if ! $cgBin/sanity-check.sh; then
     echo "Fix the above errors from saniy-check, then try again. [$LINENO]"

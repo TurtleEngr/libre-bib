@@ -56,7 +56,6 @@ setup-bib : conf.env
 
 # ----------
 setup-dir : $(cgDirEtc) $(cgDirStatus) $(cgDirTmp) $(cgDirCache) $(cgDirBackup)  $(cgLoFile) $(cgDocFile)
-	@echo "Now run: bib setup-db"
 
 $(cgDirEtc) :
 	mkdir -p $@
