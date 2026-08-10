@@ -297,7 +297,7 @@ clean-test :
 
 # ========================================
 .PHONY : install
-install : /opt/libre-bib/VERSION
+install : dev-ver /opt/libre-bib/VERSION
 
 /opt/libre-bib/VERSION : dist/opt/libre-bib/VERSION
 	sudo mkdir -p /opt/libre-bib
