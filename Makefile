@@ -121,10 +121,10 @@ mCheckProd = \
 	src/test/sample/test-doc.odt.orig
 
 # libreoffice
-#mDirLoConf = ~/.config/libreoffice/4/user/database/biblio
+mDirLoConf = ~/.config/libreoffice/4/user/database/biblio
 
 # libreoffice-flatpak
-mDirLoConf = ~/.var/app/org.libreoffice.LibreOffice/config/libreoffice/4/user/database/biblio"
+#mDirLoConf = ~/.var/app/org.libreoffice.LibreOffice/config/libreoffice/4/user/database/biblio"
 
 # ========================================
 usage :
@@ -225,7 +225,7 @@ check-php-ini : $(mPhpIniFile)
 # ========================================
 
 .PHONY : create-prod-env
-create-prod-env : \
+create-prod-env : create-build-env \
     mk-doc \
     src/etc/lo-schema.csv \
     src/etc/biblio.csv \
@@ -277,7 +277,7 @@ test :
 
 # ========================================
 .PHONY : build
-build : clean clean-test
+build : clean clean-test create-prod-env
 	-find dist -type l -exec rm {} \; &>/dev/null
 	rm -rf dist
 	mkdir -p dist/opt/libre-bib
@@ -305,6 +305,8 @@ install : /opt/libre-bib/VERSION
 	sudo find /opt/libre-bib -type d -exec chmod a+rx {} \;
 	sudo find /opt/libre-bib -type f -exec chmod a+r {} \;
 	sudo find /opt/libre-bib -type f -executable -exec chmod a+rx {} \;
+
+dist/opt/libre-bib/VERSION : build
 
 # ========================================
 # Tag versions
