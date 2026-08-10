@@ -297,7 +297,7 @@ clean-test :
 .PHONY : install
 install : dist
 	sudo mkdir -p /opt/libre-bib2
-	sudo cp dist/* /opt/libre-bib2/
+	sudo cp -ar dist/* /opt/libre-bib2/
 	find /opt/libre-bib2 -type d -exec chmod a+rx {} \;
 	find /opt/libre-bib2 -type f -exec chmod a+r {} \;
 	find /opt/libre-bib2 -type f -executable -exec chmod a+rx {} \;
