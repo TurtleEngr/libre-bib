@@ -1,4 +1,4 @@
-# Makefile - maintain libre-bib2
+# Makefile - maintain libre-bib
 
 # ========================================
 SHELL = /bin/bash
@@ -136,7 +136,7 @@ usage :
 	@echo 'update - get latest from github'
 	@echo 'dev-ver - tag a development version'
 	@echo 'build - creates dist/'
-	@echo 'install - optional, copy dist/ to /opt/libre-bib2/'
+	@echo 'install - optional, copy dist/ to /opt/libre-bib/'
 	@echo 'rel-ver - do this before packaging a stable version'
 	@echo 'package'
 	@echo 'release'
@@ -280,8 +280,8 @@ test :
 build : clean clean-test
 	-find dist -type l -exec rm {} \; &>/dev/null
 	rm -rf dist
-	mkdir -p dist/opt/libre-bib2
-	rsync -aP LICENSE src/* dist/opt/libre-bib2/
+	mkdir -p dist/opt/libre-bib
+	rsync -aP LICENSE src/* dist/opt/libre-bib/
 	find dist -name .gitignore -exec rm {} \;
 	find dist -type d -exec chmod a+rx {} \;
 	find dist -type f -exec chmod a+r {} \;
@@ -297,14 +297,14 @@ clean-test :
 
 # ========================================
 .PHONY : install
-install : /opt/libre-bib2/VERSION
+install : /opt/libre-bib/VERSION
 
-/opt/libre-bib2/VERSION : dist/opt/libre-bib2/VERSION
-	sudo mkdir -p /opt/libre-bib2
-	sudo cp -ar dist/opt/libre-bib2/* /opt/libre-bib2/
-	sudo find /opt/libre-bib2 -type d -exec chmod a+rx {} \;
-	sudo find /opt/libre-bib2 -type f -exec chmod a+r {} \;
-	sudo find /opt/libre-bib2 -type f -executable -exec chmod a+rx {} \;
+/opt/libre-bib/VERSION : dist/opt/libre-bib/VERSION
+	sudo mkdir -p /opt/libre-bib
+	sudo cp -ar dist/opt/libre-bib/* /opt/libre-bib/
+	sudo find /opt/libre-bib -type d -exec chmod a+rx {} \;
+	sudo find /opt/libre-bib -type f -exec chmod a+r {} \;
+	sudo find /opt/libre-bib -type f -executable -exec chmod a+rx {} \;
 
 # ========================================
 # Tag versions
@@ -347,7 +347,7 @@ mk-pkg : package/ver.sh package/epm.list
 	cd package; . ./ver.env; epm -v -f native -m $$ProdOSDist-$$ProdArch --output-dir ../pkg $(ProdName) ver.epm
 	cd package; . ./ver.env; epm -v -f portable -m $$ProdOSDist-$$ProdArch --output-dir ../pkg $(ProdName) ver.epm
 
-package/epm.list : dist/opt/libre-bib2
+package/epm.list : dist/opt/libre-bib
 	cd package; mkepmlist -u root -g root --prefix / ../dist | patch-epm-list -f ./epm.patch >epm.list
 
 package/ver.mak : package/ver.sh

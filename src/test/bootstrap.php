@@ -1,7 +1,7 @@
 <?php
 
 # ========================================
-# bootstrap.php - common setup for all libre-bib2 phpunit tests.
+# bootstrap.php - common setup for all libre-bib phpunit tests.
 #
 # Every *Test.php file begins with:
 #
@@ -26,7 +26,7 @@ $cgDirTest = __DIR__;
 $cgDirBin = dirname(__DIR__) . "/bin";
 $cgDirSample = __DIR__ . "/sample";
 $cgDirExample = dirname(__DIR__) . "/doc/example";
-$cgDirTmpTest = sys_get_temp_dir() . "/libre-bib2-test";
+$cgDirTmpTest = sys_get_temp_dir() . "/libre-bib-test";
 
 if ( ! is_dir($cgDirTmpTest))
     mkdir($cgDirTmpTest, 0755, true);

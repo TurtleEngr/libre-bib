@@ -9,12 +9,12 @@
 # still work with newer versions of mkver.pl)
 export MkVer="2.2"
 
-export ProdName="libre-bib2"
+export ProdName="libre-bib"
 # One word [-a-z0-9]
 # Required
 # %provides ProdName
 
-export ProdAlias="libre-bib2"
+export ProdAlias="libre-bib"
 # One word [-a-z0-9]
 
 export ProdVer="1.0.0"

@@ -6,7 +6,7 @@
          displayDetailsOnTestsThatTriggerWarnings="true"
          displayDetailsOnIncompleteTests="true">
     <testsuites>
-        <testsuite name="libre-bib2">
+        <testsuite name="libre-bib">
             <directory suffix="Test.php">.</directory>
         </testsuite>
     </testsuites>

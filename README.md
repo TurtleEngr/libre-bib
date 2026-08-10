@@ -1,17 +1,17 @@
-# libre-bib2
+# libre-bib
 
 [//]: # (For more badges see: https://shields.io/badges)
 
-Libre-Bib2 is still in development.
+Libre-Bib is still in development.
 
-[![GitHub Tag](https://img.shields.io/github/v/tag/TurtleEngr/libre-bib2?label=release-tag)](https://github.com/TurtleEngr/libre-bib2/tags)
-[![GitHub issue custom search](https://img.shields.io/github/issues-search?query=repo%3ATurtleEngr%2Flibre-bib2%20is%3Aopen&style=flat&label=issues)](https://github.com/TurtleEngr/libre-bib2/issues)
-[![GitHub License](https://img.shields.io/github/license/TurtleEngr/libre-bib2)](https://github.com/TurtleEngr/libre-bib2/blob/develop/LICENSE)
+[![GitHub Tag](https://img.shields.io/github/v/tag/TurtleEngr/libre-bib?label=release-tag)](https://github.com/TurtleEngr/libre-bib/tags)
+[![GitHub issue custom search](https://img.shields.io/github/issues-search?query=repo%3ATurtleEngr%2Flibre-bib%20is%3Aopen&style=flat&label=issues)](https://github.com/TurtleEngr/libre-bib/issues)
+[![GitHub License](https://img.shields.io/github/license/TurtleEngr/libre-bib)](https://github.com/TurtleEngr/libre-bib/blob/develop/LICENSE)
 
 This tool will help with managing a large Libreoffice Bibliography.  It
 can be used across multiple Libreoffice odt documents.
 
-Libre-Bib2 is mostly functional. I am using it for managing a large
+Libre-Bib is mostly functional. I am using it for managing a large
 Bibliography with about 3,000 records.
 
 ## Features
