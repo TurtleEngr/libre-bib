@@ -323,6 +323,7 @@ dev-ver :
 	git commit -am "Updated VERSION"
 	git tag -m "Development $$(cat src/VERSION)" $$(echo dev-$$(cat src/VERSION | tr '.' '-'))
 	git push --tags origin develop
+	bin/incver.sh -p -f src/VERSION 
 
 .PHONY : stable
 rel-ver  : update
@@ -333,6 +334,7 @@ rel-ver  : update
 	git merge develop
 	git tag -m "Release $$(cat src/VERSION)" $$(echo stable-$$(cat src/VERSION | tr '.' '-'))
 	git push --tags origin main
+	bin/incver.sh -p -f src/VERSION 
 
 # ========================================
 # Package
