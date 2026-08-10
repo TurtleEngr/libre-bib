@@ -223,7 +223,7 @@ check-php-ini : $(mPhpIniFile)
 # ========================================
 
 .PHONY : create-prod-env
-create-prod-env : create-build-env \
+create-prod-env : \
     mk-doc \
     src/etc/lo-schema.csv \
     src/etc/biblio.csv \
@@ -267,7 +267,7 @@ src/doc/example/example-outline.odt : src/doc/example/example-outline.org
 
 # ========================================
 .PHONY : test
-test : create-prod-env
+test : 
 	src/bin/bib -T all
 	src/bin/bib -T com
 	src/bin/phpunit src/test
@@ -275,7 +275,7 @@ test : create-prod-env
 
 # ========================================
 .PHONY : build
-build : clean clean-test create-prod-env
+build : clean clean-test
 	-find dist -type l -exec rm {} \; &>/dev/null
 	rm -rf dist
 	mkdir -p dist/opt/libre-bib2
@@ -295,7 +295,7 @@ clean-test :
 
 # ========================================
 .PHONY : install
-install : build
+install : dist
 	sudo mkdir -s /opt/libre-bib2
 	sudo cp dist/* /opt/libre-bib2/
 	find /opt/libre-bib2 -type d -exec chmod a+rx {} \;
@@ -306,7 +306,7 @@ install : build
 # Package
 
 .PHONY : package
-package : clean build mk-pkg
+package : clean dist mk-pkg
 	@echo "Next: make release"
 
 .PHONY : mk-pkg
