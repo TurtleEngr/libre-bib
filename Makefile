@@ -297,7 +297,7 @@ clean-test :
 
 # ========================================
 .PHONY : install
-install : dev-ver /opt/libre-bib/VERSION
+install : /opt/libre-bib/VERSION
 
 /opt/libre-bib/VERSION : dist/opt/libre-bib/VERSION
 	sudo mkdir -p /opt/libre-bib
@@ -321,22 +321,24 @@ update :
 .PHONY : save
 dev-ver :
 	git checkout develop
-	bin/incver.sh -p -f src/VERSION 
-	git commit -am "Updated VERSION"
+	git commit -am "Updated
 	git tag -m "Development $$(cat src/VERSION)" $$(echo dev-$$(cat src/VERSION | tr '.' '-'))
 	git push --tags origin develop
 	bin/incver.sh -p -f src/VERSION 
+	git commit -am "Updated -p VERSION"
 
 .PHONY : stable
 rel-ver  : update
 	bin/incver.sh -m -f src/VERSION
-	make dev-ver
+	git commit -am "Updated -m VERSION"
 	git checkout main
 	git pull origin main
 	git merge develop
 	git tag -m "Release $$(cat src/VERSION)" $$(echo stable-$$(cat src/VERSION | tr '.' '-'))
 	git push --tags origin main
-	bin/incver.sh -p -f src/VERSION 
+	git checkout develop
+	bin/incver.sh -p -f src/VERSION
+	git commit -am "Updated -p VERSION"
 
 # ========================================
 # Package
