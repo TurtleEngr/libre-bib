@@ -320,7 +320,7 @@ update :
 dev-ver :
 	git checkout develop
 	bin/incver.sh -p -f src/VERSION 
-	git checkin -am "Updated VERSION"
+	git commit -am "Updated VERSION"
 	git tag -m "Development $$(cat src/VERSION)" $$(echo dev-$$(cat src/VERSION | tr '.' '-'))
 	git push --tags origin develop
 
