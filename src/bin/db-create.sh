@@ -15,6 +15,10 @@ To reset mysql to the base install state, do this:"
     sudo rm -rf  /var/lib/mysql/*
     sudo -u mysql mysql_install_db
     sudo systemctl start mysql
+
+Change a user's DB password:
+    alter user 'USERNAME'@'localhost' IDENTIFIED BY 'NEW-PASS';
+    flush privileges;
 EOF
     exit 1
 fi

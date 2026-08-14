@@ -466,12 +466,6 @@ app. They are executed in this order, so the last definition wins.
     bibliographic information about a book, article, web page, video,
     etc.
 
-    If you have setup a LibraryThing DB (see:
-    <https://www.librarything.com/home>) you can export a tsv file of
-    your LibraryThing DB to librarything.tsv. Then you can run \"bib
-    update-lo\" to update empty \"lo\" table fields from the \"lib\" DB
-    table. See the \"LibraryThing\" section for more details.
-
     The key.txt file just gives some quick tip on the kind of values you
     can put after the Tags. It isn\'t used anywhere else, so you can
     edit or delete the file.
@@ -490,23 +484,6 @@ app. They are executed in this order, so the last definition wins.
 
     If you run the backup-lo command this is where the backup will be
     put. If there is already one there, then that will be backed up.
-
--   Var: ****cgUseLib=false****
-
-    Set this to \"true\" if you will be using a Library Thing export.
-
--   Var: ****cgLibFile=\"librarything.tsv\"****
-
-    This is the name of the tsv (Tab Separated Value) file that was
-    exported from Library Thing.
-
-    Using LibraryThing export your DB to librarything.tsv file
-    <https://www.librarything.com/home>
-
--   Var: ****cgDbLib=\"lib\"****
-
-    This is the name of the LibraryThing table that will be created from
-    cgLibFile.
 
 ------------------------------------------------------------------------
 
@@ -752,10 +729,6 @@ Missing example.odt. Copy an example from
 
 Missing: biblio.txt. Copy an example from
 /opt/libre-bib/doc/example/biblio.txt
-
-Missing librarything.tsv. Copy an example from
-/opt/libre-bib/doc/example/librarything.tsv
-Manually update it with an export from Library Thing.
 ```
 
 ``` in
@@ -764,7 +737,7 @@ $ ls
 
 ``` out
 backup/          biblio.txt  conf.env~*   key.txt           status/
-biblio-note.txt  conf.env*   example.odt  librarything.tsv  tmp/
+biblio-note.txt  conf.env*   example.odt  tmp/
 ```
 
 ``` in
