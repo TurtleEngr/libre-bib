@@ -11,7 +11,7 @@ cat <<\EOF
 global $cgBin;
 $cgBin=$_ENV["cgBin"];
 
-global $cgDirApp
+global $cgDirApp;
 $cgDirApp=$_ENV["cgDirApp"];
 EOF
 

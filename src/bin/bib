@@ -1,4 +1,4 @@
-#!/usr/bin/env bash
+#!/usr/bin/bash -x
 
 export cgDirApp=${cgDirApp:-/opt/libre-bib}
 export cgBin=$cgDirApp/bin

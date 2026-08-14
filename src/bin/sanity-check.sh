@@ -134,8 +134,9 @@ fCheckSh() {
         if ! fFileExec; then
             continue
         fi
-        if ! bash -n $gVal &>/dev/null; then
+        if ! bash -n $gVal >/dev/null 2>&1; then
             echo "Syntax error found in $gVal [$LINENO]"
+            bash -n $gVal
             ((++gErr))
         fi
     done
@@ -151,8 +152,9 @@ fCheckPhp() {
         if ! fFileExec; then
             continue
         fi
-        if ! php -l $gVal &>/dev/null; then
+        if ! php -l $gVal >/dev/null 2>&1; then
             echo "Syntax error found in $gVal [$LINENO]"
+            php -l $gVal
             ((++gErr))
         fi
     done
@@ -187,7 +189,7 @@ fCheckDep() {
         sed \
         tidy \
         make; do
-        if ! which $tCmd &>/dev/null; then
+        if ! which $tCmd >/dev/null 2>&1; then
             echo "Error: Could not find command: $tCmd [$LINENO]"
             ((++gErr))
         fi
@@ -271,7 +273,7 @@ fCheckApp() {
     fCheckPhp
 
     # ----------
-    if ! make -s -n -f $cgBin/bib-cmd.mak check &>/dev/null; then
+    if ! make -s -n -f $cgBin/bib-cmd.mak check >/dev/null 2>&1; then
         echo "Error in bib-cmd.mak [$LINENO]"
         ((++gErr))
     fi
@@ -392,8 +394,9 @@ if [[ ! -x $cgDirApp/etc/conf.env ]]; then
     echo "Error: $cgDirApp/etc/conf.env is not executable [$LINENO]"
     exit 1 # ---------->
 fi
-if ! bash -n $cgDirApp/etc/conf.env &>/dev/null; then
+if ! bash -n $cgDirApp/etc/conf.env >/dev/null 2>&1; then
     echo "Error: $cgDirApp/etc/conf.env has syntax errors [$LINENO]"
+    bash -n $cgDirApp/etc/conf.env
     exit 1 # ---------->
 fi
 
