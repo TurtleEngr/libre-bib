@@ -113,7 +113,7 @@ mCheckProd = \
 	src/test/bootstrap.php \
 	src/test/phpunit.xml \
 	src/test/sample/bib-cache/.admin.pass \
-	src/test/sample/bib-cache/.pass.tmp \
+	src/test/sample/bib-cache/.test.tmp \
 	src/test/sample/bib-cache/.root.pass \
 	src/test/sample/bootstrap.sh \
 	src/test/sample/setup-sample-dir.sh \
@@ -256,8 +256,8 @@ $(mDirLoConf)/biblio.dbf :
 	@echo "Error: It looks like Libreoffice is not installed"
 	exit 1
 
-src/etc/conf.php : src/etc/conf.env
-	src/bin/gen-conf-php.sh <$? >$@
+src/etc/conf.php : src/etc/conf.env src/bin/gen-conf-php.sh
+	src/bin/gen-conf-php.sh <src/etc/conf.env >$@
 	chmod a+rx $@
 
 src/doc/example/conf.env : src/etc/conf.env
