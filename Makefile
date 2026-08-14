@@ -321,7 +321,7 @@ update :
 .PHONY : save
 dev-ver :
 	git checkout develop
-	git commit -am "Updated
+	git commit -am "Updated"
 	git tag -m "Development $$(cat src/VERSION)" $$(echo dev-$$(cat src/VERSION | tr '.' '-'))
 	git push --tags origin develop
 	bin/incver.sh -p -f src/VERSION 
