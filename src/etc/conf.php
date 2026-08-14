@@ -4,7 +4,7 @@
 global $cgBin;
 $cgBin=$_ENV["cgBin"];
 
-global $cgDirApp;
+global $cgDirApp
 $cgDirApp=$_ENV["cgDirApp"];
 
 global $cgDebug;
@@ -43,9 +43,6 @@ $cgDbHost=$_ENV["cgDbHost"];
 global $cgDbName;
 $cgDbName=$_ENV["cgDbName"];
 
-global $cgDbPassCache;
-$cgDbPassCache=$_ENV["cgDbPassCache"];
-
 global $cgDbPassHint;
 $cgDbPassHint=$_ENV["cgDbPassHint"];
 
@@ -60,6 +57,9 @@ $cgDbTblLo=$_ENV["cgDbTblLo"];
 
 global $cgDbUser;
 $cgDbUser=$_ENV["cgDbUser"];
+
+global $cgDbPassCache;
+$cgDbPassCache=$_ENV["cgDbPassCache"];
 
 global $cgLoFile;
 $cgLoFile=$_ENV["cgLoFile"];
