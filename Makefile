@@ -142,33 +142,39 @@ usage :
 	@echo 'release'
 
 # ========================================
-.PHONY : clean
 clean :
 	-find . -type f -name '*~' -exec rm {} \;
 	-find . -type f -name pod2htmd.tmp -exec rm {} \;
 
-.PHONY : dist-clean
 dist-clean : clean
-	-rm -rf dist
+	-rm -rf dist tmp
 
 # ========================================
 .PHONY : create-build-env
-create-build-env : clean \
+create-build-env : tmp/create-build-env.date
+
+tmp/create-build-env.date : \
     package/ver.mak \
-    get-dep-pkg \
-    get-util-prog \
-    check-php-ini \
+    tmp \
+    tmp/get-dep-pkg.date \
+    tmp/get-util-prog.date \
+    tmp/check-php-ini.date \
     .git/hooks/pre-commit \
     $(mCheck)
+	'date' >$@
 	@echo "Next: make create-prod-env"
+
+tmp :
+	-mkdir tmp
 
 mBldPkg = \
 	pod2pdf \
 	tidy \
 	wget
 
-.PHONY : get-dep-pkg
-get-dep-pkg :
+get-dep-pkg : tmp/get-dep-pkg.date
+
+tmp/get-dep-pkg.date :
 	sudo apt-get update
 	tPkgList=$$(awk '/%requires/ {print $$2}' package/$(ProdOSDist).require); \
 	for tPkg in $$tPkgList $(mBldPkg); do \
@@ -180,6 +186,7 @@ get-dep-pkg :
 			exit 1; \
 		fi; \
 	done
+	'date' >$@
 
 mUtilProgDir = ~/ver/github/app/my-utility-scripts
 mUtilProg = \
@@ -191,11 +198,13 @@ mUtilProg = \
 	bin/rm-trailing-sp \
 	bin/shfmt
 
-.PHONY : get-util-prog
-get-util-prog : $(mUtilProgDir) $(mUtilProg)
+get-util-prog : tmp/get-util-prog.date
+
+tmp/get-util-prog.date : $(mUtilProgDir) $(mUtilProg)
 	cd $(mUtilProgDir); \
 	git checkout develop; \
 	git pull origin develop
+	'date' >$@
 
 $(mUtilProgDir) :
 	mkdir -p ~/ver/github/app
@@ -214,19 +223,23 @@ mPhpIni = \
 	'variables_order = "EGPCS"'
 
 .PHONY : check-php-ini
-check-php-ini : $(mPhpIniFile)
+check-php-ini : tmp/check-php-ini.date
+
+tmp/check-php-ini.date : $(mPhpIniFile)
 	@for tLine in $(mPhpIni); do \
 		if ! grep -q "^$$tLine" $(mPhpIniFile); then \
 			echo "Error: $$tLine not found in $(mPhpIniFile)"; \
 			exit 1; \
 		fi; \
 	done
+	'date' >$@
 
 # ========================================
-
 .PHONY : create-prod-env
-create-prod-env : create-build-env \
-    mk-doc \
+create-prod-env : tmp/create-prod-env.date
+
+tmp/create-prod-env.date : tmp/create-build-env.date \
+    tmp/mk-doc.date \
     src/etc/lo-schema.csv \
     src/etc/biblio.csv \
     src/etc/conf.php \
@@ -236,14 +249,19 @@ create-prod-env : create-build-env \
 	chmod -R a+rx src/bin
 	chmod a+rx src/test/*.php
 	find src -type d -exec chmod a+rx {} \;
+	'date' >$@
 	@echo "Next: make test or build"
+
 
 # Use the rules
 .PHONY : mk-doc
-mk-doc : \
+mk-doc : tmp/mk-doc.date
+
+tmp/mk-doc.date : \
     src/doc/manual/libre-bib.html \
     src/doc/manual/libre-bib.md \
     src/doc/example/example-outline.html
+	'date' >$@
 
 src/etc/lo-schema.csv : src/etc/biblio.csv
 	head -n 1 $? | sed 's/,C,254//g; s/,M//g' >$@
@@ -269,56 +287,65 @@ src/doc/example/example-outline.odt : src/doc/example/example-outline.org
 
 # ========================================
 .PHONY : test
-test : 
+test : tmp/test.date
+
+tmp/test.date : tmp/create-prod-env.date
 	src/bin/bib -T all
 	src/bin/bib -T com
 	src/bin/phpunit src/test
+	'date' >$@
 	@echo "Next: make build"
 
 # ========================================
 .PHONY : build
-build : clean clean-test create-prod-env
+build : tmp/build.date
+
+tmp/build.date : tmp/create-prod-env.date \
+    tmp/clean-test.date
+	-find . -type f -name '*~' -exec rm {} \;
+	-find . -type f -name pod2htmd.tmp -exec rm {} \;
 	-find dist -type l -exec rm {} \; &>/dev/null
-	rm -rf dist
+	-rm -rf dist
 	mkdir -p dist/opt/libre-bib
 	rsync -aP LICENSE src/* dist/opt/libre-bib/
 	find dist -name .gitignore -exec rm {} \;
 	find dist -type d -exec chmod a+rx {} \;
 	find dist -type f -exec chmod a+r {} \;
 	find dist -type f -executable -exec chmod a+rx {} \;
+	'date' >$@
 	@echo "Next: make install or package"
 
 .PHONY : clean-test
-clean-test :
+clean-test : tmp/clean-test.date
+
+tmp/clean-test.date :
 	-cd src/test/sample; \
 	rm -rf backup etc status tmp; \
 	rm bib-cache/db-create.cmd; \
 	rm biblio-note.txt conf.env key.txt
+	'date' >$@
 
 # ========================================
 .PHONY : install
-install : /opt/libre-bib/VERSION
+install : tmp/install.date
 
-/opt/libre-bib/VERSION : dist/opt/libre-bib/VERSION
+tmp/install.date : tmp/build.date
 	sudo mkdir -p /opt/libre-bib
 	sudo cp -ar dist/opt/libre-bib/* /opt/libre-bib/
 	sudo find /opt/libre-bib -type d -exec chmod a+rx {} \;
 	sudo find /opt/libre-bib -type f -exec chmod a+r {} \;
 	sudo find /opt/libre-bib -type f -executable -exec chmod a+rx {} \;
-
-dist/opt/libre-bib/VERSION : build
+	'date' >$@
 
 # ========================================
 # Tag versions
 
-.PHONY : update
 update :
 	git checkout main
 	git pull origin main
 	git checkout develop
 	git pull origin develop
 
-.PHONY : save
 dev-ver :
 	git checkout develop
 	git commit -am "Updated"
@@ -327,7 +354,6 @@ dev-ver :
 	bin/incver.sh -p -f src/VERSION 
 	git commit -am "Updated -p VERSION"
 
-.PHONY : stable
 rel-ver  : update
 	bin/incver.sh -m -f src/VERSION
 	git commit -am "Updated -m VERSION"
@@ -344,10 +370,13 @@ rel-ver  : update
 # Package
 
 .PHONY : package
-package : clean dist mk-pkg
+package : tmp/package.date
+
+tmp/package.date : clean dist mk-pkg
+	ls -l pkg
+	'date' >$@
 	@echo "Next: make release"
 
-.PHONY : mk-pkg
 mk-pkg : package/ver.sh package/epm.list
 	-mkdir -p pkg
 	cd package; . ./ver.env; epm -v -f native -m $$ProdOSDist-$$ProdArch --output-dir ../pkg $(ProdName) ver.epm
@@ -365,12 +394,10 @@ package/ver.sh : src/VERSION
 	touch $@
 
 # ========================================
-.PHONY : release-dev
-release-dev :
+release-dev : tmp/package.date
 	@echo "TBD"
 	@echo "cp pkg to $(ProdDevDir)/$(ProdOS)"
 
-.PHONY : release-prod
 release-prod :
 	@echo "TBD"
 	@echo "cp pkg to $(ProdRelDir)/$(ProdOS)"
