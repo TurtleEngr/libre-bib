@@ -73,10 +73,6 @@ document files.
 =item * Save the DB passwords (user, admin, and if needed root) in
 $cgDirCache.
 
-=item * Set or change the DB root password, if you want the root
-account to have one. On Debian and Ubuntu it does not have one by
-default, and does not need one.
-
 =item * Create the database, the DB users, and the grants.
 
 =item * Verify the result by connecting as the DB user.
@@ -263,10 +259,11 @@ the root account has no password at all, and asking for one there
 would look like a failure when nothing is wrong.
 
 Because of that, the root password is never asked for as part of the
-normal setup. Use the "Set or change the DB root password" menu item
-when you want one. Setting a password replaces socket auth for
-root@localhost, so "sudo mysql" will stop working afterward and the
-saved password becomes the only way in.
+normal setup, and there is no menu item to change it on a server that
+already has one. The only place it is set is right after the erase
+step, on a server that was just reinitialized. Setting one there
+replaces socket auth for root@localhost, so "sudo mysql" stops
+working afterward and the saved password becomes the only way in.
 
 =head2 Erasing all the databases
 
@@ -351,8 +348,11 @@ fSetGlobals() {
     gDbRootMode=""
     gConfBackup=0
 
-    # mysql is optional here: installing it is one of the things this
-    # wizard does, so it must be able to start without it.
+    # libreoffice, php, and systemctl are installed along with the
+    # libre-bib package itself, so db-setup expects them to already be
+    # there and exits if they are not. mysql is the exception: getting
+    # it installed and running is this wizard's job, so it stays
+    # optional; see fDbCheckInstalled.
     # gawk is required because valid-conf.sh's awk uses \s, which mawk
     # does not support. Under mawk it rejects a valid conf.env.
     fComCheckDeps "rot13.sh sed gawk libreoffice php systemctl" "mysql"
@@ -916,7 +916,7 @@ fDbRootMode() {
 
     if fPassExists root; then
         tPass=$(fPassGet root)
-        if mysql -P $cgDbPortLocal -u root --password="$tPass" -h $cgDbHost -e 'select 1' &>/dev/null; then
+        if sudo mysql -P $cgDbPortLocal -u root --password="$tPass" -h $cgDbHost -e 'select 1' &>/dev/null; then
             gDbRootMode="password"
             return 0
         fi
@@ -996,7 +996,7 @@ fDbSql() {
             ;;
         password)
             tPass=$(fPassGet root)
-            mysql -f -P $cgDbPortLocal -u root --password="$tPass" -h $cgDbHost <$cTmp1
+            sudo mysql -f -P $cgDbPortLocal -u root --password="$tPass" -h $cgDbHost <$cTmp1
             tErr=$?
             ;;
         *)
@@ -1097,70 +1097,37 @@ EOF
 } # fDbTestUser
 
 # --------------------------------
-fDbSetRootPass() {
-#    if ! fDbRootAccess; then
-#        return 1
-#    fi
-
+fDbAskRootPass() {
     echo
-    echo "This changes the root password on the DB server itself."
-    if [[ "$gDbRootMode" = "socket" ]]; then
-        echo
-        echo "Note: root@$cgDbHost is set up for unix_socket auth now, so"
-        echo "\"sudo mysql\" works and no root password is needed. Setting one"
-        echo "replaces socket auth with password auth. $cName will then use the"
-        echo "password saved in $cgDirCache/.root.pass."
-    fi
-    if ! fComYesNo "Change the DB root password"; then
+    if ! fComYesNo "Set a DB root password now"; then
         return 1
     fi
     if ! fPassSet root; then
         return 1
     fi
 
-    if ! fDbSql "alter user 'root'@'$cgDbHost' identified by '$(fPassGet root)';
-flush privileges;
-"; then
-        fError -c -m "Could not change the root password." -l $LINENO
-        return 1
-    fi
-    if [[ "$cgNoExec" = "true" ]]; then
-        return 0
-    fi
-
-    gDbRootMode=""
-    if ! fDbRootMode; then
-        fLog -f -p warning -m "The password was changed, but root access no longer works." -l $LINENO
-        return 1
-    fi
-    fLog -f -p notice -m "The DB root password was changed. Root access is $gDbRootMode." -l $LINENO
+    # mysql_install_db always leaves root@$cgDbHost reachable with
+    # "sudo mysql" and no password, so there is nothing to check here.
+    gDbRootMode="socket"
+    fDbSql "alter user 'root'@'$cgDbHost' identified by '$(fPassGet root)'; flush privileges;"
     return 0
 
     cat <<EOF >/dev/null
 =internal-pod
 
-=internal-head3 fDbSetRootPass
+=internal-head3 fDbAskRootPass
 
-Set or change the DB root password on the server, and save it.
-
-This is a menu item of its own, because it is needed in cases that
-have nothing to do with erasing: a stock Ubuntu install has no root
-password at all, and root access through sudo keeps working, so
-nothing else in the wizard would ever ask for one.
-
-Root access has to be working before the password can be changed, so
-fDbRootAccess is called first. If root cannot be reached at all, the
-password is not recoverable and the erase menu item is the only way
-out.
-
-On a host where root uses unix_socket auth, setting a password
-replaces that auth method. That is said out loud before the change,
-because "sudo mysql" stops working afterward. The wizard itself is not
-affected: fDbRootMode falls back to the saved password.
+Ask whether to set a DB root password, and if the answer is yes, save
+it and set it on the server. Only called right after fDbErase
+reinitializes the server, which is the one moment a root password can
+be set without already knowing the old one. No access check is made
+before or after: a fresh mysql_install_db always leaves root reachable
+with "sudo mysql" and no password, so gDbRootMode is simply set to
+"socket" here.
 
 =internal-cut
 EOF
-} # fDbSetRootPass
+} # fDbAskRootPass
 
 # --------------------------------
 fDbErase() {
@@ -1191,19 +1158,9 @@ fDbErase() {
     fRun sudo sh -c 'rm -rf /var/lib/mysql/*'
     fRun sudo -u mysql mysql_install_db
     fRun sudo systemctl start $tService
+    fLog -f -p notice -m "The DB server was reinitialized." -l $LINENO
 
-    if [[ "$cgNoExec" = "true" ]]; then
-        fLog -f -p notice -m "NoExec: skipping the checks that follow the erase." -l $LINENO
-        return 0
-    fi
-
-    if ! fDbRootMode; then
-        fLog -f -p warning -m "Root access still does not work after the erase." -l $LINENO
-        return 1
-    fi
-    fLog -f -p notice -m "The DB server was reinitialized. Root access is $gDbRootMode." -l $LINENO
-
-    fDbSetRootPass
+    fDbAskRootPass
     return 0
 
     cat <<EOF >/dev/null
@@ -1215,8 +1172,8 @@ Reinitialize the DB server, erasing all databases. This is refused
 while root access works, and needs both a yes/no answer and the word
 ERASE typed in. The steps are the ones in db-create.sh's usage text.
 
-After the erase, root@localhost is reachable with sudo again, so
-fDbSetRootPass is offered to set a root password on the fresh server.
+Right after the erase, fDbAskRootPass offers to set a root password on
+the fresh server.
 
 =internal-cut
 EOF
@@ -1356,25 +1313,22 @@ fMenu() {
         'Change the conf.env settings'
         'Create the dirs and example files'
         'Set the DB user and admin passwords'
-        'Set or change the DB root password'
         'Create the DB, the DB users, and the grants'
         'Verify the setup'
-        'Erase ALL the databases (only if the root password is lost)'
+        'Erase ALL the databases (this also offers to set a root password)'
         'Help'
         'Quit'
     )
     cActnMain=(
         'Work down this menu the first time. Every item can be run
-again later, so if you edited conf.env by hand, use item 7 to see
-what is still missing. Item 5 is only needed if you want the DB root
-account to have a password, or want to change the one it has. Item 8
-is a last resort: it erases every database on this host, and it is
-refused while DB root access works.'
+again later, so if you edited conf.env by hand, use item 6 to see
+what is still missing. Item 7 erases every database on this host, and
+is refused while DB root access works; it is also the only place a DB
+root password is set, right after the erase.'
         'func fDoCheck'
         'menu cMenuConf cActnConf'
         'func fDoDirs'
         'func fDoPass'
-        'func fDbSetRootPass'
         'func fDbCreate'
         'func fDoVerify'
         'func fDbErase'

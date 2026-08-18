@@ -324,19 +324,20 @@ EOF
 } # testDbSqlNoExec
 
 # --------------------------------
-testDbSetRootPass() {
-    local tResult
-
+# --------------------------------
+testDbAskRootPass() {
     cgDirCache=$gTestDir/bib-cache
     mkdir -p $cgDirCache
     cgNoExec=true
+    gDbRootMode=""
 
-    #----- Refused unless the user agrees, and nothing is saved
+    #----- Declining leaves nothing saved, and touches nothing else
     gpAuto=1
     gpYesNo="n"
-    tResult=$(fDbSetRootPass 2>&1)
+    fDbAskRootPass
     assertFalse "$LINENO declined" "[ $? -eq 0 ]"
     assertFalse "$LINENO nofile" "[ -e $cgDirCache/.root.pass ]"
+    assertEquals "$LINENO mode" "" "$gDbRootMode"
 
     gpAuto=0
     gpYesNo=""
@@ -345,15 +346,16 @@ testDbSetRootPass() {
     cat <<EOF >/dev/null
 =internal-pod
 
-=internal-head3 testDbSetRootPass
+=internal-head3 testDbAskRootPass
 
-The root password can only be changed while root access is working, so
-verify that declining leaves no cached password behind. The prompts
-themselves are not driven here, only the guard.
+fDbAskRootPass makes no access check, so the only thing worth testing
+without driving the password prompt is that declining leaves nothing
+behind. fPassSet itself prompts, so the accept path is not exercised
+here; see testPass for the save/read roundtrip it depends on.
 
 =internal-cut
 EOF
-} # testDbSetRootPass
+} # testDbAskRootPass
 
 # --------------------------------
 testMakeDirs() {
