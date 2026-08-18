@@ -76,23 +76,23 @@ $(cgDirStatus)/db-setup.date : $(cgDbPassCache) $(cgDirCache)/.root.pass $(cgDir
 $(cgDbPassCache) :
 	@echo
 	@read -srp 'DB $(cgDbUser) Password ($(cgDbPassHint))? '; \
-	echo $$REPLY | caesar 13 >$@
+	echo $$REPLY | rot13.sh -e >$@
 
 $(cgDirCache)/.root.pass :
 	@echo
 	@read -srp 'DB root Password? '; \
-	echo $$REPLY | caesar 13 >$@
+	echo $$REPLY | rot13.sh -e >$@
 
 $(cgDirCache)/.admin.pass :
 	@echo
 	@read -srp 'DB admin Password? '; \
-	echo $$REPLY | caesar 13 >$@
+	echo $$REPLY | rot13.sh -e >$@
 
 # ----------
 connect : $(cgDbPassCache)
 	@echo
 	@echo "Test: show databases; use $(cgDbName); show tables; quit"; \
-	mysql -P $(cgDbPortLocal) -u $(cgDbUser) --password=$$(cat $(cgDbPassCache) | rot13) -h $(cgDbHost) $(cgDbName)
+	mysql -P $(cgDbPortLocal) -u $(cgDbUser) --password=$$(cat $(cgDbPassCache) | rot13.sh -d) -h $(cgDbHost) $(cgDbName)
 
 # --------------------
 # Import: $(cgLoFile)

@@ -39,9 +39,9 @@ done
 # --------------------
 # Get passwords
 
-cUserPass=$(cat ${cgDbPassCache} | rot13)
-cRootPass=$(cat ${cgDirCache}/.root.pass | rot13)
-cAdminPass=$(cat ${cgDirCache}/.admin.pass | rot13)
+cUserPass=$(cat ${cgDbPassCache} | rot13.sh -d)
+cRootPass=$(cat ${cgDirCache}/.root.pass | rot13.sh -d)
+cAdminPass=$(cat ${cgDirCache}/.admin.pass | rot13.sh -d)
 
 # --------------------
 # Script to create DB and users

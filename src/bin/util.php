@@ -57,7 +57,7 @@ class Db {
                 __LINE__ . "]");
 
         $tPassword = rtrim(shell_exec("/bin/bash -c 'cat " .
-                $pConf["cgDbPassCache"] . " | rot13'"));
+                $pConf["cgDbPassCache"] . " | rot13.sh -d'"));
         if ("$tPassword" == "")
             echo "\nWarning: Password is null [util.php:" . __LINE__ . "]\n";
 

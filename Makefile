@@ -196,6 +196,7 @@ mUtilProg = \
 	bin/phptidy.php \
 	bin/pre-commit \
 	bin/rm-trailing-sp \
+	bin/rot13.sh \
 	bin/shfmt
 
 get-util-prog : tmp/get-util-prog.date
