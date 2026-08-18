@@ -1,0 +1,424 @@
+#!/usr/bin/env bash
+# $Source: /repo/libre-bib/src/bin/db-setup.test,v $
+# $Revision: 1.1 $ $Date: 2026/08/18 00:00:00 $ GMT
+
+# Unit tests for db-setup. This file is sourced by fRunTests, it is
+# not run directly. See: db-setup -T all
+
+# ========================================
+# Tests
+
+# --------------------------------
+suite() {
+    local tFunc
+
+    for tFunc in $(grep -E '^test[A-Za-z0-9_]+ *\(\)' $cBin/$cName.test | sed 's/(.*//'); do
+        suite_addTest $tFunc
+    done
+    return 0
+} # suite
+
+# --------------------------------
+oneTimeSetUp() {
+    # When calling $cName, unset gpTest to prevent infinite loop
+    gpTest=''
+
+    gTestDir=$Tmp/test-$$
+    mkdir -p $gTestDir
+    return 0
+} # oneTimeSetUp
+
+# --------------------------------
+oneTimeTearDown() {
+    if [[ $gpDebug -eq 0 && -n "$gTestDir" ]]; then
+        'rm' -rf $gTestDir
+    fi
+    return 0
+} # oneTimeTearDown
+
+# --------------------------------
+setUp() {
+    'rm' -rf ${gTestDir:?}/*
+    cd $gTestDir || return 1
+    cp $cgDirApp/doc/example/conf.env ./conf.env
+    gpNoExec=1
+    cgNoExec=true
+    gConfBackup=0
+    return 0
+} # setUp
+
+# --------------------------------
+tearDown() {
+    cd $cCurDir || return 1
+    return 0
+} # tearDown
+
+# --------------------------------
+testUsage() {
+    local tResult
+
+    #-----
+    tResult=$(fUsage short 2>&1)
+    assertContains "$LINENO short" "$tResult" "NAME db-setup"
+
+    #-----
+    tResult=$(fUsage foo 2>&1)
+    assertContains "$LINENO foo.1" "$tResult" "NAME db-setup"
+
+    #-----
+    tResult=$(fUsage text 2>&1)
+    assertContains "$LINENO long.1" "$tResult" "DESCRIPTION"
+    assertContains "$LINENO long.2" "$tResult" "HISTORY"
+
+    #----- pod2markdown is optional, see fComCheckDeps
+    if which pod2markdown &>/dev/null; then
+        tResult=$(fUsage md 2>&1)
+        assertContains "$LINENO md.1" "$tResult" '# DESCRIPTION'
+    fi
+
+    #-----
+    tResult=$(fUsage int 2>&1)
+    assertContains "$LINENO internal.1" "$tResult" 'fConfSet'
+    assertContains "$LINENO internal.2" "$tResult" 'fComSetGlobals'
+
+    return 0
+
+    cat <<EOF >/dev/null
+=internal-pod
+
+=internal-head3 testUsage
+
+Test fUsage. Verify the different output styles work. The POD is in
+db-setup.inc, so this also verifies that fUsage points fComUsage at
+the right file. See also testComUsage in bash-com.test.
+
+=internal-cut
+EOF
+} # testUsage
+
+# --------------------------------
+testConfSet() {
+    local tResult
+
+    #----- A commented, indented example line is replaced and enabled
+    fConfSet cgDbName my_bib
+    tResult=$(grep '^cgDbName=' conf.env)
+    assertEquals "$LINENO commented" 'cgDbName="my_bib"' "$tResult"
+
+    #----- Only one line for the var, and the comment is gone
+    tResult=$(grep -c 'cgDbName=' conf.env)
+    assertEquals "$LINENO count" "1" "$tResult"
+
+    #----- An already set line is replaced
+    fConfSet cgDbName other_bib
+    tResult=$(grep '^cgDbName=' conf.env)
+    assertEquals "$LINENO set" 'cgDbName="other_bib"' "$tResult"
+
+    #----- A var that is not in the file is appended
+    fConfSet cgNotThere yes
+    tResult=$(grep '^cgNotThere=' conf.env)
+    assertEquals "$LINENO append" 'cgNotThere="yes"' "$tResult"
+
+    #----- A backup was made, once
+    tResult=$(ls conf.env-* | wc -l)
+    assertEquals "$LINENO backup" "1" "$tResult"
+
+    #----- The result still passes valid-conf.sh
+    $cgBin/valid-conf.sh <conf.env >/dev/null 2>&1
+    assertTrue "$LINENO valid" "[ $? -eq 0 ]"
+
+    return 0
+
+    cat <<EOF >/dev/null
+=internal-pod
+
+=internal-head3 testConfSet
+
+Test fConfSet against a real copy of doc/example/conf.env, where every
+var is commented out and indented. Verifies that setting a var
+uncomments it, that setting it twice does not leave two lines, that an
+unknown var is appended, that one backup is made, and that the result
+still passes valid-conf.sh.
+
+=internal-cut
+EOF
+} # testConfSet
+
+# --------------------------------
+testConfSetBadValue() {
+    local tResult
+
+    #----- Characters that valid-conf.sh rejects are refused
+    tResult=$(fConfSet cgDbName 'bad(value)' 2>&1)
+    assertFalse "$LINENO paren" "[ $? -eq 0 ]"
+    assertContains "$LINENO paren.msg" "$tResult" "may only have"
+
+    #----- conf.env was not touched
+    tResult=$(grep -c '^cgDbName=' conf.env)
+    assertEquals "$LINENO unchanged" "0" "$tResult"
+
+    return 0
+
+    cat <<EOF >/dev/null
+=internal-pod
+
+=internal-head3 testConfSetBadValue
+
+A value with characters that valid-conf.sh would reject, or that would
+break the sed replacement, is refused and conf.env is left alone.
+
+=internal-cut
+EOF
+} # testConfSetBadValue
+
+# --------------------------------
+testConfLoad() {
+    local tResult
+
+    #----- The app default is used when conf.env does not set it
+    fConfLoad
+    assertTrue "$LINENO load" "[ $? -eq 0 ]"
+    assertEquals "$LINENO default" "biblio_example" "$cgDbName"
+
+    #----- A value in conf.env overrides the app default
+    fConfSet cgDbName my_bib
+    fConfLoad
+    assertEquals "$LINENO override" "my_bib" "$cgDbName"
+
+    #----- -n wins over cgNoExec in conf.env
+    fConfSet cgNoExec false
+    gpNoExec=1
+    fConfLoad
+    assertEquals "$LINENO noexec" "true" "$cgNoExec"
+
+    #----- A broken conf.env is reported, not sourced
+    echo 'cgBad=(1 2 3)' >>conf.env
+    tResult=$(fConfLoad 2>&1)
+    assertFalse "$LINENO broken" "[ $? -eq 0 ]"
+
+    return 0
+
+    cat <<EOF >/dev/null
+=internal-pod
+
+=internal-head3 testConfLoad
+
+Verify the layering: app defaults first, then ./conf.env on top, then
+the -n command line override. Also verify that a conf.env that
+valid-conf.sh rejects returns an error instead of being sourced.
+
+=internal-cut
+EOF
+} # testConfLoad
+
+# --------------------------------
+testPass() {
+    local tResult
+
+    cgDirCache=$gTestDir/bib-cache
+    cgDbPassCache=$cgDirCache/.user.tmp
+
+    #----- File names
+    tResult=$(fPassFile user)
+    assertEquals "$LINENO user" "$cgDbPassCache" "$tResult"
+    tResult=$(fPassFile root)
+    assertEquals "$LINENO root" "$cgDirCache/.root.pass" "$tResult"
+    tResult=$(fPassFile admin)
+    assertEquals "$LINENO admin" "$cgDirCache/.admin.pass" "$tResult"
+
+    #----- An unknown name is an internal error
+    tResult=$(fPassFile bogus 2>&1)
+    assertContains "$LINENO bogus" "$tResult" "Unknown password"
+
+    #----- Nothing saved yet
+    mkdir -p $cgDirCache
+    fPassExists user
+    assertFalse "$LINENO missing" "[ $? -eq 0 ]"
+
+    #----- Round trip: what is saved is what comes back
+    echo "Secret-42" | rot13.sh -e >$cgDbPassCache
+    chmod 600 $cgDbPassCache
+    fPassExists user
+    assertTrue "$LINENO exists" "[ $? -eq 0 ]"
+    tResult=$(fPassGet user)
+    assertEquals "$LINENO roundtrip" "Secret-42" "$tResult"
+
+    #----- The cache file is not readable by others
+    tResult=$(stat -c '%a' $cgDbPassCache)
+    assertEquals "$LINENO mode" "600" "$tResult"
+
+    return 0
+
+    cat <<EOF >/dev/null
+=internal-pod
+
+=internal-head3 testPass
+
+Test the password cache file names, and that a password written the
+way fPassSet writes it is read back unchanged by fPassGet. fPassSet
+itself prompts, so it is not called here.
+
+=internal-cut
+EOF
+} # testPass
+
+# --------------------------------
+testRun() {
+    local tResult
+
+    #----- With cgNoExec, the command is reported and not run
+    cgNoExec=true
+    tResult=$(fRun touch $gTestDir/should-not-exist 2>&1)
+    assertContains "$LINENO noexec.msg" "$tResult" "NoExec"
+    assertFalse "$LINENO noexec.file" "[ -e $gTestDir/should-not-exist ]"
+
+    #----- Without it, the command runs
+    cgNoExec=false
+    fRun touch $gTestDir/should-exist
+    assertTrue "$LINENO exec.file" "[ -e $gTestDir/should-exist ]"
+
+    #----- The command's return code is passed back
+    fRun false
+    assertFalse "$LINENO exec.rc" "[ $? -eq 0 ]"
+
+    cgNoExec=true
+    return 0
+
+    cat <<EOF >/dev/null
+=internal-pod
+
+=internal-head3 testRun
+
+fRun is the guard in front of every sudo, apt-get, and systemctl call,
+so -n depends on it. Verify it blocks and reports when cgNoExec is
+true, and passes the return code through when it is not.
+
+=internal-cut
+EOF
+} # testRun
+
+# --------------------------------
+testDbSqlNoExec() {
+    local tResult
+
+    #----- With cgNoExec, the SQL is shown and mysql is not called
+    cgNoExec=true
+    gDbRootMode=""
+    tResult=$(fDbSql "select 1;" 2>&1)
+    assertTrue "$LINENO rc" "[ $? -eq 0 ]"
+    assertContains "$LINENO sql" "$tResult" "select 1;"
+
+    return 0
+
+    cat <<EOF >/dev/null
+=internal-pod
+
+=internal-head3 testDbSqlNoExec
+
+With -n, fDbSql reports the SQL and returns 0 even when no DB root
+access has been found. This is what makes "db-setup -n" safe to run on
+a host with no DB server.
+
+=internal-cut
+EOF
+} # testDbSqlNoExec
+
+# --------------------------------
+testDbSetRootPass() {
+    local tResult
+
+    cgDirCache=$gTestDir/bib-cache
+    mkdir -p $cgDirCache
+    cgNoExec=true
+
+    #----- Refused unless the user agrees, and nothing is saved
+    gpAuto=1
+    gpYesNo="n"
+    tResult=$(fDbSetRootPass 2>&1)
+    assertFalse "$LINENO declined" "[ $? -eq 0 ]"
+    assertFalse "$LINENO nofile" "[ -e $cgDirCache/.root.pass ]"
+
+    gpAuto=0
+    gpYesNo=""
+    return 0
+
+    cat <<EOF >/dev/null
+=internal-pod
+
+=internal-head3 testDbSetRootPass
+
+The root password can only be changed while root access is working, so
+verify that declining leaves no cached password behind. The prompts
+themselves are not driven here, only the guard.
+
+=internal-cut
+EOF
+} # testDbSetRootPass
+
+# --------------------------------
+testMakeDirs() {
+    local tDir
+
+    cgDirEtc=etc
+    cgDirStatus=status
+    cgDirTmp=tmp
+    cgDirCache=bib-cache
+    cgDirBackup=backup
+
+    #----- The dirs are created
+    fMakeDirs
+    for tDir in etc status tmp bib-cache backup; do
+        assertTrue "$LINENO $tDir" "[ -d $tDir ]"
+    done
+
+    #----- Running again is not an error, and does not lose anything
+    touch etc/keep-me
+    fMakeDirs
+    assertTrue "$LINENO rerun" "[ -e etc/keep-me ]"
+
+    return 0
+
+    cat <<EOF >/dev/null
+=internal-pod
+
+=internal-head3 testMakeDirs
+
+The wizard is meant to be run more than once, so verify that fMakeDirs
+is safe to repeat and does not overwrite what is already there.
+
+=internal-cut
+EOF
+} # testMakeDirs
+
+# --------------------------------
+testCopyIfMissing() {
+    local tResult
+
+    #----- A missing file is copied
+    fCopyIfMissing $cgDirApp/doc/example/key.txt key.txt
+    assertTrue "$LINENO copied" "[ -r key.txt ]"
+
+    #----- An existing file is left alone
+    echo "mine" >key.txt
+    fCopyIfMissing $cgDirApp/doc/example/key.txt key.txt
+    tResult=$(cat key.txt)
+    assertEquals "$LINENO kept" "mine" "$tResult"
+
+    #----- A missing source is a warning, not a stop
+    tResult=$(fCopyIfMissing $cgDirApp/doc/example/no-such-file out.txt 2>&1)
+    assertFalse "$LINENO nosrc" "[ $? -eq 0 ]"
+    assertFalse "$LINENO nosrc.file" "[ -e out.txt ]"
+
+    return 0
+
+    cat <<EOF >/dev/null
+=internal-pod
+
+=internal-head3 testCopyIfMissing
+
+Verify that the example files are never copied over a user's own file,
+which is the main risk of re-running the wizard.
+
+=internal-cut
+EOF
+} # testCopyIfMissing

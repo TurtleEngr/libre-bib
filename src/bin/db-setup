@@ -1,0 +1,121 @@
+#!/bin/bash
+# $Source: /repo/libre-bib/src/bin/db-setup,v $
+# $Revision: 1.1 $ $Date: 2026/08/18 00:00:00 $ GMT
+
+# Wizard to configure conf.env and the DB. See db-setup.inc for the
+# functions and for the usage documentation (db-setup -h).
+
+# Naming Convention
+# gpVar - command line parameters. These can override gcVars with same
+#         base name.
+# cgVar - config vars that are read from conf.env
+# gVar - global variables. Should be few. Use functions to reduce these.
+# cVar - These are global config vars, fixed values for the script.
+# pVar - a positional variable passed into a function (local).
+# tVar - a local variable used in a function.
+# fFunction - a function unique to this script
+# fComFunction - Most functions in bash-com.inc begin with fCom
+
+set -u
+export cgBin cgDirApp cgNoExec
+
+# ========================================
+# Main
+
+export cName=${BASH_SOURCE##*/}
+
+# -------------------
+# Set current directory location in PWD and cCurDir, because with cron
+# jobs PWD is not set.
+if [[ -z "$PWD" ]]; then
+    PWD=$(pwd)
+fi
+cCurDir=$PWD
+
+# -------------------
+# Define cBin, location of this script and of bash-com.inc
+cBin=${BASH_SOURCE%/*}
+
+# shellcheck disable=SC1091
+source $cBin/bash-com.inc
+# shellcheck disable=SC1091
+source $cBin/$cName.inc
+
+# -------------------
+# Configuration Section
+
+# shellcheck disable=SC2016
+cVer='$Revision: 1.1 $'
+fSetGlobals
+
+# -------------------
+# Get Args Section
+while getopts :nhH:lT:vx tArg; do
+    case $tArg in
+        # Script arguments
+        n) gpNoExec=1 ;;
+        # Common arguments
+        h)
+            fUsage long
+            exit 1
+            ;;
+        H)
+            fUsage "$OPTARG"
+            exit 1
+            ;;
+        l) gpLog=1 ;;
+        v) ((++gpVerbose)) ;;
+        x) ((++gpDebug)) ;;
+        T) gpTest="$OPTARG" ;;
+        # Problem arguments
+        :) fError -m "Value required for option: -$OPTARG" -l $LINENO ;;
+        \?) fError -m "Unknown option: $OPTARG" -l $LINENO ;;
+    esac
+done
+((--OPTIND))
+shift $OPTIND
+if [[ $# -ne 0 ]]; then
+    fError -m "Unknown argument: $*" -l $LINENO
+fi
+
+# -------------------
+if [[ -n "$gpTest" ]]; then
+    fRunTests
+fi
+
+# -------------------
+# Setup default logging
+
+if [[ $gpLog -ne 0 ]]; then
+    gpFacility=local1
+    exec 1> >(logger -s -t $cName -p $gpFacility.info)
+    exec 2> >(logger -s -t $cName -p $gpFacility.warning)
+fi
+
+# -------------------
+# Validate Args Section
+
+fValidateApp
+
+# -------------------
+# Read-only section
+
+echo
+echo "$cName - libre-bib setup wizard"
+echo "App:     $cgDirApp"
+echo "Working: $PWD"
+if [[ $gpNoExec -ne 0 ]]; then
+    echo "NoExec:  DB, package, and service commands are only reported."
+fi
+
+# -------------------
+# Write section
+
+fConfInit
+fConfLoad
+
+fMenu
+
+# -------------------
+# CleanUp Section
+fCleanUp
