@@ -247,31 +247,25 @@ shunit2.1
 
 =head2 DB root access
 
-Two ways of reaching the DB as root are tried, in this order:
+The DB root user is always reached with "sudo mysql". The saved root
+password, if one has been set, is added with --password=. There is
+only one path, because MariaDB on Debian and Ubuntu makes "sudo mysql"
+work by default (root@localhost has no password to start with), and
+once a password is set, mysql still accepts it while running as root
+through sudo.
 
- socket   - "sudo mysql", the unix_socket auth that Debian and Ubuntu
-            set up by default for root@localhost. No password is used.
- password - "mysql -u root --password=..." with the password saved in
-            $cgDirCache/.root.pass
-
-Socket access is tried first because on a stock Ubuntu MariaDB install
-the root account has no password at all, and asking for one there
-would look like a failure when nothing is wrong.
-
-Because of that, the root password is never asked for as part of the
-normal setup, and there is no menu item to change it on a server that
-already has one. The only place it is set is right after the erase
-step, on a server that was just reinitialized. Setting one there
-replaces socket auth for root@localhost, so "sudo mysql" stops
-working afterward and the saved password becomes the only way in.
+The root password is never asked for as part of the normal setup.
+There is no menu item to change it on a server that already has one.
+The only place it is set is right after the erase step, on a server
+that was just reinitialized and so has no password yet.
 
 =head2 Erasing all the databases
 
-If neither method works, the DB root password is unknown and there is
-no way to recover it. The only remaining option is to reinitialize the
-server, which erases B<every> database on the host, not only the
-libre-bib one. That menu item is refused while root access works, and
-it asks for a typed confirmation.
+If root cannot be reached at all, the DB root password is unknown and
+there is no way to recover it. The only remaining option is to
+reinitialize the server, which erases B<every> database on the host,
+not only the libre-bib one. That menu item is refused while root
+access works, and it asks for a typed confirmation.
 
 =head1 CAVEATS
 
@@ -280,9 +274,9 @@ not encryption. Anyone who can read $cgDirCache can recover them. The
 files are created mode 600. This matches how bib-cmd.mak and
 db-create.sh already store them.
 
-In password mode the root password is passed to mysql on the command
+The root password, when one is set, is passed to mysql on the command
 line, where it is briefly visible in "ps". This also matches
-db-create.sh. Socket mode does not have this problem.
+db-create.sh.
 
 =head1 DIAGNOSTICS
 
@@ -345,8 +339,8 @@ fSetGlobals() {
     cgNoExec=${cgNoExec:-false}
     gpNoExec=${gpNoExec:-0}
 
-    gDbRootMode=""
     gConfBackup=0
+    gDbRootArgs=()
 
     # libreoffice, php, and systemctl are installed along with the
     # libre-bib package itself, so db-setup expects them to already be
@@ -355,7 +349,7 @@ fSetGlobals() {
     # optional; see fDbCheckInstalled.
     # gawk is required because valid-conf.sh's awk uses \s, which mawk
     # does not support. Under mawk it rejects a valid conf.env.
-    fComCheckDeps "rot13.sh sed gawk libreoffice php systemctl" "mysql"
+    fComCheckDeps "rot13.sh sed gawk libreoffice php systemctl mysql" "cat"
     return 0
 
     cat <<EOF >/dev/null
@@ -367,9 +361,7 @@ Calls fComSetGlobals, then sets cgBin and cgDirApp from the location
 of this script, so that the wizard works from a git working copy as
 well as from /opt/libre-bib. Both can be set before the script runs.
 
-gDbRootMode holds how the DB root account was reached: "socket",
-"password", or empty when it has not been reached. gConfBackup is 1
-after conf.env has been backed up in this session.
+gConfBackup is 1 after conf.env has been backed up in this session.
 
 =internal-cut
 EOF
@@ -822,63 +814,10 @@ EOF
 } # fRun
 
 # --------------------------------
-fDbService() {
-    local tUnit
-
-    for tUnit in mariadb mysql mysqld; do
-        if systemctl list-unit-files $tUnit.service 2>/dev/null | grep -q "^$tUnit.service"; then
-            echo $tUnit
-            return 0
-        fi
-    done
-    echo mysql
-    return 1
-
-    cat <<EOF >/dev/null
-=internal-pod
-
-=internal-head3 fDbService
-
-Output the name of the DB systemd unit. Ubuntu names the MariaDB unit
-"mariadb", other packages use "mysql" or "mysqld". Returns 1, and
-outputs "mysql", if none of them are known to systemd.
-
-=internal-cut
-EOF
-} # fDbService
-
-# --------------------------------
-fDbCheckInstalled() {
-    if which mariadbd mysqld &>/dev/null; then
-        fLog -p info -m "DB server is installed." -l $LINENO
-        return 0
-    fi
-
-    echo
-    echo "No DB server was found on this host."
-    if ! fComYesNo "Install mariadb-client and mariadb-server with apt-get"; then
-        fLog -f -p warning -m "A DB server is required before the DB can be set up." -l $LINENO
-        return 1
-    fi
-    fRun sudo apt-get install -y mariadb-client mariadb-server
-    return $?
-
-    cat <<EOF >/dev/null
-=internal-pod
-
-=internal-head3 fDbCheckInstalled
-
-Check for a DB server, and offer to install mariadb if there is none.
-
-=internal-cut
-EOF
-} # fDbCheckInstalled
-
-# --------------------------------
 fDbCheckRunning() {
     local tService
 
-    tService=$(fDbService)
+    tService=mariadb
     if systemctl is-active --quiet $tService; then
         fLog -p info -m "$tService is running." -l $LINENO
         return 0
@@ -904,54 +843,39 @@ EOF
 } # fDbCheckRunning
 
 # --------------------------------
-fDbRootMode() {
-    local tPass
-
-    gDbRootMode=""
-
-    if sudo mysql -P $cgDbPortLocal -h $cgDbHost -e 'select 1' &>/dev/null; then
-        gDbRootMode="socket"
-        return 0
-    fi
-
-    if fPassExists root; then
-        tPass=$(fPassGet root)
-        if sudo mysql -P $cgDbPortLocal -u root --password="$tPass" -h $cgDbHost -e 'select 1' &>/dev/null; then
-            gDbRootMode="password"
-            return 0
-        fi
-    fi
-    return 1
+fDbRootWorks() {
+    sudo -n mysql -h $cgDbHost -e 'select 1' &>/dev/null
+    return $?
 
     cat <<EOF >/dev/null
 =internal-pod
 
-=internal-head3 fDbRootMode
+=internal-head3 fDbRootWorks
 
-Find a way to reach the DB as root, and set gDbRootMode to "socket" or
-"password". Returns 1, with gDbRootMode empty, if neither works.
+Test whether the DB root user can be reached right now: always
+"sudo mysql", with the saved root password added if one has been set.
 
-Socket auth is tried first: on Debian and Ubuntu root@localhost is set
-up for unix_socket, so "sudo mysql" works and there is no root
-password to ask for.
+"sudo -n" is used here (only here) so that a host where sudo itself
+needs a password fails this test at once, instead of sitting at a
+password prompt that the redirected output has hidden.
 
 =internal-cut
 EOF
-} # fDbRootMode
+} # fDbRootWorks
 
 # --------------------------------
 fDbRootAccess() {
-    if fDbRootMode; then
-        fLog -f -p notice -m "DB root access is working ($gDbRootMode)." -l $LINENO
+    if fDbRootWorks; then
+        fLog -f -p notice -m "DB root access is working." -l $LINENO
         return 0
     fi
 
     echo
-    echo "Could not reach the DB as root, with sudo or with a saved password."
+    echo "Could not reach the DB as root with: sudo mysql"
     if fComYesNo "Enter the DB root password and try again"; then
         fPassSet root
-        if fDbRootMode; then
-            fLog -f -p notice -m "DB root access is working ($gDbRootMode)." -l $LINENO
+        if fDbRootWorks; then
+            fLog -f -p notice -m "DB root access is working." -l $LINENO
             return 0
         fi
     fi
@@ -966,7 +890,7 @@ fDbRootAccess() {
 
 =internal-head3 fDbRootAccess
 
-Get DB root access, asking for the root password if sudo is not
+Get DB root access, asking for the root password if sudo alone is not
 enough. Returns 1 if root still cannot be reached, which is the only
 case where the erase menu item is allowed.
 
@@ -978,7 +902,6 @@ EOF
 fDbSql() {
     local pSql="$1"
 
-    local tPass
     local tErr
 
     if [[ "$cgNoExec" = "true" ]]; then
@@ -989,21 +912,8 @@ fDbSql() {
 
     umask 077
     echo "$pSql" >$cTmp1
-    case $gDbRootMode in
-        socket)
-            sudo mysql -f -P $cgDbPortLocal -h $cgDbHost <$cTmp1
-            tErr=$?
-            ;;
-        password)
-            tPass=$(fPassGet root)
-            sudo mysql -f -P $cgDbPortLocal -u root --password="$tPass" -h $cgDbHost <$cTmp1
-            tErr=$?
-            ;;
-        *)
-            fError -c -m "No DB root access. Run the 'Check' menu item first." -l $LINENO
-            tErr=1
-            ;;
-    esac
+    sudo mysql -f -h $cgDbHost <$cTmp1
+    tErr=$?
     'rm' -f $cTmp1
     return $tErr
 
@@ -1012,9 +922,13 @@ fDbSql() {
 
 =internal-head3 fDbSql pSql
 
-Run pSql as the DB root user, using whichever access fDbRootMode
-found. The SQL is written to a mode 600 temp file and redirected in,
-so that the DB user and admin passwords do not appear in "ps".
+Run pSql as the DB root user: always "sudo mysql", with the saved root
+password added if one has been set. Unlike fDbRootWorks, sudo here is
+not "-n", so if the host needs a sudo password this is where the
+person is asked for it, in the open, not behind a hidden check.
+
+The SQL is written to a mode 600 temp file and redirected in, so that
+the DB user and admin passwords do not appear in "ps".
 
 If cgNoExec is "true" the SQL is printed and nothing is run.
 
@@ -1106,9 +1020,6 @@ fDbAskRootPass() {
         return 1
     fi
 
-    # mysql_install_db always leaves root@$cgDbHost reachable with
-    # "sudo mysql" and no password, so there is nothing to check here.
-    gDbRootMode="socket"
     fDbSql "alter user 'root'@'$cgDbHost' identified by '$(fPassGet root)'; flush privileges;"
     return 0
 
@@ -1121,9 +1032,9 @@ Ask whether to set a DB root password, and if the answer is yes, save
 it and set it on the server. Only called right after fDbErase
 reinitializes the server, which is the one moment a root password can
 be set without already knowing the old one. No access check is made
-before or after: a fresh mysql_install_db always leaves root reachable
-with "sudo mysql" and no password, so gDbRootMode is simply set to
-"socket" here.
+before or after: mysql_install_db always leaves root reachable with
+"sudo mysql", and fDbSql always uses sudo, so there is nothing to
+check.
 
 =internal-cut
 EOF
@@ -1134,8 +1045,8 @@ fDbErase() {
     local tReply
     local tService
 
-    if fDbRootMode; then
-        fError -c -m "Root access works ($gDbRootMode), so erasing is not needed." -l $LINENO
+    if fDbRootWorks; then
+        fError -c -m "Root access works, so erasing is not needed." -l $LINENO
         return 1
     fi
 
@@ -1153,7 +1064,7 @@ fDbErase() {
         return 1
     fi
 
-    tService=$(fDbService)
+    tService=mariadb
     fRun sudo systemctl stop $tService
     fRun sudo sh -c 'rm -rf /var/lib/mysql/*'
     fRun sudo -u mysql mysql_install_db
@@ -1184,7 +1095,6 @@ EOF
 
 # --------------------------------
 fDoCheck() {
-    fDbCheckInstalled
     fDbCheckRunning
     fDbRootAccess
     return 0

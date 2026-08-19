@@ -303,7 +303,6 @@ testDbSqlNoExec() {
 
     #----- With cgNoExec, the SQL is shown and mysql is not called
     cgNoExec=true
-    gDbRootMode=""
     tResult=$(fDbSql "select 1;" 2>&1)
     assertTrue "$LINENO rc" "[ $? -eq 0 ]"
     assertContains "$LINENO sql" "$tResult" "select 1;"
@@ -324,12 +323,44 @@ EOF
 } # testDbSqlNoExec
 
 # --------------------------------
+testDbRootArgs() {
+    cgDirCache=$gTestDir/bib-cache
+    mkdir -p $cgDirCache
+
+    #----- No saved password: no args
+    gDbRootArgs=(placeholder)
+    fDbRootArgs
+    assertEquals "$LINENO empty" "0" "${#gDbRootArgs[@]}"
+
+    #----- A saved password, including a space, comes back as one arg
+    echo "pass word" | rot13.sh -e >$(fPassFile root)
+    chmod 600 $(fPassFile root)
+    fDbRootArgs
+    assertEquals "$LINENO count" "3" "${#gDbRootArgs[@]}"
+    assertEquals "$LINENO user" "-u" "${gDbRootArgs[0]}"
+    assertEquals "$LINENO name" "root" "${gDbRootArgs[1]}"
+    assertEquals "$LINENO pass" "--password=pass word" "${gDbRootArgs[2]}"
+
+    return 0
+
+    cat <<EOF >/dev/null
+=internal-pod
+
+=internal-head3 testDbRootArgs
+
+fDbRootArgs sets a global array rather than returning a string, so
+that a password containing a space survives as a single array element
+instead of being re-split by a caller's \$(...) expansion.
+
+=internal-cut
+EOF
+} # testDbRootArgs
+
 # --------------------------------
 testDbAskRootPass() {
     cgDirCache=$gTestDir/bib-cache
     mkdir -p $cgDirCache
     cgNoExec=true
-    gDbRootMode=""
 
     #----- Declining leaves nothing saved, and touches nothing else
     gpAuto=1
@@ -337,7 +368,6 @@ testDbAskRootPass() {
     fDbAskRootPass
     assertFalse "$LINENO declined" "[ $? -eq 0 ]"
     assertFalse "$LINENO nofile" "[ -e $cgDirCache/.root.pass ]"
-    assertEquals "$LINENO mode" "" "$gDbRootMode"
 
     gpAuto=0
     gpYesNo=""
