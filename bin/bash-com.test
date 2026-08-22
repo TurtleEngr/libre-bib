@@ -1,6 +1,6 @@
 #!/bin/bash
 # $Source: /repo/per-bruce.cvs/bin/bash-com.test,v $
-# $Revision: 1.22 $ $Date: 2026/08/04 03:23:47 $ GMT
+# $Revision: 1.23 $ $Date: 2026/08/17 04:06:47 $ GMT
 
 # --------------------------------
 fComBashTestUsage() {
@@ -62,7 +62,7 @@ shunit2.1
 
 =head1 HISTORY
 
-$Revision: 1.22 $ $Date: 2026/08/04 03:23:47 $ GMT
+$Revision: 1.23 $ $Date: 2026/08/17 04:06:47 $ GMT
 
 =cut
 EOF
@@ -100,11 +100,12 @@ oneTimeSetUp() {
 
     fComSetGlobals
 
-    echo "sudo chmod a+r /var/log/user.log /var/log/app/bash-com.test.log"
-
-    sudo touch /var/log/user.log /var/log/app/bash-com.test.log
-    sudo chmod a+rwx /var/log/app/
-    sudo chmod a+rw /var/log/user.log /var/log/app/bash-com.test.log
+    if grep -q TLocal1 /etc/rsyslog.d/* >/dev/null 2>&1; then
+        echo "sudo chmod a+r /var/log/user.log /var/log/app/bash-com.test.log"
+        sudo touch /var/log/user.log /var/log/app/bash-com.test.log
+        sudo chmod a+rwx /var/log/app/
+        sudo chmod a+rw /var/log/user.log /var/log/app/bash-com.test.log
+    fi
 
     # Save global values
     export tDefault_Tmp=$Tmp
@@ -153,9 +154,11 @@ EOF
 
 oneTimeTearDown() {
     if [[ $gpDebug -eq 0 ]]; then
-        echo sudo rm /var/log/app/bash-com.test.log
-        sudo chmod go-w /var/log/user.log /var/log/app /var/log/app/*
-        rm -rf /tmp/$USER/bash-com-test 2>/dev/null
+        if grep -q TLocal1 /etc/rsyslog.d/* >/dev/null 2>&1; then
+            echo sudo rm /var/log/app/bash-com.test.log
+            sudo chmod go-w /var/log/user.log /var/log/app /var/log/app/*
+            rm -rf /tmp/$USER/bash-com-test 2>/dev/null
+        fi
     fi
     return 0
 } # oneTimeTearDown

@@ -490,6 +490,9 @@ bin/pre-commit : $(mUtilProgDir)/bin/pre-commit
 bin/rm-trailing-sp : $(mUtilProgDir)/bin/rm-trailing-sp
 	cp $? $@
 
+bin/rot13.sh : $(mUtilProgDir)/bin/rot13.sh
+	cp $? $@
+
 bin/shfmt : $(mUtilProgDir)/bin/shfmt
 	cp $? $@
 

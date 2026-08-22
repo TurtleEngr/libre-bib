@@ -146,7 +146,7 @@ class BibRefNew {
 
         # Bib cols that are not put in the bibliography-mark.
         $cSkipCol = array("Identifier", "Type", "Annote", "Note",
-            "Custom1", "Custom2", "Custom3", "Custom5");
+            "URL", "Custom2", "Custom3", "Custom5");
 
         if ( ! isset($this->mBibCache))
             $this->mBibCache = array();

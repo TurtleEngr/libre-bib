@@ -1,4 +1,4 @@
-<?php
+|<?php
 
 # ========================================
 # convert-lo-2-bib.inc - class ConvertLo2Bib, the work done by convert-lo-2-bib.php.
@@ -106,7 +106,6 @@ class ConvertLo2Bib {
             case "Note":
             case "Title":
             case "Type":
-            case "Custom1":
             case "Custom2":
             case "Custom3":
                 # These are not changed
@@ -176,12 +175,16 @@ class ConvertLo2Bib {
                     $tRec[$tCol] = ' ISBN:' . $tRec[$tCol] . '.';
                     break;
                 case "URL":
-                    $tRec[$tCol] = ' URL:' . $tRec[$tCol];
+                    # Merge URL and Custom1 into Custom1. LO rewrites
+                    # text:url as a URI (spaces become %20), but it
+                    # leaves text:custom1 alone.
+                    $tUrl = ' URL:' . $tRec[$tCol];
                     if ($tRec['Custom1'] != '') {
                         # Use only the first entry (space separator)
                         $tAltList = explode(' ', trim($tRec['Custom1']));
-                        $tRec[$tCol] .= '  Alt:' . $tAltList[0];
+                        $tUrl .= ' Alt:' . $tAltList[0];
                     }
+                    $tRec['Custom1'] = $tUrl;
                     break;
                 case "Custom4":
                     $tRec[$tCol] = ' Seen: ' . $tRec[$tCol] . '.';

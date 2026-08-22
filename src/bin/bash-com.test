@@ -1,6 +1,6 @@
 #!/bin/bash
 # $Source: /repo/per-bruce.cvs/bin/bash-com.test,v $
-# $Revision: 1.22 $ $Date: 2026/08/04 03:23:47 $ GMT
+# $Revision: 1.23 $ $Date: 2026/08/17 04:06:47 $ GMT
 
 # --------------------------------
 fComBashTestUsage() {
@@ -62,7 +62,7 @@ shunit2.1
 
 =head1 HISTORY
 
-$Revision: 1.22 $ $Date: 2026/08/04 03:23:47 $ GMT
+$Revision: 1.23 $ $Date: 2026/08/17 04:06:47 $ GMT
 
 =cut
 EOF
