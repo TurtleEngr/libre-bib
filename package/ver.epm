@@ -1,7 +1,7 @@
 
 %include mx.require
 %product Bibliography tool for LibreOffice
-%version 1.3.1
+%version 1.4.0
 %packager RE
 %vendor TurtleEngr / turtle.engr.com
 %copyright Copyright 2026. All rights reserved.
