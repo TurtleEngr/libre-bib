@@ -4,13 +4,13 @@
 
 ProdName=libre-bib
 ProdAlias=libre-bib
-ProdVer=1.2.7
+ProdVer=1.2.8
 ProdRC=
 ProdBuild=1
-ProdBuildTime=2026.08.14.18.12
+ProdBuildTime=2026.08.22.5.54
 ProdSvnVer=
-ProdWinVer=1.2.7
-ProdDate=2026-08-14
+ProdWinVer=1.2.8
+ProdDate=2026-08-22
 ProdSummary=Bibliography tool for LibreOffice
 ProdDesc=Bibliography tool for LibreOffice
 ProdSupport=turtle.engr.com
@@ -29,7 +29,7 @@ ProdRelRoot=moria.whyayh.com:/rel
 ProdRelCategory=software/own/libre-bib
 ProdRelDir=moria.whyayh.com:/rel/released/software/own/libre-bib
 ProdDevDir=moria.whyayh.com:/rel/development/software/own/libre-bib
-ProdTag=tag-1-2-7-1
+ProdTag=tag-1-2-8-1
 ProdOS=mx23
 ProdOSDist=mx
 ProdOSVer=23.6
