@@ -157,10 +157,7 @@ class ConvertLo2Bib {
                         $tRec[$tCol] .= ': ' . $tRec['Title'];
                     if ($tRec['Edition'] != '')
                         $tRec[$tCol] .= ' (' . $tRec['Edition'] . ' ed.)';
-                    if ($tRec['Type'] == '1')
-                        $tRec[$tCol] = ' ' . $tRec[$tCol] . '.';
-                    else
-                        $tRec[$tCol] = ' "' . $tRec[$tCol] . '."';
+                    $tRec[$tCol] = $tRec[$tCol] . '.';
                     break;
                 case "Author":
                     if ($tRec['Custom2'] != '')
