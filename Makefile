@@ -389,6 +389,7 @@ package/epm.list : dist/opt/libre-bib
 package/ver.mak : package/ver.sh
 	sed -i "s/export ProdVer=.*/export ProdVer=\"$$(cat src/VERSION)\"/" package/ver.sh
 	cd package; \
+	export RELEASE=1; \
 	mkver.pl -e 'mak env epm'
 
 package/ver.sh : src/VERSION
