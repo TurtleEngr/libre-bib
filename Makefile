@@ -400,9 +400,8 @@ release-dev : tmp/package.date
 	@echo "TBD"
 	@echo "cp pkg to $(ProdDevDir)/$(ProdOS)"
 
-release-prod :
-	@echo "TBD"
-	@echo "cp pkg to $(ProdRelDir)/$(ProdOS)"
+release release-prod :
+	rsync pkg/* $(ProdRelDir)
 
 # ========================================
 # Complex Targets
